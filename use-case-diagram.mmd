@@ -1,0 +1,56 @@
+---
+title: SAFE TRACK — Diagramme de cas d'utilisation
+---
+graph TB
+    subgraph SAFE_TRACK["SAFE TRACK — Système"]
+        UC1["Se connecter"]
+        UC2["Se déconnecter"]
+        UC3["Consulter le tableau de bord"]
+        UC4["Consulter la localisation (carte)"]
+        UC5["Consulter les alertes"]
+        UC6["Consulter les prédictions IA (santé équipements)"]
+        UC7["Gérer les structures (CRUD)"]
+        UC8["Créer l'administrateur de structure"]
+        UC9["Activer / Désactiver une structure"]
+        UC10["Consulter les statistiques globales"]
+        UC11["Gérer les utilisateurs de SA structure"]
+        UC12["Créer un compte USER"]
+        UC13["Activer / Désactiver un utilisateur"]
+        UC14["Consulter la maintenance"]
+        UC15["Planifier / Modifier une maintenance"]
+        UC16["Consulter tous les utilisateurs (global)"]
+    end
+
+    SUPERADMIN["SUPERADMIN"] --> UC1
+    SUPERADMIN --> UC2
+    SUPERADMIN --> UC6
+    SUPERADMIN --> UC7
+    SUPERADMIN --> UC8
+    SUPERADMIN --> UC9
+    SUPERADMIN --> UC10
+    SUPERADMIN --> UC16
+    SUPERADMIN -.-> UC11
+    SUPERADMIN -.-> UC12
+    SUPERADMIN -.-> UC13
+
+    ADMIN_STRUCTURE["ADMIN_STRUCTURE"] --> UC1
+    ADMIN_STRUCTURE --> UC2
+    ADMIN_STRUCTURE --> UC3
+    ADMIN_STRUCTURE --> UC4
+    ADMIN_STRUCTURE --> UC5
+    ADMIN_STRUCTURE --> UC6
+    ADMIN_STRUCTURE --> UC11
+    ADMIN_STRUCTURE --> UC12
+    ADMIN_STRUCTURE --> UC13
+    ADMIN_STRUCTURE --> UC14
+    ADMIN_STRUCTURE --> UC15
+
+    USER["USER"] --> UC1
+    USER --> UC2
+    USER --> UC3
+    USER --> UC4
+    USER --> UC5
+    USER --> UC6
+    USER --> UC14
+
+    UC6 -. "inclusion" .-> UC15

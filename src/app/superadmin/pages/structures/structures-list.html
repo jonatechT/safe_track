@@ -1,0 +1,134 @@
+<div class="sa-page-header">
+  <div>
+    <h1 class="sa-title">Gestion des structures</h1>
+    <p class="sa-subtitle">Créez, consultez et gérez toutes les structures de la plateforme.</p>
+  </div>
+  <a routerLink="/superadmin/structures/new" class="sa-btn-primary">
+    <i class="fa-solid fa-plus"></i> Créer une structure
+  </a>
+</div>
+
+@if (message()) {
+  <div class="sa-alert" [class.sa-alert-success]="messageType() === 'success'" [class.sa-alert-error]="messageType() === 'error'">
+    <i class="fa-solid" [class.fa-circle-check]="messageType() === 'success'" [class.fa-circle-xmark]="messageType() === 'error'"></i>
+    {{ message() }}
+  </div>
+}
+
+<div class="sa-toolbar">
+  <div class="sa-search">
+    <i class="fa-solid fa-magnifying-glass sa-search-icon"></i>
+    <input type="text" class="sa-search-input" placeholder="Rechercher une structure..." [(ngModel)]="searchTerm" />
+  </div>
+  <div class="sa-filter-group">
+    <select class="sa-filter-select" [(ngModel)]="statusFilter">
+      <option value="">Tous les statuts</option>
+      <option value="ACTIVE">Actives</option>
+      <option value="INACTIVE">Inactives</option>
+    </select>
+  </div>
+</div>
+
+<div class="sa-card">
+  @if (isLoading()) {
+    <div class="sa-loading">
+      <div class="sa-spinner"></div>
+      Chargement des structures...
+    </div>
+  } @else if (filteredStructures().length === 0) {
+    <div class="sa-empty">
+      <i class="fa-solid fa-building-circle-xmark sa-empty-icon"></i>
+      <p>Aucune structure trouvée.</p>
+      @if (searchTerm() || statusFilter()) {
+        <p>Modifiez votre recherche ou vos filtres.</p>
+      } @else {
+        <a routerLink="/superadmin/structures/new" class="sa-link">Créer la première structure</a>
+      }
+    </div>
+  } @else {
+    <div class="sa-table-wrapper">
+      <table class="sa-table">
+        <thead>
+          <tr>
+            <th>Structure</th>
+            <th>Code</th>
+            <th>Ville / Pays</th>
+            <th>Statut</th>
+            <th>Administrateur</th>
+            <th>Créée le</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of filteredStructures(); track s.id) {
+            <tr>
+              <td>
+                  <div class="sa-cell-main">
+                    <div class="sa-cell-avatar">{{ s.nom.charAt(0).toUpperCase() }}</div>
+                  <div>
+                    <div class="sa-cell-name">{{ s.nom }}</div>
+                    <div class="sa-cell-sub">{{ s.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="sa-code">{{ s.code }}</span></td>
+              <td>{{ s.ville }}<br/><span class="sa-cell-sub">{{ s.pays }}</span></td>
+              <td>
+                  @if (s.statut === 'ACTIVE') {
+                    <span class="sa-badge sa-badge-active">Active</span>
+                  } @else {
+                    <span class="sa-badge sa-badge-inactive">Inactive</span>
+                  }
+              </td>
+              <td>{{ s.adminNom || '—' }}</td>
+              <td>{{ s.dateCreation | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <div style="display: flex; gap: 6px;">
+                  <a [routerLink]="['/superadmin/structures', s.id]" class="sa-btn-icon" title="Consulter / Modifier">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                  @if (s.statut === 'ACTIVE') {
+                    <button class="sa-btn-icon sa-icon-warning" (click)="confirmToggleStatus(s)" title="Désactiver">
+                      <i class="fa-solid fa-circle-pause"></i>
+                    </button>
+                  } @else {
+                    <button class="sa-btn-icon" (click)="confirmToggleStatus(s)" title="Activer">
+                      <i class="fa-solid fa-circle-play"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (showConfirmModal()) {
+  <div class="sa-modal-overlay" (click)="cancelModal()">
+    <div class="sa-modal" (click)="$event.stopPropagation()">
+      <div class="sa-modal-header">
+        <div class="sa-modal-icon" [class.sa-modal-icon-warning]="selectedStructure()?.statut === 'ACTIVE'" [class.sa-modal-icon-danger]="selectedStructure()?.statut !== 'ACTIVE'">
+          <i class="fa-solid" [class.fa-circle-pause]="selectedStructure()?.statut === 'ACTIVE'" [class.fa-circle-play]="selectedStructure()?.statut !== 'ACTIVE'"></i>
+        </div>
+        <h3 class="sa-modal-title">
+          {{ selectedStructure()?.statut === 'ACTIVE' ? 'Désactiver la structure' : 'Activer la structure' }}
+        </h3>
+      </div>
+      <div class="sa-modal-body">
+        Êtes-vous sûr de vouloir
+        <strong>{{ selectedStructure()?.statut === 'ACTIVE' ? 'désactiver' : 'activer' }}</strong>
+        la structure <strong>{{ selectedStructure()?.nom }}</strong> ?
+        {{ selectedStructure()?.statut === 'ACTIVE' ? 'Les utilisateurs associés ne pourront plus se connecter.' : 'Les utilisateurs associés pourront à nouveau se connecter.' }}
+      </div>
+      <div class="sa-modal-actions">
+        <button class="sa-btn-secondary" (click)="cancelModal()">Annuler</button>
+        <button class="sa-btn-danger" (click)="confirmToggle()">
+          {{ selectedStructure()?.statut === 'ACTIVE' ? 'Oui, désactiver' : 'Oui, activer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

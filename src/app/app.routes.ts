@@ -1,5 +1,7 @@
 import { Route } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
+import { superAdminGuard } from './superadmin/guards/superadmin.guard';
+import { structureAdminGuard } from './guards/structure-admin.guard';
 
 export interface StatCardData {
   label: string;
@@ -31,7 +33,7 @@ export const pageData: Record<string, PageData> = {
     statCards: [
       { label: 'Équipements localisés', value: '1248', icon: 'fa-solid fa-cube', color: '#3B82F6', bgColor: '#EFF6FF' },
       { label: 'Hors ligne', value: '225', icon: 'fa-solid fa-wifi', color: '#EF4444', bgColor: '#FEF2F2' },
-      { label: 'Dernière synchro', value: '2 min', icon: 'fa-solid fa-clock', color: '#10B981', bgColor: '#ECFDF5' }
+      { label: 'En ligne', value: '1023', icon: 'fa-solid fa-wifi', color: '#10B981', bgColor: '#ECFDF5' }
     ],
     showMap: false,
     tableHeaders: ['Statut', 'Équipement', 'IMEI', 'Localisation', 'Dernière synchro'],
@@ -52,13 +54,14 @@ export const pageData: Record<string, PageData> = {
     statCards: [
       { label: 'À planifier', value: '24', icon: 'fa-solid fa-calendar-plus', color: '#F59E0B', bgColor: '#FFFBEB' },
       { label: 'En cours', value: '8', icon: 'fa-solid fa-spinner', color: '#3B82F6', bgColor: '#EFF6FF' },
-      { label: 'Terminées', value: '156', icon: 'fa-solid fa-check-circle', color: '#10B981', bgColor: '#ECFDF5' }
+      { label: 'Terminées', value: '156', icon: 'fa-solid fa-check-circle', color: '#10B981', bgColor: '#ECFDF5' },
+      { label: 'Alertes actives', value: '3', icon: 'fa-solid fa-bell', color: '#EF4444', bgColor: '#FEF2F2' }
     ],
-    tableHeaders: ['Équipement', 'Type', 'Date prévue', 'Technicien', 'Statut'],
+    tableHeaders: ['Équipement', 'Type', 'Date prévue', 'Technicien', 'Statut', 'Alertes'],
     tableRows: [
-      { 'Équipement': 'Kit solaire #SK-045', 'Type': 'Nettoyage panneaux', 'Date prévue': '12 mai 2024', 'Technicien': 'M. Ouedraogo', 'Statut': 'Planifiée' },
-      { 'Équipement': 'Engin minier #EM-012', 'Type': 'Remplacement batterie', 'Date prévue': '15 mai 2024', 'Technicien': 'M. Traore', 'Statut': 'En cours' },
-      { 'Équipement': 'Véhicule #V-007', 'Type': 'Vidange moteur', 'Date prévue': '18 mai 2024', 'Technicien': 'M. Sanogo', 'Statut': 'Planifiée' }
+      { 'Équipement': 'Kit solaire #SK-045', 'Type': 'Nettoyage panneaux', 'Date prévue': '12 mai 2024', 'Technicien': 'M. Ouedraogo', 'Statut': 'Planifiée', 'Alertes': '1 active', 'alertes': '1' },
+      { 'Équipement': 'Engin minier #EM-012', 'Type': 'Remplacement batterie', 'Date prévue': '15 mai 2024', 'Technicien': 'M. Traore', 'Statut': 'En cours', 'Alertes': 'Pris par M. Traore', 'alertes': '2' },
+      { 'Équipement': 'Véhicule #V-007', 'Type': 'Vidange moteur', 'Date prévue': '18 mai 2024', 'Technicien': 'M. Sanogo', 'Statut': 'Planifiée', 'Alertes': 'Aucune', 'alertes': '0' }
     ]
   },
   alerts: {
@@ -78,22 +81,6 @@ export const pageData: Record<string, PageData> = {
       { 'Type': 'Maintenance préventive due', 'Équipement': 'Kit solaire #SK-089', 'Sévérité': 'Info', 'Date': 'Il y a 1 h', 'Statut': 'Résolue' }
     ]
   },
-  reports: {
-    title: 'Rapports',
-    subtitle: 'Génération et export de rapports d\'activité.',
-    icon: 'fa-solid fa-file-lines',
-    statCards: [
-      { label: 'Rapports générés', value: '128', icon: 'fa-solid fa-file-pdf', color: '#EF4444', bgColor: '#FEF2F2' },
-      { label: 'Ce mois-ci', value: '24', icon: 'fa-solid fa-calendar', color: '#3B82F6', bgColor: '#EFF6FF' },
-      { label: 'Exportations', value: '56', icon: 'fa-solid fa-download', color: '#10B981', bgColor: '#ECFDF5' }
-    ],
-    tableHeaders: ['Rapport', 'Période', 'Type', 'Statut', 'Téléchargement'],
-    tableRows: [
-      { 'Rapport': 'Rapport mensuel', 'Période': 'Mai 2024', 'Type': 'PDF', 'Statut': 'Prêt', 'Téléchargement': 'Disponible' },
-      { 'Rapport': 'Rapport d\'anomalies', 'Période': 'Sem. 18-24', 'Type': 'CSV', 'Statut': 'Prêt', 'Téléchargement': 'Disponible' },
-      { 'Rapport': 'Rapport de maintenance', 'Période': 'Avr 2024', 'Type': 'PDF', 'Statut': 'En cours', 'Téléchargement': 'Indisponible' }
-    ]
-  },
   users: {
     title: 'Utilisateurs',
     subtitle: 'Gestion des comptes utilisateurs et de leurs permissions.',
@@ -110,28 +97,6 @@ export const pageData: Record<string, PageData> = {
       { 'Nom': 'Mme. Traore', 'Email': 'fatoumata@safe-track.com', 'Rôle': 'Opérateur', 'Statut': 'Actif', 'Dernière connexion': 'Il y a 3 h' }
     ]
   },
-  settings: {
-    title: 'Paramètres',
-    subtitle: 'Configuration de la plateforme et préférences.',
-    icon: 'fa-solid fa-gear',
-    statCards: [
-      { label: 'Notifications', value: 'Activées', icon: 'fa-solid fa-bell', color: '#10B981', bgColor: '#ECFDF5' },
-      { label: 'Langue', value: 'Français', icon: 'fa-solid fa-language', color: '#3B82F6', bgColor: '#EFF6FF' },
-      { label: 'Thème', value: 'Clair', icon: 'fa-solid fa-palette', color: '#8B5CF6', bgColor: '#F5F3FF' },
-      { label: 'Fuseau horaire', value: 'UTC+0', icon: 'fa-solid fa-clock', color: '#F59E0B', bgColor: '#FFFBEB' },
-      { label: 'Sessions actives', value: '3', icon: 'fa-solid fa-laptop', color: '#EF4444', bgColor: '#FEF2F2' },
-      { label: 'Dernière mise à jour', value: 'Il y a 2 h', icon: 'fa-solid fa-rotate', color: '#06B6D4', bgColor: '#ECFEFF' }
-    ],
-    tableHeaders: ['Paramètre', 'Valeur', 'Description', 'Modifiable'],
-    tableRows: [
-      { 'Paramètre': 'Intervalle de synchronisation', 'Valeur': '5 minutes', 'Description': 'Fréquence de remontée des données GPS', 'Modifiable': 'Oui' },
-      { 'Paramètre': 'Seuil d\'alerte batterie', 'Valeur': '20%', 'Description': 'Niveau de batterie déclenchant une alerte', 'Modifiable': 'Oui' },
-      { 'Paramètre': 'Seuil de violation de box', 'Valeur': 'Activé', 'Description': 'Détection d\'ouverture non autorisée', 'Modifiable': 'Oui' },
-      { 'Paramètre': 'Géofencing', 'Valeur': 'Activé', 'Description': 'Zones de déplacement autorisées', 'Modifiable': 'Oui' },
-      { 'Paramètre': 'Rapports automatiques', 'Valeur': 'Hebdomadaire', 'Description': 'Envoi automatique des rapports par email', 'Modifiable': 'Oui' },
-      { 'Paramètre': 'Authentification 2FA', 'Valeur': 'Désactivée', 'Description': 'Double authentification pour les comptes', 'Modifiable': 'Oui' }
-    ]
-  }
 };
 
 export const routes: Route[] = [
@@ -140,10 +105,24 @@ export const routes: Route[] = [
   { path: 'register', loadComponent: () => import('./auth/register/register').then(m => m.RegisterComponent) },
   { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent), canActivate: [authGuard] },
   { path: 'location', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['location'], canActivate: [authGuard] },
-  { path: 'maintenance', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['maintenance'], canActivate: [authGuard] },
+  { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['alerts'], canActivate: [authGuard] },
-  { path: 'reports', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['reports'], canActivate: [authGuard] },
-  { path: 'users', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['users'], canActivate: [authGuard] },
-  { path: 'settings', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['settings'], canActivate: [authGuard] },
+  { path: 'users', loadComponent: () => import('./features/users/users-list').then(m => m.UsersListComponent), canActivate: [structureAdminGuard] },
+  { path: 'profile', redirectTo: '/dashboard', pathMatch: 'full' },
+
+  // ===== SUPERADMIN (espace isolé) =====
+  {
+    path: 'superadmin',
+    loadComponent: () => import('./superadmin/components/superadmin-layout/superadmin-layout').then(m => m.SuperAdminLayoutComponent),
+    canActivate: [superAdminGuard],
+    children: [
+      { path: '', loadComponent: () => import('./superadmin/pages/superadmin-dashboard/superadmin-dashboard').then(m => m.SuperAdminDashboardComponent) },
+      { path: 'structures', loadComponent: () => import('./superadmin/pages/structures/structures-list').then(m => m.StructuresListComponent) },
+      { path: 'structures/new', loadComponent: () => import('./superadmin/pages/structures/structure-form').then(m => m.StructureFormComponent) },
+      { path: 'structures/:id', loadComponent: () => import('./superadmin/pages/structures/structure-detail').then(m => m.StructureDetailComponent) },
+      { path: 'structures/:id/edit', loadComponent: () => import('./superadmin/pages/structures/structure-form').then(m => m.StructureFormComponent) }
+    ]
+  },
+
   { path: '**', redirectTo: '/login' }
 ];

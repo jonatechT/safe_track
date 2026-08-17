@@ -1,11 +1,11 @@
 <div class="app-layout" [class.auth-layout]="isAuthPage()">
-  <!-- Sidebar -->
-  <aside class="sidebar" *ngIf="!isAuthPage()">
+  <!-- Sidebar desktop -->
+  <aside class="sidebar" *ngIf="!isAuthPage() && !isSuperAdminPage()">
     <div class="sidebar-logo">
       <div class="logo-icon">
-        <img src="logo.jpg" alt="SAFE Track logo" class="logo-img" />
+        <img src="logo.jpg" alt="SHANGO logo" class="logo-img" />
       </div>
-      <span class="logo-text">SAFE <span class="logo-accent">Track</span></span>
+      <span class="logo-text">SHANGO</span>
     </div>
 
     <nav class="sidebar-nav">
@@ -16,6 +16,7 @@
           [routerLink]="item.route"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileMenu()"
         >
           <i class="nav-icon" [class]="item.icon"></i>
           <span class="nav-label">{{ item.label }}</span>
@@ -23,29 +24,74 @@
       }
     </nav>
 
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="openLogoutConfirm()" aria-label="Se déconnecter">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span class="logout-label">Déconnexion</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Mobile menu overlay -->
+  <div class="mobile-menu-overlay" *ngIf="isMobileMenuOpen && !isAuthPage() && !isSuperAdminPage()" (click)="closeMobileMenu()"></div>
+
+  <!-- Mobile sidebar drawer -->
+  <aside class="mobile-sidebar" *ngIf="isMobileMenuOpen && !isAuthPage() && !isSuperAdminPage()">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <img src="logo.jpg" alt="SHANGO logo" class="logo-img" />
+      </div>
+      <span class="logo-text">SHANGO</span>
+      <button class="mobile-menu-close" (click)="closeMobileMenu()" aria-label="Fermer le menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of menuItems; track item.label) {
+        <a
+          class="nav-item"
+          [class.active]="item.active"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileMenu()"
+        >
+          <i class="nav-icon" [class]="item.icon"></i>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" (click)="openLogoutConfirm()" aria-label="Se déconnecter">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span class="logout-label">Déconnexion</span>
+      </button>
+    </div>
   </aside>
 
   <!-- Main content -->
-  <div class="main-wrapper" *ngIf="!isAuthPage()">
+  <div class="main-wrapper" *ngIf="!isAuthPage() && !isSuperAdminPage()">
     <!-- Header -->
     <header class="topbar">
-      <div class="search-container">
-        <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input type="text" class="search-input" placeholder="Rechercher un équipement" />
+      <div class="topbar-left">
+        <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Ouvrir le menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="search-container">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" class="search-input" placeholder="Rechercher un équipement" />
+        </div>
       </div>
       <div class="topbar-actions">
-        <div class="action-btn notification-btn">
-          <i class="fa-regular fa-bell"></i>
-          <span class="notification-badge">8</span>
-        </div>
-        <div class="action-btn">
-          <i class="fa-regular fa-circle-question"></i>
-        </div>
         <div class="profile-chip">
-          <div class="profile-avatar">{{ currentUser?.name?.charAt(0)?.toUpperCase() || 'SA' }}</div>
-          <span class="profile-name">{{ currentUser?.name || 'Super Admin' }}</span>
-          <i class="fa-solid fa-chevron-down profile-chevron"></i>
+          <div class="profile-avatar">{{ currentUserName.charAt(0).toUpperCase() || 'U' }}</div>
+          <span class="profile-name">{{ currentUserName }}</span>
         </div>
+        <button class="logout-btn-icon" (click)="openLogoutConfirm()" aria-label="Se déconnecter">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
       </div>
     </header>
 
@@ -54,5 +100,28 @@
       <router-outlet />
     </main>
   </div>
-  <router-outlet *ngIf="isAuthPage()" />
+  <router-outlet *ngIf="isAuthPage() || isSuperAdminPage()" />
 </div>
+
+<!-- Logout confirmation modal -->
+@if (showLogoutConfirm) {
+  <div class="logout-modal-overlay" (click)="cancelLogout()">
+    <div class="logout-modal" (click)="$event.stopPropagation()">
+      <div class="logout-modal-header">
+        <div class="logout-modal-icon">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+        <h3 class="logout-modal-title">Se déconnecter</h3>
+      </div>
+      <div class="logout-modal-body">
+        Voulez-vous vraiment vous déconnecter ?
+      </div>
+      <div class="logout-modal-actions">
+        <button class="logout-btn-secondary" (click)="cancelLogout()">Annuler</button>
+        <button class="logout-btn-danger" (click)="confirmLogout()">
+          <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+        </button>
+      </div>
+    </div>
+  </div>
+}

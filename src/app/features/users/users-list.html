@@ -1,0 +1,156 @@
+<div class="users-page">
+  <div class="users-header">
+    <div>
+      <h1 class="users-title">Gestion des utilisateurs</h1>
+      <p class="users-subtitle">Gérez les utilisateurs de votre structure.</p>
+    </div>
+    <button class="users-btn-primary" (click)="toggleForm()">
+      <i class="fa-solid fa-user-plus"></i> Ajouter un utilisateur
+    </button>
+  </div>
+
+  @if (message()) {
+    <div class="users-alert" [class.users-alert-success]="messageType() === 'success'" [class.users-alert-error]="messageType() === 'error'">
+      <i class="fa-solid" [class.fa-circle-check]="messageType() === 'success'" [class.fa-circle-xmark]="messageType() === 'error'"></i>
+      {{ message() }}
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="users-card">
+      <h2 class="users-card-title">Ajouter un utilisateur</h2>
+      <div class="users-form-grid">
+        <div class="users-form-group">
+          <label class="users-form-label">Nom *</label>
+          <input type="text" class="users-form-input" [(ngModel)]="formData.nom" placeholder="Nom" />
+        </div>
+        <div class="users-form-group">
+          <label class="users-form-label">Prénom *</label>
+          <input type="text" class="users-form-input" [(ngModel)]="formData.prenom" placeholder="Prénom" />
+        </div>
+        <div class="users-form-group">
+          <label class="users-form-label">Email *</label>
+          <input type="email" class="users-form-input" [(ngModel)]="formData.email" placeholder="email@exemple.com" />
+        </div>
+        <div class="users-form-group">
+          <label class="users-form-label">Téléphone</label>
+          <input type="tel" class="users-form-input" [(ngModel)]="formData.telephone" placeholder="+226 XX XX XX XX" />
+        </div>
+        <div class="users-form-group">
+          <label class="users-form-label">Mot de passe temporaire *</label>
+          <input type="text" class="users-form-input" [(ngModel)]="formData.motDePasse" placeholder="8 caractères minimum" />
+        </div>
+        <div class="users-form-group">
+          <label class="users-form-label">Statut</label>
+          <select class="users-form-select" [(ngModel)]="formData.statut">
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <p class="users-form-info">
+        Le rôle sera automatiquement défini sur <strong>USER</strong> et la structure sur <strong>{{ structureName() }}</strong>.
+      </p>
+      <div class="users-form-actions">
+        <button class="users-btn-secondary" (click)="toggleForm()">Annuler</button>
+        <button class="users-btn-primary" (click)="createUser()">
+          <i class="fa-solid fa-check"></i> Créer l'utilisateur
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="users-card">
+    <div class="users-table-wrapper">
+      @if (users().length === 0) {
+        <div class="users-empty">
+          <i class="fa-solid fa-users-slash users-empty-icon"></i>
+          <p>Aucun utilisateur dans votre structure.</p>
+        </div>
+      } @else {
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th>Statut</th>
+              <th>Date de création</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of users(); track u.id) {
+              <tr>
+                <td>
+                  <div class="users-cell-main">
+                    <div class="users-cell-avatar">{{ u.name.charAt(0).toUpperCase() }}</div>
+                    <div>
+                      <div class="users-cell-name">{{ u.name }}</div>
+                      <div class="users-cell-sub">
+                        @if (u.role === 'ADMIN_STRUCTURE') {
+                          admin
+                        } @else {
+                          utilisateur
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.telephone || '—' }}</td>
+                <td>
+                  @if (u.statut === 'ACTIVE') {
+                    <span class="users-badge users-badge-active">Active</span>
+                  } @else {
+                    <span class="users-badge users-badge-inactive">Inactive</span>
+                  }
+                </td>
+                <td>{{ u.dateCreation | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <div style="display: flex; gap: 6px;">
+                    @if (u.statut === 'ACTIVE') {
+                      <button class="users-btn-icon users-icon-warning" (click)="confirmToggleStatus(u)" title="Désactiver">
+                        <i class="fa-solid fa-circle-pause"></i>
+                      </button>
+                    } @else {
+                      <button class="users-btn-icon" (click)="confirmToggleStatus(u)" title="Activer">
+                        <i class="fa-solid fa-circle-play"></i>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</div>
+
+@if (showConfirmModal()) {
+  <div class="users-modal-overlay" (click)="cancelModal()">
+    <div class="users-modal" (click)="$event.stopPropagation()">
+      <div class="users-modal-header">
+        <div class="users-modal-icon users-modal-icon-warning">
+          <i class="fa-solid" [class.fa-circle-pause]="selectedUser()?.statut === 'ACTIVE'" [class.fa-circle-play]="selectedUser()?.statut !== 'ACTIVE'"></i>
+        </div>
+        <h3 class="users-modal-title">
+          {{ selectedUser()?.statut === 'ACTIVE' ? 'Désactiver l\'utilisateur' : 'Activer l\'utilisateur' }}
+        </h3>
+      </div>
+      <div class="users-modal-body">
+        Êtes-vous sûr de vouloir
+        <strong>{{ selectedUser()?.statut === 'ACTIVE' ? 'désactiver' : 'activer' }}</strong>
+        l'utilisateur <strong>{{ selectedUser()?.name }}</strong> ?
+      </div>
+      <div class="users-modal-actions">
+        <button class="users-btn-secondary" (click)="cancelModal()">Annuler</button>
+        <button class="users-btn-danger" (click)="confirmToggle()">
+          {{ selectedUser()?.statut === 'ACTIVE' ? 'Oui, désactiver' : 'Oui, activer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

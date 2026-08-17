@@ -1,0 +1,105 @@
+<div class="sa-page-header">
+  <div>
+    <h1 class="sa-title">{{ isEditMode ? 'Modifier la structure' : 'Créer une structure' }}</h1>
+    <p class="sa-subtitle">{{ isEditMode ? 'Modifiez les informations de la structure.' : 'Créez une nouvelle structure et son administrateur.' }}</p>
+  </div>
+  <a routerLink="/superadmin/structures" class="sa-btn-secondary">
+    <i class="fa-solid fa-arrow-left"></i> Retour
+  </a>
+</div>
+
+@if (message()) {
+  <div class="sa-alert" [class.sa-alert-success]="messageType() === 'success'" [class.sa-alert-error]="messageType() === 'error'">
+    <i class="fa-solid" [class.fa-circle-check]="messageType() === 'success'" [class.fa-circle-xmark]="messageType() === 'error'"></i>
+    {{ message() }}
+  </div>
+}
+
+<form (ngSubmit)="onSubmit()" #form="ngForm" class="sa-card">
+  <h2 class="sa-card-title" style="margin-bottom: 16px;">
+    Informations de la structure
+  </h2>
+
+  <div class="sa-form-grid">
+    <div class="sa-form-group">
+      <label class="sa-form-label">Nom de la structure *</label>
+      <input type="text" class="sa-form-input" name="nom" [(ngModel)]="formData.nom" placeholder="Ex : Centre de Santé ABC" required />
+    </div>
+    <div class="sa-form-group">
+      <label class="sa-form-label">Code / Identifiant unique *</label>
+      <input type="text" class="sa-form-input" name="code" [(ngModel)]="formData.code" placeholder="Ex : CS-ABC-001" required />
+    </div>
+    <div class="sa-form-group full-width">
+      <label class="sa-form-label">Description</label>
+      <textarea class="sa-form-textarea" name="description" [(ngModel)]="formData.description" placeholder="Description de la structure..."></textarea>
+    </div>
+    <div class="sa-form-group">
+      <label class="sa-form-label">Email *</label>
+      <input type="email" class="sa-form-input" name="email" [(ngModel)]="formData.email" placeholder="contact@structure.com" required />
+    </div>
+    <div class="sa-form-group">
+      <label class="sa-form-label">Téléphone</label>
+      <input type="tel" class="sa-form-input" name="telephone" [(ngModel)]="formData.telephone" placeholder="+226 XX XX XX XX" />
+    </div>
+    <div class="sa-form-group">
+      <label class="sa-form-label">Adresse</label>
+      <input type="text" class="sa-form-input" name="adresse" [(ngModel)]="formData.adresse" placeholder="Adresse complète" />
+    </div>
+    <div class="sa-form-group">
+      <label class="sa-form-label">Ville *</label>
+      <input type="text" class="sa-form-input" name="ville" [(ngModel)]="formData.ville" placeholder="Ex : Ouagadougou" required />
+    </div>
+    <div class="sa-form-group">
+      <label class="sa-form-label">Pays *</label>
+      <input type="text" class="sa-form-input" name="pays" [(ngModel)]="formData.pays" placeholder="Ex : Burkina Faso" required />
+    </div>
+    <div class="sa-form-group">
+      <label class="sa-form-label">Statut</label>
+      <select class="sa-form-select" name="statut" [(ngModel)]="formData.statut">
+        <option value="ACTIVE">Active</option>
+        <option value="INACTIVE">Inactive</option>
+      </select>
+    </div>
+  </div>
+
+  @if (!isEditMode) {
+    <h2 class="sa-card-title" style="margin: 24px 0 16px;">
+      Administrateur de la structure (optionnel)
+    </h2>
+
+    <div class="sa-form-grid">
+      <div class="sa-form-group">
+        <label class="sa-form-label">Nom complet</label>
+        <input type="text" class="sa-form-input" name="adminNom" [(ngModel)]="formData.adminNom" placeholder="Ex : M. Ouedraogo" />
+      </div>
+      <div class="sa-form-group">
+        <label class="sa-form-label">Email</label>
+        <input type="email" class="sa-form-input" name="adminEmail" [(ngModel)]="formData.adminEmail" placeholder="admin@structure.com" />
+      </div>
+      <div class="sa-form-group">
+        <label class="sa-form-label">Téléphone</label>
+        <input type="tel" class="sa-form-input" name="adminTelephone" [(ngModel)]="formData.adminTelephone" placeholder="+226 XX XX XX XX" />
+      </div>
+      <div class="sa-form-group">
+        <label class="sa-form-label">Mot de passe temporaire</label>
+        <input type="text" class="sa-form-input" name="adminMotDePasse" [(ngModel)]="formData.adminMotDePasse" placeholder="8 caractères minimum" />
+      </div>
+    </div>
+    <p style="font-size: 12px; color: #94A3B8; margin-top: 8px;">
+      L'administrateur aura le rôle <strong>ADMIN_STRUCTURE</strong> et sera associé uniquement à cette structure.
+    </p>
+  }
+
+  <div class="sa-form-actions">
+    <a routerLink="/superadmin/structures" class="sa-btn-secondary">Annuler</a>
+    <button type="submit" class="sa-btn-primary" [disabled]="isSaving()">
+      @if (isSaving()) {
+        <div class="sa-spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
+        Enregistrement...
+      } @else {
+        <i class="fa-solid" [class.fa-save]="isEditMode" [class.fa-plus]="!isEditMode"></i>
+        {{ isEditMode ? 'Enregistrer les modifications' : 'Créer la structure' }}
+      }
+    </button>
+  </div>
+</form>

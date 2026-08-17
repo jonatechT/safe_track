@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -11,10 +11,10 @@ import { AuthService } from '../auth.service';
   styleUrl: './register.scss'
 })
 export class RegisterComponent {
-  name = '';
-  email = '';
-  organization = '';
-  role = '';
+  firstName = '';
+  lastName = '';
+  identifier = '';
+  structure = '';
   password = '';
   confirmPassword = '';
   showPassword = false;
@@ -29,7 +29,8 @@ export class RegisterComponent {
 
   onSubmit(): void {
     this.errorMessage = '';
-    if (!this.name || !this.email || !this.organization || !this.role || !this.password) {
+    const fullName = `${this.firstName} ${this.lastName}`.trim();
+    if (!this.firstName || !this.lastName || !this.identifier || !this.structure || !this.password) {
       this.errorMessage = 'Veuillez remplir tous les champs.';
       return;
     }
@@ -43,7 +44,7 @@ export class RegisterComponent {
     }
     this.isLoading = true;
     setTimeout(() => {
-      const success = this.authService.register(this.name, this.email, this.password);
+      const success = this.authService.register(fullName, this.identifier, this.password);
       this.isLoading = false;
       if (success) {
         this.router.navigate(['/dashboard']);

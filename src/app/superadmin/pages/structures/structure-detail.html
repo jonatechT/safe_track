@@ -1,0 +1,154 @@
+<div class="sa-page-header">
+  <div>
+    <h1 class="sa-title">{{ structure()?.nom || 'Détail de la structure' }}</h1>
+    <p class="sa-subtitle">Consultation et modification de la structure.</p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <a routerLink="/superadmin/structures" class="sa-btn-secondary">
+      <i class="fa-solid fa-arrow-left"></i> Retour
+    </a>
+    <a [routerLink]="['/superadmin/structures', structureId, 'edit']" class="sa-btn-primary">
+      <i class="fa-solid fa-pen"></i> Modifier
+    </a>
+  </div>
+</div>
+
+@if (message()) {
+  <div class="sa-alert" [class.sa-alert-success]="messageType() === 'success'" [class.sa-alert-error]="messageType() === 'error'">
+    {{ message() }}
+  </div>
+}
+
+@if (!structure()) {
+  <div class="sa-card">
+    <div class="sa-empty">
+      <i class="fa-solid fa-building-circle-xmark sa-empty-icon"></i>
+      <p>Structure introuvable.</p>
+      <a routerLink="/superadmin/structures" class="sa-link">Retour à la liste</a>
+    </div>
+  </div>
+} @else {
+  <div class="sa-card" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="sa-cell-avatar" style="width: 48px; height: 48px; font-size: 20px;">{{ structure()?.nom?.charAt(0)?.toUpperCase() }}</div>
+      <div>
+        <div style="font-size: 16px; font-weight: 700; color: #0F172A;">{{ structure()?.nom }}</div>
+        <div style="font-size: 12px; color: #64748B;">{{ structure()?.code }}</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      @if (structure()?.statut === 'ACTIVE') {
+        <span class="sa-badge sa-badge-active">Active</span>
+      } @else {
+        <span class="sa-badge sa-badge-inactive">Inactive</span>
+      }
+      <button class="sa-btn-danger" (click)="confirmToggleStatus()">
+        <i class="fa-solid" [class.fa-circle-pause]="structure()?.statut === 'ACTIVE'" [class.fa-circle-play]="structure()?.statut !== 'ACTIVE'"></i>
+        {{ structure()?.statut === 'ACTIVE' ? 'Désactiver' : 'Activer' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="sa-card">
+    <h2 class="sa-card-title" style="margin-bottom: 16px;">
+      Administrateur de la structure
+    </h2>
+    @if (structure()?.adminNom) {
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="sa-cell-avatar" style="background: #F5F3FF; color: #8B5CF6;">
+          {{ structure()?.adminNom?.charAt(0)?.toUpperCase() }}
+        </div>
+        <div>
+          <div style="font-weight: 600; color: #0F172A;">{{ structure()?.adminNom }}</div>
+          <div style="font-size: 12px; color: #64748B;">{{ structure()?.adminEmail }}</div>
+          <div style="font-size: 12px; color: #64748B;">{{ structure()?.adminTelephone }}</div>
+        </div>
+      </div>
+    } @else {
+      <p style="color: #94A3B8; font-size: 13px;">Aucun administrateur associé à cette structure.</p>
+    }
+  </div>
+
+  <div class="sa-card">
+    <h2 class="sa-card-title" style="margin-bottom: 16px;">
+      Informations de contact
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+      <div>
+        <div class="sa-form-label">Email</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A;">{{ structure()?.email }}</div>
+      </div>
+      <div>
+        <div class="sa-form-label">Téléphone</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A;">{{ structure()?.telephone || '—' }}</div>
+      </div>
+      <div>
+        <div class="sa-form-label">Ville</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A;">{{ structure()?.ville }}</div>
+      </div>
+      <div>
+        <div class="sa-form-label">Pays</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A;">{{ structure()?.pays }}</div>
+      </div>
+      <div>
+        <div class="sa-form-label">Adresse</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A;">{{ structure()?.adresse || '—' }}</div>
+      </div>
+    </div>
+  </div>
+
+  @if (structure()?.description) {
+    <div class="sa-card">
+      <h2 class="sa-card-title" style="margin-bottom: 12px;">
+        Description
+      </h2>
+      <p style="font-size: 13px; color: #475569; line-height: 1.7;">{{ structure()?.description }}</p>
+    </div>
+  }
+
+  <div class="sa-card">
+    <h2 class="sa-card-title" style="margin-bottom: 16px;">
+      Informations système
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+      <div>
+        <div class="sa-form-label">Identifiant</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A; font-family: monospace;">{{ structure()?.id }}</div>
+      </div>
+      <div>
+        <div class="sa-form-label">Date de création</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A;">{{ structure()?.dateCreation | date:'dd/MM/yyyy' }}</div>
+      </div>
+      <div>
+        <div class="sa-form-label">Dernière modification</div>
+        <div style="font-size: 13px; font-weight: 500; color: #0F172A;">{{ structure()?.dateModification | date:'dd/MM/yyyy' }}</div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showConfirmModal()) {
+  <div class="sa-modal-overlay" (click)="cancelModal()">
+    <div class="sa-modal" (click)="$event.stopPropagation()">
+      <div class="sa-modal-header">
+        <div class="sa-modal-icon sa-modal-icon-warning">
+          <i class="fa-solid" [class.fa-circle-pause]="structure()?.statut === 'ACTIVE'" [class.fa-circle-play]="structure()?.statut !== 'ACTIVE'"></i>
+        </div>
+        <h3 class="sa-modal-title">
+          {{ structure()?.statut === 'ACTIVE' ? 'Désactiver la structure' : 'Activer la structure' }}
+        </h3>
+      </div>
+      <div class="sa-modal-body">
+        Êtes-vous sûr de vouloir
+        <strong>{{ structure()?.statut === 'ACTIVE' ? 'désactiver' : 'activer' }}</strong>
+        la structure <strong>{{ structure()?.nom }}</strong> ?
+      </div>
+      <div class="sa-modal-actions">
+        <button class="sa-btn-secondary" (click)="cancelModal()">Annuler</button>
+        <button class="sa-btn-danger" (click)="confirmToggle()">
+          {{ structure()?.statut === 'ACTIVE' ? 'Oui, désactiver' : 'Oui, activer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

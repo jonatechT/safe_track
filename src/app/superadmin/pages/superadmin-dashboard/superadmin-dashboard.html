@@ -1,0 +1,87 @@
+<div class="sa-dashboard">
+  <div class="sa-page-header">
+    <div>
+      <h1 class="sa-title">Tableau de bord SuperAdmin</h1>
+      <p class="sa-subtitle">Vue d'ensemble globale de la plateforme.</p>
+    </div>
+    <a routerLink="/superadmin/structures/new" class="sa-btn-primary">
+      <i class="fa-solid fa-plus"></i> Créer une structure
+    </a>
+  </div>
+
+  <div class="sa-stats-grid">
+    <div class="sa-stat-card">
+      <span class="sa-stat-label">Structures totales</span>
+      <span class="sa-stat-value">{{ stats().total }}</span>
+    </div>
+    <div class="sa-stat-card">
+      <span class="sa-stat-label">Structures actives</span>
+      <span class="sa-stat-value">{{ stats().actives }}</span>
+    </div>
+    <div class="sa-stat-card">
+      <span class="sa-stat-label">Structures inactives</span>
+      <span class="sa-stat-value">{{ stats().inactives }}</span>
+    </div>
+  </div>
+
+  <div class="sa-card">
+    <div class="sa-card-header">
+      <div>
+        <h2 class="sa-card-title">Structures récentes</h2>
+        <p class="sa-card-subtitle">Dernières structures enregistrées</p>
+      </div>
+      <a routerLink="/superadmin/structures" class="sa-link">Voir tout</a>
+    </div>
+    @if (recentStructures().length === 0) {
+      <div class="sa-empty">
+        <i class="fa-solid fa-inbox sa-empty-icon"></i>
+        <p>Aucune structure pour le moment.</p>
+      </div>
+    } @else {
+      <div class="sa-table-wrapper">
+        <table class="sa-table">
+          <thead>
+            <tr>
+              <th>Structure</th>
+              <th>Code</th>
+              <th>Ville</th>
+              <th>Statut</th>
+              <th>Administrateur</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of recentStructures(); track s.id) {
+              <tr>
+                <td>
+                  <div class="sa-cell-main">
+                    <div class="sa-cell-avatar">{{ s.nom.charAt(0).toUpperCase() }}</div>
+                    <div>
+                      <div class="sa-cell-name">{{ s.nom }}</div>
+                      <div class="sa-cell-sub">{{ s.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="sa-code">{{ s.code }}</span></td>
+                <td>{{ s.ville }}</td>
+                <td>
+                  @if (s.statut === 'ACTIVE') {
+                    <span class="sa-badge sa-badge-active">Active</span>
+                  } @else {
+                    <span class="sa-badge sa-badge-inactive">Inactive</span>
+                  }
+                </td>
+                <td>{{ s.adminNom || '—' }}</td>
+                <td>
+                  <a [routerLink]="['/superadmin/structures', s.id]" class="sa-btn-icon" title="Voir la structure">
+                    <i class="fa-solid fa-eye"></i>
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

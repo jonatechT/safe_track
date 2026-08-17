@@ -1,175 +1,77 @@
 <div class="dashboard">
-  <!-- Header section -->
   <div class="dashboard-header">
-    <div>
-      <h1 class="page-title">Tableau de bord</h1>
-      <p class="page-subtitle">Vue d'ensemble de votre parc et de son état en temps réel.</p>
-    </div>
+    <h1 class="dashboard-title">Tableau de bord</h1>
+    <p class="dashboard-subtitle">Suivez en temps réel l'état de vos équipements et alertes.</p>
   </div>
 
-  <!-- KPI Cards -->
-  <div class="kpi-grid">
-    @for (kpi of kpiCards; track kpi.label) {
-      <a [routerLink]="kpi.route" class="kpi-card" #kpiCard>
-        <div class="kpi-icon" [style.background]="kpi.bgColor" [style.color]="kpi.color">
-          <i [class]="kpi.icon"></i>
-        </div>
-        <div class="kpi-info">
-          <span class="kpi-label">{{ kpi.label }}</span>
-          <span class="kpi-value">{{ kpi.displayValue() }}</span>
-          @if (kpi.sublabel) {
-            <span class="kpi-sublabel" [style.color]="kpi.subColor">{{ kpi.sublabel }}</span>
-          }
-        </div>
-      </a>
-    }
+  <div class="kpi-row">
+    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">Total équipements</span><span class="kpi-value"><strong>{{ totalEquipements }}</strong></span></div>
+    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">En ligne</span><span class="kpi-value"><strong>{{ enLigne }}</strong></span></div>
+    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">Alerte active</span><span class="kpi-value"><strong>{{ alerteActive }}</strong></span></div>
+    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">Anomalie détecté</span><span class="kpi-value"><strong>{{ anomalieDetectee }}</strong></span></div>
   </div>
 
-  <!-- Middle section: Map + Alerts -->
-  <div class="middle-grid">
-    <!-- Map card -->
-    <div class="card map-card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">Localisation en temps réel</h2>
-          <p class="card-subtitle">Ouagadougou, Burkina Faso</p>
-        </div>
-        <div class="card-actions">
-          <button class="icon-btn"><i class="fa-solid fa-expand"></i></button>
-          <button class="icon-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        </div>
-      </div>
-      <div class="map-container" #mapContainer></div>
-      <div class="map-legend">
-        @for (item of mapLegend; track item.label) {
-          <div class="legend-item">
-            <span class="legend-dot" [style.background]="item.color"></span>
-            <span class="legend-label">{{ item.label }}</span>
-            <span class="legend-count">{{ item.count }}</span>
-          </div>
-        }
+  <div class="grid-2">
+    <div class="card">
+      <h2 class="card-title">Équipements par catégorie</h2>
+      <div class="category-list">
+        <div class="category-item"><div class="category-header"><span class="category-name">Kits</span><span class="category-count">{{ kits }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="kitsPourcent" style="background: #1E3A8A;"></div></div></div>
+        <div class="category-item"><div class="category-header"><span class="category-name">Motocyclettes</span><span class="category-count">{{ motocyclettes }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="motocyclettesPourcent" style="background: #1E3A8A;"></div></div></div>
+        <div class="category-item"><div class="category-header"><span class="category-name">Automobiles</span><span class="category-count">{{ automobiles }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="automobilesPourcent" style="background: #1E3A8A;"></div></div></div>
       </div>
     </div>
 
-    <!-- Alerts card -->
-    <div class="card alerts-card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">Alertes récentes</h2>
-          <p class="card-subtitle">4 nouvelles alertes</p>
-        </div>
-        <button class="view-all-btn">Voir tout</button>
-      </div>
-      <div class="alerts-list">
-        @for (alert of alerts; track alert.title) {
-          <div class="alert-item">
-            <div class="alert-icon" [style.background]="alert.bgColor" [style.color]="alert.color">
-              <i [class]="alert.icon"></i>
-            </div>
-            <div class="alert-info">
-              <span class="alert-title">{{ alert.title }}</span>
-              <span class="alert-time">{{ alert.time }}</span>
-            </div>
-            <i class="fa-solid fa-chevron-right alert-arrow"></i>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-
-  <!-- Bottom section: 3 charts -->
-  <div class="bottom-grid">
-    <!-- Donut chart -->
-    <div class="card chart-card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">État des équipements</h2>
-          <p class="card-subtitle">Répartition par type</p>
-        </div>
-        <button class="icon-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-      </div>
-      <div class="donut-wrapper">
-        <div class="donut-chart-container" [class.loaded]="chartsLoaded">
-          <canvas #donutCanvas></canvas>
-          <div class="donut-center">
-            <span class="donut-total">1,248</span>
-            <span class="donut-label">équipements</span>
-          </div>
-        </div>
+    <div class="card">
+      <h2 class="card-title">Répartition par statut</h2>
+      <div class="statut-wrapper">
+        <div class="donut-chart"><div class="donut-center"><span class="donut-value">67%</span><span class="donut-label">En ligne</span></div></div>
         <div class="donut-legend">
-          <div class="donut-legend-item">
-            <span class="legend-dot" style="background: #10B981"></span>
-            <span class="legend-label">Kits solaires</span>
-            <span class="legend-value">51.8%</span>
-          </div>
-          <div class="donut-legend-item">
-            <span class="legend-dot" style="background: #3B82F6"></span>
-            <span class="legend-label">Engins miniers</span>
-            <span class="legend-value">16.8%</span>
-          </div>
-          <div class="donut-legend-item">
-            <span class="legend-dot" style="background: #F59E0B"></span>
-            <span class="legend-label">Véhicules admin.</span>
-            <span class="legend-value">19.6%</span>
-          </div>
-          <div class="donut-legend-item">
-            <span class="legend-dot" style="background: #94A3B8"></span>
-            <span class="legend-label">Véhicules</span>
-            <span class="legend-value">11.8%</span>
-          </div>
+          <div class="legend-item"><span class="legend-dot" style="background: #1E3A8A;"></span><span class="legend-label">En ligne</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #ff0000;"></span><span class="legend-label">Hors ligne</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #ffe500;"></span><span class="legend-label">En maintenance</span></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Gauge + health bars -->
-    <div class="card chart-card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">Santé des composants</h2>
-          <p class="card-subtitle">État global du parc</p>
+  <div class="bottom-2">
+    <div class="card">
+      <h2 class="card-title">Activités récentes</h2>
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-info"><span class="activity-title">Maintenance équipement N001</span><span class="activity-time">Il y a 10 min</span></div>
+          <span class="status-pill status-progress">En cours</span>
         </div>
-        <button class="icon-btn"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-      </div>
-      <div class="gauge-wrapper">
-        <div class="gauge-container" [class.loaded]="chartsLoaded">
-          <canvas #gaugeCanvas></canvas>
-          <div class="gauge-center">
-            <span class="gauge-value">87%</span>
-            <span class="gauge-label">Bon état</span>
-          </div>
+        <div class="activity-item">
+          <div class="activity-info"><span class="activity-title">Maintenance équipement N002</span><span class="activity-time">Il y a 1 h</span></div>
+          <span class="status-pill status-done">Terminée</span>
         </div>
-      </div>
-      <div class="health-bars">
-        @for (item of componentHealth; track item.label) {
-          <div class="health-item">
-            <div class="health-header">
-              <span class="health-label">{{ item.label }}</span>
-              <span class="health-value" [style.color]="item.color">{{ item.value }}%</span>
-            </div>
-            <div class="health-track">
-              <div class="health-fill" [style.width]="item.value + '%'" [style.background]="item.color"></div>
-            </div>
-          </div>
-        }
+
+        <div class="activity-item">
+          <div class="activity-info"><span class="activity-title">Maintenance équipement N003</span><span class="activity-time">Il y a 3 h</span></div>
+          <span class="status-pill status-pending">En attente</span>
+        </div>
+
       </div>
     </div>
 
-    <!-- AI predictions -->
-    <div class="card chart-card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">Prédictions IA</h2>
-          <p class="card-subtitle">7 prochains jours</p>
+    <div class="card">
+      <h2 class="card-title">Alertes récentes</h2>
+      <div class="alerts-list">
+        <div class="alert-item">
+          <div class="alert-info"><span class="alert-title">Violation de box</span><span class="alert-time">Il y a 5 min</span></div>
+          <span class="alert-pulse"></span>
         </div>
-        <span class="ai-badge"><i class="fa-solid fa-brain"></i> IA</span>
-      </div>
-      <div class="ai-prediction">
-        <span class="ai-number">14</span>
-        <span class="ai-label">Équipements à risque</span>
-      </div>
-        <div class="line-chart-container" [class.loaded]="chartsLoaded">
-          <canvas #lineCanvas></canvas>
+
+        <div class="alert-item">
+          <div class="alert-info"><span class="alert-title">Batterie faible</span><span class="alert-time">Il y a 12 min</span></div>
+          <span class="alert-pulse"></span>
         </div>
+        <div class="alert-item">
+          <div class="alert-info"><span class="alert-title">Déplacement non autorisé</span><span class="alert-time">Il y a 28 min</span></div>
+          <span class="alert-pulse"></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

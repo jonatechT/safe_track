@@ -26,13 +26,8 @@ interface TableRow {
           <div class="stat-grid">
             @for (stat of statCards; track stat.label) {
               <div class="stat-card">
-                <div class="stat-icon" [style.background]="stat.bgColor" [style.color]="stat.color">
-                  <i [class]="stat.icon"></i>
-                </div>
-                <div class="stat-info">
-                  <span class="stat-label">{{ stat.label }}</span>
-                  <span class="stat-value">{{ stat.value }}</span>
-                </div>
+                <span class="stat-label">{{ stat.label }}</span>
+                <span class="stat-value">{{ stat.value }}</span>
               </div>
             }
           </div>
@@ -55,7 +50,9 @@ interface TableRow {
                 <thead>
                   <tr>
                     @for (header of tableHeaders; track header) {
-                      <th>{{ header }}</th>
+                      @if (header !== 'Statut') {
+                        <th>{{ header }}</th>
+                      }
                     }
                   </tr>
                 </thead>
@@ -63,40 +60,30 @@ interface TableRow {
                   @for (row of tableRows; track $index) {
                     <tr>
                       @for (header of tableHeaders; track header) {
-                        <td>
-                          @if (header === 'Statut') {
-                            @if (row[header].includes('alerte')) {
-                              <span class="status-badge status-alert">
-                                <i class="fa-solid fa-circle-exclamation"></i>
-                                {{ row[header].replace('⚠️ ', '') }}
-                              </span>
-                            } @else if (row[header].includes('Inspection')) {
-                              <span class="status-badge status-inspection">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                {{ row[header].replace('🔍 ', '') }}
-                              </span>
-                            } @else if (row[header].includes('Normal')) {
-                              <span class="status-badge status-normal">
-                                <i class="fa-solid fa-circle-check"></i>
-                                {{ row[header].replace('✅ ', '') }}
-                              </span>
+                        @if (header !== 'Statut') {
+                          <td>
+                            @if (header === 'Équipement') {
+                              <div class="equipment-cell">
+                                <span class="equipment-name">{{ row[header] }}</span>
+                              </div>
+                            } @else if (header === 'IMEI') {
+                              <span class="imei-code">{{ row[header] }}</span>
+                            } @else if (header === 'Localisation' && row['LienLocalisation']) {
+                              <a
+                                class="location-link"
+                                href="https://www.google.com/maps?q={{ row['LienLocalisation'] }}"
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                {{ row[header] }}
+                              </a>
+                            } @else if (header === 'Dernière synchro') {
+                              <span class="sync-time">{{ row[header] }}</span>
                             } @else {
                               {{ row[header] }}
                             }
-                          } @else if (header === 'Localisation' && row['LienLocalisation']) {
-                            <a
-                              class="location-link"
-                              href="https://www.google.com/maps?q={{ row['LienLocalisation'] }}"
-                              target="_blank"
-                              rel="noopener"
-                            >
-                              <i class="fa-solid fa-location-dot"></i>
-                              {{ row[header] }}
-                            </a>
-                          } @else {
-                            {{ row[header] }}
-                          }
-                        </td>
+                          </td>
+                        }
                       }
                     </tr>
                   }
@@ -115,41 +102,48 @@ interface TableRow {
     </app-base-page>
   `,
   styles: [`
-    .generic-content { display: flex; flex-direction: column; gap: 20px; width: 100%; }
-    .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .stat-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.4); padding: 24px; display: flex; align-items: center; gap: 16px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1); }
-    .stat-card:hover { box-shadow: 0 20px 48px rgba(139, 92, 246, 0.16); border-color: rgba(255, 255, 255, 0.6); transform: translateY(-4px); }
-    .stat-icon { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
-    .stat-info { display: flex; flex-direction: column; gap: 2px; }
-    .stat-label { font-size: 12px; font-weight: 500; color: #64748B; }
-    .stat-value { font-size: 22px; font-weight: 700; color: #0F172A; }
-    .card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.4); padding: 28px; transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1); }
-    .card:hover { box-shadow: 0 20px 48px rgba(139, 92, 246, 0.16); border-color: rgba(255, 255, 255, 0.6); transform: translateY(-4px); }
-    .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+    .generic-content { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .stat-card { background: #FFFFFF; border-radius: 16px; padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; color: #0F172A; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); min-width: 200px; min-height: 110px; justify-content: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .stat-card:hover { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18); transform: translateY(-2px); }
+    .stat-label { font-size: 16px; font-weight: 400; color: #64748B; }
+    .stat-value { font-size: 18px; font-weight: 600; color: #0F172A; }
+    .card { background: #FFFFFF; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08); transition: box-shadow 0.3s ease, transform 0.3s ease; width: 100%; }
+    .card:hover { box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12); transform: translateY(-2px); }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; width: 100%; }
     .card-title { font-size: 15px; font-weight: 700; color: #0F172A; letter-spacing: -0.2px; }
     .card-subtitle { font-size: 12px; color: #94A3B8; margin-top: 2px; }
     .map-card-page { padding: 24px; margin-bottom: 0; }
-    .map-container-page { height: 340px; border-radius: 24px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.4); z-index: 0; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
-    .table-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.4); padding: 28px; overflow: hidden; transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease; box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1); }
-    .table-card:hover { box-shadow: 0 20px 48px rgba(139, 92, 246, 0.16); border-color: rgba(255, 255, 255, 0.6); transform: translateY(-4px); }
-    .table-wrapper { overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .data-table th { text-align: left; padding: 12px 14px; color: #64748B; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #EDF2F7; background: rgba(248, 250, 252, 0.5); }
-    .data-table th:first-child { border-top-left-radius: 10px; }
-    .data-table th:last-child { border-top-right-radius: 10px; }
-    .data-table td { padding: 14px 14px; border-bottom: 1px solid #F1F5F9; color: #334155; font-weight: 500; }
-    .data-table tbody tr { transition: background 0.2s ease, transform 0.2s ease; }
-    .data-table tbody tr:hover { background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.03)); }
+    .map-container-page { height: 340px; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; background: #FFFFFF; }
+    .table-card { background: #FFFFFF; border-radius: 16px; padding: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08); transition: box-shadow 0.3s ease; margin-top: 24px; }
+    .table-wrapper { overflow-x: auto; border-radius: 12px; }
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+    .data-table thead th { text-align: left; padding: 14px 16px; color: #6B7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; }
+    .data-table thead th:first-child { border-top-left-radius: 8px; }
+    .data-table thead th:last-child { border-top-right-radius: 8px; }
+    .data-table tbody td { padding: 12px 16px; border-bottom: 1px solid #F3F4F6; color: #374151; font-weight: 400; }
+    .data-table tbody tr { transition: background 0.2s ease; border-radius: 8px; }
+    .data-table tbody tr:hover { background: #F9FAFB; }
     .data-table tbody tr:last-child td { border-bottom: none; }
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); }
-    .status-alert { background: #FEF2F2; color: #EF4444; border: 1px solid #FECACA; }
-    .status-inspection { background: #FFFBEB; color: #F59E0B; border: 1px solid #FDE68A; }
-    .status-normal { background: #ECFDF5; color: #10B981; border: 1px solid #A7F3D0; }
-    .location-link { display: inline-flex; align-items: center; gap: 6px; color: #3B82F6; text-decoration: none; font-weight: 600; font-size: 12px; transition: all 0.2s ease; }
-    .location-link:hover { color: #1D4ED8; text-decoration: underline; }
+    .data-table tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+    .data-table tbody tr:last-child td:last-child { border-bottom-right-radius: 8px; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .status-alert { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
+    .status-inspection { background: #FFFBEB; color: #D97706; border: 1px solid #FCD39D; }
+    .status-normal { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+    .location-link { display: inline-flex; align-items: center; gap: 6px; color: #3B82F6; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
+    .location-link:hover { color: #1D4ED8; }
     .location-link i { font-size: 12px; }
-    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 48px; color: #94A3B8; text-align: center; }
-    .empty-icon { font-size: 36px; color: #CBD5E1; }
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 48px; color: #6B7280; text-align: center; }
+    .empty-icon { font-size: 36px; color: #9CA3AF; }
+
+    @media (max-width: 1024px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .stat-grid { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class GenericPageComponent implements OnInit, AfterViewInit {
@@ -182,6 +176,43 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     if (this.showMap && isPlatformBrowser(this.platformId) && this.mapPageContainer) {
       this.initMap();
     }
+  }
+
+  protected getEquipmentIcon(nom: string): string {
+    const lower = nom.toLowerCase();
+    if (lower.includes('kit')) return 'fa-solid fa-solar-panel';
+    if (lower.includes('véhicule') || lower.includes('vehicule')) return 'fa-solid fa-car';
+    if (lower.includes('engin')) return 'fa-solid fa-truck-pickup';
+    return 'fa-solid fa-box';
+  }
+
+  protected getEquipmentClass(nom: string): string {
+    const lower = nom.toLowerCase();
+    if (lower.includes('kit')) return 'equip-solar';
+    if (lower.includes('véhicule') || lower.includes('vehicule')) return 'equip-vehicle';
+    if (lower.includes('engin')) return 'equip-mining';
+    return '';
+  }
+
+  protected getEquipmentType(nom: string): string {
+    const lower = nom.toLowerCase();
+    if (lower.includes('kit')) return 'Kit solaire';
+    if (lower.includes('véhicule') || lower.includes('vehicule')) return 'Véhicule';
+    if (lower.includes('engin')) return 'Engin minier';
+    return 'Équipement';
+  }
+
+  protected formatCoordinates(localisation: string): string {
+    return localisation;
+  }
+
+  protected getCity(localisation: string): string {
+    // Inférer la ville en fonction des coordonnées (approximation pour le mock)
+    const lat = parseFloat(localisation.split('°')[0].replace(',', '.'));
+    if (lat > 12.4) return 'Zone industrielle Kossodo';
+    if (lat > 12.3) return 'Ouagadougou';
+    if (lat > 11) return 'Bobo-Dioulasso';
+    return 'Région rurale';
   }
 
   private async initMap(): Promise<void> {

@@ -11,7 +11,7 @@ import { AuthService } from '../auth.service';
   styleUrl: './login.scss'
 })
 export class LoginComponent {
-  email = signal('');
+  identifier = signal('');
   password = signal('');
   showPassword = signal(false);
   isLoading = signal(false);
@@ -24,16 +24,21 @@ export class LoginComponent {
 
   onSubmit(): void {
     this.errorMessage.set('');
-    if (!this.email() || !this.password()) {
+    if (!this.identifier() || !this.password()) {
       this.errorMessage.set('Veuillez remplir tous les champs.');
       return;
     }
     this.isLoading.set(true);
     setTimeout(() => {
-      const success = this.authService.login(this.email(), this.password());
+      const success = this.authService.login(this.identifier(), this.password());
       this.isLoading.set(false);
       if (success) {
-        this.router.navigate(['/dashboard']);
+        const user = this.authService.getUser();
+        if (user?.role === 'SUPERADMIN') {
+          this.router.navigate(['/superadmin']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       } else {
         this.errorMessage.set('Identifiants incorrects.');
       }
