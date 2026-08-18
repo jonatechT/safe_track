@@ -82,11 +82,11 @@ export const pageData: Record<string, PageData> = {
     ]
   },
   users: {
-    title: 'Utilisateurs',
-    subtitle: 'Gestion des comptes utilisateurs et de leurs permissions.',
+    title: 'Techniciens',
+    subtitle: 'Gestion des comptes techniciens et de leurs permissions.',
     icon: 'fa-solid fa-users',
     statCards: [
-      { label: 'Total utilisateurs', value: '48', icon: 'fa-solid fa-user', color: '#3B82F6', bgColor: '#EFF6FF' },
+      { label: 'Total techniciens', value: '48', icon: 'fa-solid fa-user', color: '#3B82F6', bgColor: '#EFF6FF' },
       { label: 'Administrateurs', value: '5', icon: 'fa-solid fa-crown', color: '#F59E0B', bgColor: '#FFFBEB' },
       { label: 'Opérateurs', value: '43', icon: 'fa-solid fa-user', color: '#10B981', bgColor: '#ECFDF5' }
     ],

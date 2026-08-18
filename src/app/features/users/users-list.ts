@@ -104,7 +104,9 @@ export class UsersListComponent {
   protected users = computed(() => {
     const structureId = this.authService.structureId;
     if (!structureId) return [];
-    return this.usersService.getUsersByStructure(structureId);
+    // Ne montrer que les techniciens (rôle USER) de la structure,
+    // jamais les admins de structure
+    return this.usersService.getUsersByStructure(structureId).filter(u => u.role !== 'ADMIN_STRUCTURE');
   });
 
   protected structureName = computed(() => {
@@ -157,7 +159,7 @@ export class UsersListComponent {
       dateCreation: new Date().toISOString()
     };
     this.usersService.createUser(newUser);
-    this.message.set(`L'utilisateur « ${fullName} » a été créé avec succès.`);
+this.message.set(`Le technicien « ${fullName} » a été créé avec succès.`);
     this.messageType.set('success');
     this.toggleForm();
     setTimeout(() => this.message.set(''), 4000);
@@ -179,7 +181,7 @@ export class UsersListComponent {
     const updated = this.usersService.toggleStatus(u.id);
     if (updated) {
       const action = updated.statut === 'ACTIVE' ? 'activé' : 'désactivé';
-      this.message.set(`L'utilisateur « ${updated.name} » a été ${action} avec succès.`);
+this.message.set(`Le technicien « ${updated.name} » a été ${action} avec succès.`);
       this.messageType.set('success');
       setTimeout(() => this.message.set(''), 4000);
     }

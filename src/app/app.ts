@@ -32,7 +32,7 @@ export class App {
     { label: 'Localisation', icon: 'fa-solid fa-location-dot', route: '/location' },
     { label: 'Maintenance', icon: 'fa-solid fa-wrench', route: '/maintenance' },
     { label: 'Alertes', icon: 'fa-solid fa-bell', route: '/alerts' },
-    { label: 'Utilisateurs', icon: 'fa-solid fa-users', route: '/users' }
+    { label: 'Techniciens', icon: 'fa-solid fa-users', route: '/users' }
   ];
 
   constructor(
@@ -49,6 +49,17 @@ export class App {
   protected isSuperAdminPage(): boolean {
     const url = this.router.url;
     return url.startsWith('/superadmin');
+  }
+
+  /** Tableau de bord + pages métier toujours visibles */
+  protected get visibleMenuItems(): MenuItem[] {
+    const role = this.authService.getUser()?.role;
+    // ADMIN_STRUCTURE a accès aux techniciens de sa structure
+    if (role === 'ADMIN_STRUCTURE') {
+      return this.menuItems;
+    }
+    // TECHNICIEN/USER ne voit jamais "Techniciens"
+    return this.menuItems.filter(item => item.route !== '/users');
   }
 
   protected get currentUser(): User | null {
