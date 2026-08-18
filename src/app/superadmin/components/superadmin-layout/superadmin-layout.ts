@@ -14,7 +14,7 @@ import { AuthService } from '../../../auth/auth.service';
             <img src="logo.jpg" alt="SAFE Track" class="sa-logo-img" />
           </div>
           <div class="sa-logo-text-block">
-            <span class="sa-logo-text">SAFE Track</span>
+            <span class="sa-logo-text">SHANGO</span>
             <span class="sa-logo-badge">SUPERADMIN</span>
           </div>
         </div>
