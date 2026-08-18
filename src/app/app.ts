@@ -1,3 +1,4 @@
+// Deployed to GitHub Pages at https://jonatecht.github.io/safe_track/
 import { Component, signal } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
