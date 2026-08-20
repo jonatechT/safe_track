@@ -76,9 +76,7 @@ export const pageData: Record<string, PageData> = {
     tableHeaders: ['Type', 'Équipement', 'Sévérité', 'Date', 'Statut'],
     tableRows: [
       { 'Type': 'Violation de box', 'Équipement': 'Kit solaire #SK-045', 'Sévérité': 'Critique', 'Date': 'Il y a 5 min', 'Statut': 'Ouverte' },
-      { 'Type': 'Déplacement non autorisé', 'Équipement': 'Véhicule #V-007', 'Sévérité': 'Avertissement', 'Date': 'Il y a 12 min', 'Statut': 'Ouverte' },
-      { 'Type': 'Anomalie de batterie', 'Équipement': 'Engin minier #EM-012', 'Sévérité': 'Avertissement', 'Date': 'Il y a 28 min', 'Statut': 'En cours' },
-      { 'Type': 'Maintenance préventive due', 'Équipement': 'Kit solaire #SK-089', 'Sévérité': 'Info', 'Date': 'Il y a 1 h', 'Statut': 'Résolue' }
+      { 'Type': 'Déplacement non autorisé', 'Équipement': 'Véhicule #V-007', 'Sévérité': 'Avertissement', 'Date': 'Il y a 12 min', 'Statut': 'Ouverte' }
     ]
   },
   users: {

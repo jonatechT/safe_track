@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { BasePageComponent } from '../base-page/base-page';
 import { MaintenanceService, MaintenanceItem } from '../../services/maintenance.service';
 import { AuthService } from '../../auth/auth.service';
@@ -7,7 +6,7 @@ import { AuthService } from '../../auth/auth.service';
 @Component({
   selector: 'app-maintenance-page',
   standalone: true,
-  imports: [BasePageComponent, NgClass],
+  imports: [BasePageComponent],
   template: `
     <app-base-page title="Maintenance" subtitle="Planification et suivi des interventions de maintenance." icon="fa-solid fa-wrench">
       <div class="maintenance-content">
@@ -35,9 +34,7 @@ import { AuthService } from '../../auth/auth.service';
                 <tr>
                   <th>Équipement</th>
                   <th>Type</th>
-                  <th>Date prévue</th>
-                  <th>Statut</th>
-                  <th>Alertes</th>
+                  <th>Date</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -52,34 +49,21 @@ import { AuthService } from '../../auth/auth.service';
                     <td>{{ item.type }}</td>
                     <td>{{ item.datePrevue }}</td>
                     <td>
-                      <span class="status-badge" [ngClass]="{
-                        'status-planifiee': item.statut === 'Planifiée',
-                        'status-en-cours': item.statut === 'En cours',
-                        'status-terminee': item.statut === 'Terminée'
-                      }">
-                        {{ item.statut }}
-                      </span>
-                    </td>
-                    <td>
-                      @if (item.alertes > 0) {
-                        <span class="alert-badge alert-active">
-                          {{ item.alertes }} active{{ item.alertes > 1 ? 's' : '' }}
-                        </span>
-                        @if (item.prisPar) {
-                          <div class="taken-by">
-                            <i class="fa-solid fa-user-check"></i>
-                            Pris à {{ item.datePrise }}
-                          </div>
-                        }
-                      } @else {
-                        <span class="alert-badge alert-none">Aucune</span>
-                      }
-                    </td>
-                    <td>
                       @if (item.alertes > 0 && !item.prisPar) {
                         <button class="btn-prendre" (click)="prendreAlerte(item)">
                           <i class="fa-solid fa-hand"></i> Prendre l'alerte
                         </button>
+                      } @else if (item.statut === 'En attente' && item.prisPar) {
+                        <div class="waiting-actions">
+                          <span class="waiting-label">
+                            <i class="fa-solid fa-clock"></i> Demande en cours
+                          </span>
+                          @if (isAdmin()) {
+                            <button class="btn-valider" (click)="validerAlerte(item)">
+                              <i class="fa-solid fa-check"></i> Valider
+                            </button>
+                          }
+                        </div>
                       } @else if (item.statut === 'En cours' && item.prisPar) {
                         <span class="taken-label">
                           <i class="fa-solid fa-check-circle"></i> En cours par {{ item.prisPar }}
@@ -140,6 +124,13 @@ import { AuthService } from '../../auth/auth.service';
     .btn-prendre { background: #F59E0B; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
     .btn-prendre:hover { background: #D97706; transform: translateY(-1px); }
 
+    .btn-valider { background: #10B981; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; margin-left: 8px; }
+    .btn-valider:hover { background: #059669; transform: translateY(-1px); }
+
+    .waiting-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .waiting-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #F59E0B; font-weight: 600; }
+    .waiting-label i { font-size: 12px; }
+
     .taken-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; font-weight: 600; }
     .taken-label i { font-size: 12px; }
 
@@ -171,6 +162,10 @@ export class MaintenancePageComponent implements OnInit {
     return this.authService.getUser()?.name || 'Utilisateur';
   }
 
+  isAdmin(): boolean {
+    return this.authService.isStructureAdmin() || this.authService.isSuperAdmin();
+  }
+
   getEnCours(): number {
     return this.items.filter(i => i.statut === 'En cours').length;
   }
@@ -185,6 +180,11 @@ export class MaintenancePageComponent implements OnInit {
 
   prendreAlerte(item: MaintenanceItem): void {
     this.maintenanceService.prendreAlerte(item.id, this.getCurrentUserName());
+    this.items = this.maintenanceService.getItems();
+  }
+
+  validerAlerte(item: MaintenanceItem): void {
+    this.maintenanceService.validerAlerte(item.id);
     this.items = this.maintenanceService.getItems();
   }
 }
