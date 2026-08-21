@@ -10,6 +10,7 @@ export interface MaintenanceItem {
   alertes: number;
   prisPar?: string;
   datePrise?: string;
+  rapport?: RapportIntervention;
 }
 
 export interface NotificationItem {
@@ -21,6 +22,14 @@ export interface NotificationItem {
   message: string;
   date: string;
   read: boolean;
+}
+
+export interface RapportIntervention {
+  contenu: string;
+  dateRedaction: string;
+  redacteur: string;
+  piecesRemplacees?: string;
+  dureeIntervention?: string;
 }
 
 @Injectable({
@@ -128,6 +137,30 @@ export class MaintenanceService {
     });
     this.maintenanceItems.set(items);
     this.save(items);
+  }
+
+  /** Ajouter un rapport d'intervention pour une maintenance */
+  redigerRapport(id: string, rapport: RapportIntervention): void {
+    const items = this.maintenanceItems().map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          rapport: {
+            ...rapport,
+            dateRedaction: new Date().toLocaleDateString('fr-FR'),
+            redacteur: rapport.redacteur || 'Technicien'
+          }
+        };
+      }
+      return item;
+    });
+    this.maintenanceItems.set(items);
+    this.save(items);
+  }
+
+  /** Récupérer le rapport d'une intervention */
+  getRapport(id: string): RapportIntervention | undefined {
+    return this.maintenanceItems().find(i => i.id === id)?.rapport;
   }
 
   /** Réinitialiser les données mock */
