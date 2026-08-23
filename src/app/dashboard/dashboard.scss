@@ -26,6 +26,26 @@
   margin: 0;
 }
 
+/* ===== KPI container ===== */
+.kpi-container {
+  background: #EFF6FF;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.kpi-container-header {
+  margin-bottom: 20px;
+}
+
+.kpi-container-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
 /* ===== KPI row ===== */
 .kpi-row {
   display: grid;
@@ -43,6 +63,8 @@
   color: #0F172A;
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
   min-width: 200px;
+  min-height: 120px;
+  justify-content: center;
 }
 
 .kpi-label {
@@ -62,6 +84,51 @@
 
 .kpi-value strong {
   font-size: 1.2em;
+}
+
+/* ===== Cercle de progression ===== */
+.progress-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: conic-gradient(#1E3A8A 0% 82%, #E2E8F0 82% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  animation: progressAppear 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.progress-circle::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  z-index: 0;
+}
+
+.progress-text {
+  position: relative;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: 700;
+  color: #0F172A;
+  text-align: center;
+  line-height: 1;
+}
+
+@keyframes progressAppear {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* ===== Grids ===== */

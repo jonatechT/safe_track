@@ -49,7 +49,8 @@ export class MaintenanceService {
     }
     const items: MaintenanceItem[] = [
       { id: 'm1', equipment: 'Kit solaire #SK-045', type: 'Charge trop lente', datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'Planifiée', alertes: 1 },
-      { id: 'm2', equipment: 'Engin minier #EM-012', type: 'Panne batterie', datePrevue: '18 août 2026', technicien: 'M. Traore', statut: 'En cours', alertes: 2, prisPar: 'M. Traore', datePrise: 'Il y a 2 h' }
+      { id: 'm2', equipment: 'Engin minier #EM-012', type: 'Panne batterie', datePrevue: '18 août 2026', technicien: 'M. Traore', statut: 'En cours', alertes: 2, prisPar: 'M. Traore', datePrise: 'Il y a 2 h' },
+      { id: 'm3', equipment: 'Groupe électrogène #GE-008', type: 'Problème de câblage', datePrevue: '12 août 2026', technicien: 'M. Ouedraogo', statut: 'Terminée', alertes: 0, prisPar: 'M. Ouedraogo', datePrise: 'Il y a 3 jours' }
     ];
     this.save(items);
     return items;

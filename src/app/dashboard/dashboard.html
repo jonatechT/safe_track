@@ -4,11 +4,28 @@
     <p class="dashboard-subtitle">Suivez en temps réel l'état de vos équipements et alertes.</p>
   </div>
 
-  <div class="kpi-row">
-    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">Total équipements</span><span class="kpi-value"><strong>{{ totalEquipements }}</strong></span></div>
-    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">Équipements en ligne</span><span class="kpi-value"><strong>{{ enLigne }}</strong></span></div>
-    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">Alerte active</span><span class="kpi-value"><strong>{{ alerteActive }}</strong></span></div>
-    <div class="kpi-card" style="min-height: 110px; justify-content: center;"><span class="kpi-label">Anomalie détecté</span><span class="kpi-value"><strong>{{ anomalieDetectee }}</strong></span></div>
+  <div class="kpi-container">
+    <div class="kpi-container-header">
+      <h2 class="kpi-container-title">Vue d'ensemble</h2>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-label">Total équipements</span>
+        <span class="kpi-value"><strong>{{ totalEquipements }}</strong></span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Équipements en ligne</span>
+        <span class="kpi-value"><strong>{{ enLigne }}</strong></span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Alerte active</span>
+        <span class="kpi-value"><strong>{{ alerteActive }}</strong></span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Anomalie détecté</span>
+        <span class="kpi-value"><strong>{{ anomalieDetectee }}</strong></span>
+      </div>
+    </div>
   </div>
 
   <div class="grid-2">

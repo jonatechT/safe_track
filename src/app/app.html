@@ -31,9 +31,9 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn" (click)="openLogoutConfirm()" aria-label="Déconnexion" title="Déconnexion">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span class="logout-label">Déconnexion</span>
+      <button class="profile-btn" (click)="openProfile()" aria-label="Profil" title="Profil">
+        <i class="fa-solid fa-user"></i>
+        <span class="profile-btn-label">Profil</span>
       </button>
     </div>
   </aside>
@@ -70,9 +70,9 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="logout-btn" (click)="openLogoutConfirm()" aria-label="Déconnexion" title="Déconnexion">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span class="logout-label">Déconnexion</span>
+      <button class="profile-btn" (click)="openProfile(); closeMobileMenu()" aria-label="Profil" title="Profil">
+        <i class="fa-solid fa-user"></i>
+        <span class="profile-btn-label">Profil</span>
       </button>
     </div>
   </aside>
@@ -132,36 +132,65 @@
     </div>
 
     <div class="profile-panel-body">
-      <div class="profile-field">
-        <span class="profile-field-label">Nom</span>
-        <span class="profile-field-value">{{ currentUserName }}</span>
-      </div>
-      <div class="profile-field">
-        <span class="profile-field-label">E-mail</span>
-        <span class="profile-field-value">{{ currentUserEmail }}</span>
-      </div>
-      <div class="profile-field">
-        <span class="profile-field-label">Téléphone</span>
-        <span class="profile-field-value">{{ currentUserPhone }}</span>
-      </div>
-      @if (currentUserStructureId) {
+      <div class="profile-section">
+        <span class="profile-section-title">Informations personnelles</span>
         <div class="profile-field">
-          <span class="profile-field-label">Structure</span>
-          <span class="profile-field-value">{{ currentStructureName }}</span>
+          <span class="profile-field-icon"><i class="fa-solid fa-user"></i></span>
+          <div class="profile-field-content">
+            <span class="profile-field-label">Nom complet</span>
+            <span class="profile-field-value">{{ currentUserName }}</span>
+          </div>
         </div>
-      }
-      @if (currentUserStatut) {
         <div class="profile-field">
-          <span class="profile-field-label">Statut</span>
-          <span class="profile-field-value">{{ currentUserStatut }}</span>
+          <span class="profile-field-icon"><i class="fa-solid fa-envelope"></i></span>
+          <div class="profile-field-content">
+            <span class="profile-field-label">Adresse e-mail</span>
+            <span class="profile-field-value">{{ currentUserEmail }}</span>
+          </div>
         </div>
-      }
-      @if (currentUserDateCreation) {
         <div class="profile-field">
-          <span class="profile-field-label">Créé le</span>
-          <span class="profile-field-value">{{ currentUserDateCreation | date: 'dd/MM/yyyy' }}</span>
+          <span class="profile-field-icon"><i class="fa-solid fa-phone"></i></span>
+          <div class="profile-field-content">
+            <span class="profile-field-label">Téléphone</span>
+            <span class="profile-field-value">{{ currentUserPhone }}</span>
+          </div>
         </div>
-      }
+        @if (currentUserStructureId) {
+          <div class="profile-field">
+            <span class="profile-field-icon"><i class="fa-solid fa-building"></i></span>
+            <div class="profile-field-content">
+              <span class="profile-field-label">Structure</span>
+              <span class="profile-field-value">{{ currentStructureName }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="profile-section">
+        <span class="profile-section-title">Compte</span>
+        @if (currentUserStatut) {
+          <div class="profile-field">
+            <span class="profile-field-icon"><i class="fa-solid fa-shield-halved"></i></span>
+            <div class="profile-field-content">
+              <span class="profile-field-label">Statut</span>
+              <span class="profile-field-value">
+                <span class="profile-badge" [class.profile-badge-active]="currentUserStatut === 'ACTIVE'">
+                  {{ currentUserStatut }}
+                </span>
+              </span>
+            </div>
+          </div>
+        }
+        @if (currentUserDateCreation) {
+          <div class="profile-field">
+            <span class="profile-field-icon"><i class="fa-solid fa-calendar-days"></i></span>
+            <div class="profile-field-content">
+              <span class="profile-field-label">Membre depuis le</span>
+              <span class="profile-field-value">{{ currentUserDateCreation | date: 'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        }
+      </div>
     </div>
 
     <div class="profile-panel-footer">

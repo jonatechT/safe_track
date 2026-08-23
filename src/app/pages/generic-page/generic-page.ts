@@ -9,6 +9,7 @@ interface StatCard {
   icon: string;
   color: string;
   bgColor: string;
+  progress?: number;
 }
 
 interface TableRow {
@@ -23,13 +24,17 @@ interface TableRow {
     <app-base-page [title]="title" [subtitle]="subtitle" [icon]="icon">
       <div class="generic-content">
         @if (statCards.length) {
-          <div class="stat-grid">
-            @for (stat of statCards; track stat.label) {
-              <div class="stat-card">
-                <span class="stat-label">{{ stat.label }}</span>
-                <span class="stat-value">{{ stat.value }}</span>
-              </div>
-            }
+          <div class="kpi-container">
+            <div class="stat-grid">
+              @for (stat of statCards; track stat.label) {
+                <div class="stat-card">
+                  <div class="stat-main">
+                    <span class="stat-label">{{ stat.label }}</span>
+                    <span class="stat-value"><strong>{{ stat.value }}</strong></span>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
         }
         @if (showMap) {
@@ -103,9 +108,13 @@ interface TableRow {
   `,
   styles: [`
     .generic-content { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+    .kpi-container { background: #EFF6FF; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); }
+    .kpi-container-header { margin-bottom: 20px; }
+    .kpi-container-title { font-size: 16px; font-weight: 700; color: #0F172A; margin: 0; }
     .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
     .stat-card { background: #FFFFFF; border-radius: 16px; padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; color: #0F172A; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); min-width: 200px; min-height: 110px; justify-content: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .stat-card:hover { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18); transform: translateY(-2px); }
+    .stat-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
     .stat-label { font-size: 16px; font-weight: 400; color: #64748B; }
     .stat-value { font-size: 18px; font-weight: 600; color: #0F172A; }
     .card { background: #FFFFFF; border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08); transition: box-shadow 0.3s ease, transform 0.3s ease; width: 100%; }
@@ -115,18 +124,63 @@ interface TableRow {
     .card-subtitle { font-size: 12px; color: #94A3B8; margin-top: 2px; }
     .map-card-page { padding: 24px; margin-bottom: 0; }
     .map-container-page { height: 340px; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; background: #FFFFFF; }
-    .table-card { background: #FFFFFF; border-radius: 16px; padding: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08); transition: box-shadow 0.3s ease; margin-top: 24px; }
-    .table-wrapper { overflow-x: auto; border-radius: 12px; }
-    .data-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
-    .data-table thead th { text-align: left; padding: 14px 16px; color: #6B7280; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #E5E7EB; background: #F9FAFB; }
-    .data-table thead th:first-child { border-top-left-radius: 8px; }
-    .data-table thead th:last-child { border-top-right-radius: 8px; }
-    .data-table tbody td { padding: 12px 16px; border-bottom: 1px solid #F3F4F6; color: #374151; font-weight: 400; }
-    .data-table tbody tr { transition: background 0.2s ease; border-radius: 8px; }
-    .data-table tbody tr:hover { background: #F9FAFB; }
-    .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:last-child td:first-child { border-bottom-left-radius: 8px; }
-    .data-table tbody tr:last-child td:last-child { border-bottom-right-radius: 8px; }
+    /* ===== Tableau moderne ===== */
+    .table-card {
+      background: #EFF6FF;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 8px 20px 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04);
+      transition: box-shadow 0.3s ease;
+      margin-top: 24px;
+    }
+    .table-wrapper { overflow-x: auto; border-radius: 12px; margin: 0 -8px; }
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 13px; }
+
+    .data-table thead th {
+      text-align: left;
+      padding: 14px 18px;
+      color: #64748B;
+      font-weight: 600;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      background: rgba(56, 189, 248, 0.10);
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .data-table thead tr { border-radius: 10px; }
+    .data-table thead th:first-child { border-radius: 10px 0 0 10px; }
+    .data-table thead th:last-child { text-align: right; border-radius: 0 10px 10px 0; }
+
+    .data-table tbody tr {
+      transition: all 0.2s ease;
+      border-radius: 12px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+      background: #F7FAFE;
+    }
+    .data-table tbody td {
+      background: transparent;
+      padding: 15px 18px;
+      border-bottom: 1px solid #EAF1FA;
+      border-top: 1px solid #EAF1FA;
+      color: #334155;
+      font-weight: 400;
+      vertical-align: middle;
+    }
+    .data-table tbody td:first-child {
+      border-left: 1px solid #F1F5F9;
+      border-radius: 12px 0 0 12px;
+    }
+    .data-table tbody td:last-child {
+      border-right: 1px solid #F1F5F9;
+      border-radius: 0 12px 12px 0;
+      text-align: right;
+    }
+    .data-table tbody tr:hover td {
+      background: rgba(56, 189, 248, 0.10);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; }
     .status-alert { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
     .status-inspection { background: #FFFBEB; color: #D97706; border: 1px solid #FCD39D; }
@@ -176,6 +230,12 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     if (this.showMap && isPlatformBrowser(this.platformId) && this.mapPageContainer) {
       this.initMap();
     }
+  }
+
+  /** Génère le style conic-gradient pour un cercle de progression */
+  getProgressStyle(percent: number, color: string): string {
+    const p = Math.min(100, Math.max(0, percent));
+    return `conic-gradient(${color} 0% ${p}%, #E2E8F0 ${p}% 100%)`;
   }
 
   protected getEquipmentIcon(nom: string): string {

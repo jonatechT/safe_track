@@ -9,6 +9,7 @@ export interface StatCardData {
   icon: string;
   color: string;
   bgColor: string;
+  progress?: number;
 }
 
 export interface TableRowData {
@@ -31,9 +32,9 @@ export const pageData: Record<string, PageData> = {
     subtitle: 'Suivi en temps réel de vos équipements sur la carte.',
     icon: 'fa-solid fa-location-dot',
     statCards: [
-      { label: 'Équipements localisés', value: '1248', icon: 'fa-solid fa-cube', color: '#3B82F6', bgColor: '#EFF6FF' },
-      { label: 'Hors ligne', value: '225', icon: 'fa-solid fa-wifi', color: '#EF4444', bgColor: '#FEF2F2' },
-      { label: 'En ligne', value: '1023', icon: 'fa-solid fa-wifi', color: '#10B981', bgColor: '#ECFDF5' }
+      { label: 'Équipements localisés', value: '1248', icon: 'fa-solid fa-cube', color: '#3B82F6', bgColor: '#EFF6FF', progress: 100 },
+      { label: 'Hors ligne', value: '225', icon: 'fa-solid fa-wifi', color: '#EF4444', bgColor: '#FEF2F2', progress: 18 },
+      { label: 'En ligne', value: '1023', icon: 'fa-solid fa-wifi', color: '#10B981', bgColor: '#ECFDF5', progress: 82 }
     ],
     showMap: false,
     tableHeaders: ['Statut', 'Équipement', 'IMEI', 'Localisation', 'Dernière synchro'],
@@ -69,9 +70,9 @@ export const pageData: Record<string, PageData> = {
     subtitle: 'Toutes les alertes et notifications de votre parc.',
     icon: 'fa-solid fa-bell',
     statCards: [
-      { label: 'Critiques', value: '12', icon: 'fa-solid fa-circle-exclamation', color: '#EF4444', bgColor: '#FEF2F2' },
-      { label: 'Avertissements', value: '20', icon: 'fa-solid fa-triangle-exclamation', color: '#F59E0B', bgColor: '#FFFBEB' },
-      { label: 'Résolues', value: '87', icon: 'fa-solid fa-check-circle', color: '#10B981', bgColor: '#ECFDF5' }
+      { label: 'Critiques', value: '12', icon: 'fa-solid fa-circle-exclamation', color: '#EF4444', bgColor: '#FEF2F2', progress: 10 },
+      { label: 'Avertissements', value: '20', icon: 'fa-solid fa-triangle-exclamation', color: '#F59E0B', bgColor: '#FFFBEB', progress: 17 },
+      { label: 'Résolues', value: '87', icon: 'fa-solid fa-check-circle', color: '#10B981', bgColor: '#ECFDF5', progress: 73 }
     ],
     tableHeaders: ['Type', 'Équipement', 'Sévérité', 'Date', 'Statut'],
     tableRows: [
@@ -104,6 +105,7 @@ export const routes: Route[] = [
   { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent), canActivate: [authGuard] },
   { path: 'location', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['location'], canActivate: [authGuard] },
   { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
+  { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['alerts'], canActivate: [authGuard] },
   { path: 'users', loadComponent: () => import('./features/users/users-list').then(m => m.UsersListComponent), canActivate: [structureAdminGuard] },
   { path: 'profile', redirectTo: '/dashboard', pathMatch: 'full' },

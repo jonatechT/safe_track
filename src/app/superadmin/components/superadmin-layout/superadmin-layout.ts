@@ -42,9 +42,9 @@ import { AuthService } from '../../../auth/auth.service';
         </nav>
 
         <div class="sa-sidebar-footer">
-          <button class="sa-logout-btn" (click)="openLogoutConfirm()" title="Déconnexion" aria-label="Déconnexion">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="sa-logout-label">Déconnexion</span>
+          <button class="sa-profile-btn" (click)="openProfile()" title="Profil" aria-label="Profil">
+            <i class="fa-solid fa-user"></i>
+            <span class="sa-profile-btn-label">Profil</span>
           </button>
         </div>
       </aside>
@@ -86,30 +86,56 @@ import { AuthService } from '../../../auth/auth.service';
         </div>
 
         <div class="sa-profile-panel-body">
-          <div class="sa-profile-field">
-            <span class="sa-profile-field-label">Nom</span>
-            <span class="sa-profile-field-value">{{ currentUser?.name || 'Non renseigné' }}</span>
-          </div>
-          <div class="sa-profile-field">
-            <span class="sa-profile-field-label">E-mail</span>
-            <span class="sa-profile-field-value">{{ currentUser?.email || 'Non renseigné' }}</span>
-          </div>
-          <div class="sa-profile-field">
-            <span class="sa-profile-field-label">Téléphone</span>
-            <span class="sa-profile-field-value">{{ currentUser?.telephone || 'Non renseigné' }}</span>
-          </div>
-          @if (currentUser?.statut) {
+          <div class="sa-profile-section">
+            <span class="sa-profile-section-title">Informations personnelles</span>
             <div class="sa-profile-field">
-              <span class="sa-profile-field-label">Statut</span>
-              <span class="sa-profile-field-value">{{ currentUser?.statut }}</span>
+              <span class="sa-profile-field-icon"><i class="fa-solid fa-user"></i></span>
+              <div class="sa-profile-field-content">
+                <span class="sa-profile-field-label">Nom complet</span>
+                <span class="sa-profile-field-value">{{ currentUser?.name || 'Non renseigné' }}</span>
+              </div>
             </div>
-          }
-          @if (currentUser?.dateCreation) {
             <div class="sa-profile-field">
-              <span class="sa-profile-field-label">Créé le</span>
-              <span class="sa-profile-field-value">{{ currentUser?.dateCreation | date: 'dd/MM/yyyy' }}</span>
+              <span class="sa-profile-field-icon"><i class="fa-solid fa-envelope"></i></span>
+              <div class="sa-profile-field-content">
+                <span class="sa-profile-field-label">Adresse e-mail</span>
+                <span class="sa-profile-field-value">{{ currentUser?.email || 'Non renseigné' }}</span>
+              </div>
             </div>
-          }
+            <div class="sa-profile-field">
+              <span class="sa-profile-field-icon"><i class="fa-solid fa-phone"></i></span>
+              <div class="sa-profile-field-content">
+                <span class="sa-profile-field-label">Téléphone</span>
+                <span class="sa-profile-field-value">{{ currentUser?.telephone || 'Non renseigné' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sa-profile-section">
+            <span class="sa-profile-section-title">Compte</span>
+            @if (currentUser?.statut) {
+              <div class="sa-profile-field">
+                <span class="sa-profile-field-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                <div class="sa-profile-field-content">
+                  <span class="sa-profile-field-label">Statut</span>
+                  <span class="sa-profile-field-value">
+                    <span class="sa-profile-badge" [class.sa-profile-badge-active]="currentUser?.statut === 'ACTIVE'">
+                      {{ currentUser?.statut }}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            }
+            @if (currentUser?.dateCreation) {
+              <div class="sa-profile-field">
+                <span class="sa-profile-field-icon"><i class="fa-solid fa-calendar-days"></i></span>
+                <div class="sa-profile-field-content">
+                  <span class="sa-profile-field-label">Membre depuis le</span>
+                  <span class="sa-profile-field-value">{{ currentUser?.dateCreation | date: 'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+            }
+          </div>
         </div>
 
         <div class="sa-profile-panel-footer">
@@ -190,13 +216,13 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-sidebar.collapsed .sa-nav-item { padding: 12px 0; justify-content: center; gap: 0; }
 
     .sa-sidebar-footer { display: flex; flex-direction: column; align-items: stretch; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; }
-    .sa-logout-btn { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 12px; border: 1px solid transparent; background: rgba(239, 68, 68, 0.15); color: #F87171; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; }
-    .sa-logout-btn i { font-size: 20px; }
-    .sa-logout-btn:hover { background: rgba(239, 68, 68, 0.25); color: #EF4444; }
-    .sa-logout-btn:focus-visible { outline: 2px solid #EF4444; outline-offset: 2px; }
-    .sa-logout-label { white-space: nowrap; opacity: 1; transition: opacity 0.3s ease; }
-    .sa-sidebar.collapsed .sa-logout-btn { justify-content: center; padding: 10px 0; gap: 0; }
-    .sa-sidebar.collapsed .sa-logout-label { display: none; }
+    .sa-profile-btn { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 12px; border: 1px solid transparent; background: rgba(56, 189, 248, 0.12); color: #38BDF8; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; }
+    .sa-profile-btn i { font-size: 20px; }
+    .sa-profile-btn:hover { background: rgba(56, 189, 248, 0.22); color: #7DD3FC; }
+    .sa-profile-btn:focus-visible { outline: 2px solid #38BDF8; outline-offset: 2px; }
+    .sa-profile-btn-label { white-space: nowrap; opacity: 1; transition: opacity 0.3s ease; }
+    .sa-sidebar.collapsed .sa-profile-btn { justify-content: center; padding: 10px 0; gap: 0; }
+    .sa-sidebar.collapsed .sa-profile-btn-label { display: none; }
 
     /* Main area */
     .sa-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #F1F5F9; }
@@ -231,10 +257,17 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-profile-panel-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: #E2E8F0; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
     .sa-profile-panel-close:hover { background: rgba(255,255,255,0.2); }
     .sa-profile-panel-close:focus-visible { outline: 2px solid #38BDF8; outline-offset: 2px; }
-    .sa-profile-panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
-    .sa-profile-field { display: flex; flex-direction: column; gap: 4px; }
-    .sa-profile-field-label { font-size: 11px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sa-profile-panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+    .sa-profile-section { display: flex; flex-direction: column; gap: 10px; }
+    .sa-profile-section-title { font-size: 11px; font-weight: 700; color: #1E3A8A; text-transform: uppercase; letter-spacing: 0.8px; padding-bottom: 6px; border-bottom: 1px solid #E2E8F0; }
+    .sa-profile-field { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; transition: all 0.2s ease; }
+    .sa-profile-field:hover { border-color: #BFDBFE; background: #EFF6FF; }
+    .sa-profile-field-icon { width: 34px; height: 34px; border-radius: 10px; background: #EFF6FF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .sa-profile-field-content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .sa-profile-field-label { font-size: 10px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
     .sa-profile-field-value { font-size: 14px; font-weight: 500; color: #0F172A; word-break: break-word; }
+    .sa-profile-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #FEF2F2; color: #EF4444; }
+    .sa-profile-badge-active { background: #ECFDF5; color: #10B981; }
     .sa-profile-panel-footer { padding: 16px 24px; border-top: 1px solid #E2E8F0; }
     .sa-profile-logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 18px; border-radius: 12px; border: none; background: #EF4444; color: #FFF; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
     .sa-profile-logout-btn:hover { background: #DC2626; }

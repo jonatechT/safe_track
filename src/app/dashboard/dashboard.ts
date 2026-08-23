@@ -24,6 +24,12 @@ export class DashboardComponent implements OnInit {
   motocyclettesPourcent: number = 27;
   automobilesPourcent: number = 21;
 
+  // Pourcentages pour les cercles de progression KPI
+  totalEquipementsPourcent: number = 100;
+  enLignePourcent: number = 82;
+  alerteActivePourcent: number = 4;
+  anomalieDetecteePourcent: number = 2;
+
   ngOnInit(): void {
     this.loadKpiData();
   }
@@ -43,5 +49,17 @@ export class DashboardComponent implements OnInit {
     this.kitsPourcent = 52;
     this.motocyclettesPourcent = 27;
     this.automobilesPourcent = 21;
+
+    // Calcul des pourcentages pour les cercles de progression
+    this.totalEquipementsPourcent = 100;
+    this.enLignePourcent = Math.round((this.enLigne / this.totalEquipements) * 100);
+    this.alerteActivePourcent = Math.round((this.alerteActive / this.totalEquipements) * 100);
+    this.anomalieDetecteePourcent = Math.round((this.anomalieDetectee / this.totalEquipements) * 100);
+  }
+
+  /** Génère le style conic-gradient pour un cercle de progression */
+  getProgressStyle(percent: number, color: string): string {
+    const p = Math.min(100, Math.max(0, percent));
+    return `conic-gradient(${color} 0% ${p}%, #E2E8F0 ${p}% 100%)`;
   }
 }
