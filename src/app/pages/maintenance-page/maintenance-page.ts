@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BasePageComponent } from '../base-page/base-page';
 import { MaintenanceService, MaintenanceItem } from '../../services/maintenance.service';
@@ -35,6 +35,19 @@ import { AuthService } from '../../auth/auth.service';
           </div>
         </div>
 
+        <!-- Retour utilisateur après une action -->
+        @if (feedbackMessage()) {
+          <div
+            class="feedback-banner"
+            [class.feedback-success]="feedbackType() === 'success'"
+            [class.feedback-error]="feedbackType() === 'error'"
+            role="status"
+          >
+            <i [class]="feedbackType() === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-triangle-exclamation'"></i>
+            <span>{{ feedbackMessage() }}</span>
+          </div>
+        }
+
         <!-- Tableau des maintenances -->
         <div class="table-card">
           <div class="table-wrapper">
@@ -44,6 +57,7 @@ import { AuthService } from '../../auth/auth.service';
                   <th>Équipement</th>
                   <th>Type</th>
                   <th>Date</th>
+                  <th>Technicien</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -57,26 +71,31 @@ import { AuthService } from '../../auth/auth.service';
                     </td>
                     <td>{{ item.type }}</td>
                     <td>{{ item.datePrevue }}</td>
+                    <td>
+                      @if (item.prisPar) {
+                        <span
+                          class="tech-badge"
+                          [class.tech-mine]="item.prisPar === getCurrentUserName()"
+                          [title]="item.datePrise ? 'Pris le ' + item.datePrise : ''"
+                        >
+                          <i class="fa-solid fa-user-gear"></i> {{ item.prisPar }}
+                          @if (item.datePrise) {
+                            <span class="tech-date">· {{ item.datePrise }}</span>
+                          }
+                        </span>
+                      } @else {
+                        <span class="tech-none">Non pris</span>
+                      }
+                    </td>
                     <td class="actions-cell">
                       @if (item.alertes > 0 && !item.prisPar) {
                         <button class="btn-prendre" (click)="prendreAlerte(item)">
                           <i class="fa-solid fa-hand"></i> Prendre l'alerte
                         </button>
-                      } @else if (item.statut === 'En attente' && item.prisPar) {
-                        <div class="waiting-actions">
-                          <span class="waiting-label">
-                            <i class="fa-solid fa-clock"></i> Demande en cours
-                          </span>
-                          @if (isAdmin()) {
-                            <button class="btn-valider" (click)="validerAlerte(item)">
-                              <i class="fa-solid fa-check"></i> Valider
-                            </button>
-                          }
-                        </div>
                       } @else if (item.statut === 'En cours' && item.prisPar) {
                         <div class="done-actions">
                           <span class="taken-label">
-                            <i class="fa-solid fa-check-circle"></i> En cours par {{ item.prisPar }}
+                            <i class="fa-solid fa-clock"></i> Intervention en cours
                           </span>
                           <button class="btn-terminer" (click)="terminerMaintenance(item)">
                             <i class="fa-solid fa-flag-checkered"></i> Terminer
@@ -192,15 +211,34 @@ import { AuthService } from '../../auth/auth.service';
     .taken-by { margin-top: 6px; font-size: 11px; color: #059669; display: flex; align-items: center; gap: 4px; }
     .taken-by i { font-size: 11px; }
 
+    /* Badge du technicien ayant pris l'alerte */
+    .tech-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; white-space: nowrap; }
+    .tech-badge i { font-size: 11px; }
+    .tech-badge.tech-mine { background: #DBEAFE; color: #1D4ED8; border-color: #BFDBFE; }
+    .tech-date { font-weight: 400; opacity: 0.85; font-size: 10px; }
+    .tech-none { color: #94A3B8; font-size: 12px; }
+
+    /* Bandeau de retour utilisateur */
+    .feedback-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      animation: feedback-in 0.25s ease;
+    }
+    .feedback-banner i { font-size: 14px; }
+    .feedback-success { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+    .feedback-error { background: #FEF2F2; color: #B91C1C; border: 1px solid #FCA5A5; }
+    @keyframes feedback-in {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .btn-prendre { background: #1E3A8A; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
     .btn-prendre:hover { background: #0B1A2E; transform: translateY(-1px); }
-
-    .btn-valider { background: #1E3A8A; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-valider:hover { background: #0B1A2E; transform: translateY(-1px); }
-
-    .waiting-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
-    .waiting-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; font-weight: 600; }
-    .waiting-label i { font-size: 12px; }
 
     .taken-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; font-weight: 600; }
     .taken-label i { font-size: 12px; }
@@ -224,8 +262,11 @@ import { AuthService } from '../../auth/auth.service';
     }
   `]
 })
-export class MaintenancePageComponent implements OnInit {
-  items: MaintenanceItem[] = [];
+export class MaintenancePageComponent {
+  /** Bandeau de retour utilisateur après une action */
+  feedbackMessage = signal('');
+  feedbackType = signal<'success' | 'error'>('success');
+  private feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     private maintenanceService: MaintenanceService,
@@ -233,8 +274,13 @@ export class MaintenancePageComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    this.items = this.maintenanceService.getItems();
+  /**
+   * Liste réactive lue directement depuis le signal du service :
+   * elle se met à jour automatiquement après chaque action et lors des
+   * synchronisations multi-onglets (autre technicien ayant pris une alerte).
+   */
+  get items(): MaintenanceItem[] {
+    return this.maintenanceService.getItems();
   }
 
   getCurrentUserName(): string {
@@ -278,19 +324,35 @@ export class MaintenancePageComponent implements OnInit {
     return `conic-gradient(${color} 0% ${p}%, #E2E8F0 ${p}% 100%)`;
   }
 
+  /** Prendre une alerte immédiatement, sans validation admin préalable */
   prendreAlerte(item: MaintenanceItem): void {
-    this.maintenanceService.prendreAlerte(item.id, this.getCurrentUserName());
-    this.items = this.maintenanceService.getItems();
-  }
-
-  validerAlerte(item: MaintenanceItem): void {
-    this.maintenanceService.validerAlerte(item.id);
-    this.items = this.maintenanceService.getItems();
+    const success = this.maintenanceService.prendreAlerte(item.id, this.getCurrentUserName());
+    if (success) {
+      this.showFeedback(
+        `Vous avez pris en charge l'alerte « ${item.type} » sur ${item.equipment}.`,
+        'success'
+      );
+    } else {
+      const latest = this.maintenanceService.getItems().find(i => i.id === item.id);
+      this.showFeedback(
+        `Impossible de prendre cette alerte : elle est déjà prise en charge par ${latest?.prisPar ?? 'un autre technicien'}.`,
+        'error'
+      );
+    }
   }
 
   terminerMaintenance(item: MaintenanceItem): void {
     this.maintenanceService.terminerMaintenance(item.id);
-    this.items = this.maintenanceService.getItems();
+    this.showFeedback(`Intervention sur ${item.equipment} marquée comme terminée.`, 'success');
+  }
+
+  private showFeedback(message: string, type: 'success' | 'error'): void {
+    this.feedbackMessage.set(message);
+    this.feedbackType.set(type);
+    if (this.feedbackTimeout) {
+      clearTimeout(this.feedbackTimeout);
+    }
+    this.feedbackTimeout = setTimeout(() => this.feedbackMessage.set(''), 5000);
   }
 
   allerAuxRapports(): void {

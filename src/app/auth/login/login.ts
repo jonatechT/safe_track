@@ -14,6 +14,7 @@ export class LoginComponent {
   identifier = signal('');
   password = signal('');
   showPassword = signal(false);
+  rememberMe = signal(false);
   isLoading = signal(false);
   errorMessage = signal('');
 

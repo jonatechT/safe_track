@@ -1,71 +1,92 @@
 <div class="auth-page">
-  <div class="auth-card">
-    <!-- Logo -->
-    <div class="logo-container">
-      <img src="logo.jpg" alt="Safe Track" class="auth-logo" />
-    </div>
+  <!-- Image d'arrière-plan : champ de panneaux solaires au coucher du soleil -->
+  <img src="pannaux.jpg" alt="" class="auth-bg" aria-hidden="true" />
+  <div class="auth-overlay"></div>
 
-    <!-- Tabs -->
-    <div class="auth-tabs">
-      <a routerLink="/login" class="auth-tab active">CONNECTION</a>
-      <a routerLink="/register" class="auth-tab">INSCRIPTION</a>
-    </div>
+  <!-- Carte de connexion en verre translucide -->
+  <div class="auth-card">
+    <header class="auth-header">
+      <h1 class="auth-title">Connexion</h1>
+      <p class="auth-subtitle">Veuillez vous connecter à votre compte</p>
+    </header>
 
     @if (errorMessage()) {
-      <div class="error-message">
+      <div class="error-message" role="alert">
         <i class="fa-solid fa-circle-exclamation"></i>
         <span>{{ errorMessage() }}</span>
       </div>
     }
 
     <form (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="form-group">
-        <div class="input-wrapper">
-          <input
-            id="identifier"
-            type="text"
-            class="form-input"
-            placeholder="Email ou Numéro"
-            [(ngModel)]="identifier"
-            name="identifier"
-            required
-          />
-        </div>
+      <!-- Champ User Name -->
+      <div class="input-wrapper">
+        <input
+          id="identifier"
+          type="text"
+          class="form-input"
+          placeholder="Nom d'utilisateur"
+          autocomplete="username"
+          [(ngModel)]="identifier"
+          name="identifier"
+          required
+        />
+        <i class="fa-regular fa-user input-icon" aria-hidden="true"></i>
       </div>
 
-      <div class="form-group">
-        <div class="input-wrapper">
-          <input
-            id="password"
-            [type]="showPassword() ? 'text' : 'password'"
-            class="form-input"
-            placeholder="Mot de passe"
-            [(ngModel)]="password"
-            name="password"
-            required
-          />
-          <button
-            type="button"
-            class="toggle-password"
-            (click)="showPassword.set(!showPassword())"
-          >
-            <i [class]="showPassword() ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
-          </button>
-        </div>
+      <!-- Champ Password -->
+      <div class="input-wrapper">
+        <input
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          class="form-input"
+          placeholder="Mot de passe"
+          autocomplete="current-password"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+        <button
+          type="button"
+          class="toggle-password"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-label]="showPassword() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+        >
+          <i [class]="showPassword() ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" aria-hidden="true"></i>
+        </button>
       </div>
 
+      <!-- Remember me -->
+      <label class="remember-me">
+        <input
+          type="checkbox"
+          class="remember-checkbox"
+          [(ngModel)]="rememberMe"
+          name="rememberMe"
+        />
+        <span class="checkbox-box" aria-hidden="true">
+          <i class="fa-solid fa-check"></i>
+        </span>
+        <span class="remember-label">Se souvenir de moi</span>
+      </label>
+
+      <!-- Bouton Login -->
       <button
         type="submit"
         class="auth-button"
-        [class.loading]="isLoading()"
         [disabled]="isLoading()"
       >
         @if (isLoading()) {
-          <div class="spinner"></div>
+          <span class="spinner" aria-hidden="true"></span>
         } @else {
-          <span>CONTINUER</span>
+          <span>Se connecter</span>
         }
       </button>
     </form>
+
+    <!-- Lien vers l'inscription -->
+    <p class="signup-text">
+      Vous n&rsquo;avez pas de compte&nbsp;?
+      <a routerLink="/register" class="signup-link">S&rsquo;inscrire</a>
+    </p>
   </div>
 </div>

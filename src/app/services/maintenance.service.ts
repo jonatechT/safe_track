@@ -41,11 +41,42 @@ export class MaintenanceService {
   readonly maintenanceItems = signal<MaintenanceItem[]>(this.loadInitialData());
   readonly notifications = signal<NotificationItem[]>([]);
 
+  constructor() {
+    // Synchronisation multi-onglets : si un autre onglet (autre technicien)
+    // prend une alerte, cet onglet se met à jour immédiatement afin d'éviter
+    // que deux techniciens se dirigent vers le même équipement en même temps.
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', event => {
+        if (event.key === this.STORAGE_KEY && event.newValue) {
+          try {
+            this.maintenanceItems.set(JSON.parse(event.newValue));
+          } catch {
+            /* données invalides : on ignore */
+          }
+        }
+      });
+    }
+  }
+
   private loadInitialData(): MaintenanceItem[] {
-    // Supprimer les anciennes clés de stockage pour forcer le chargement des nouvelles données
+    // Nettoyage de l'ancienne clé de stockage (migration v1 -> v2)
     if (typeof window !== 'undefined') {
       localStorage.removeItem('safe_track_maintenance');
-      localStorage.removeItem('safe_track_maintenance_v2');
+    }
+    // Charger les données persistées : les prises d'alerte doivent survivre
+    // à un rafraîchissement pour que tous les techniciens voient qui a pris quoi.
+    if (typeof window !== 'undefined') {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      if (raw) {
+        try {
+          const stored = JSON.parse(raw) as MaintenanceItem[];
+          if (Array.isArray(stored) && stored.length > 0) {
+            return stored;
+          }
+        } catch {
+          /* données corrompues : on retombe sur les données de démonstration */
+        }
+      }
     }
     const items: MaintenanceItem[] = [
       { id: 'm1', equipment: 'Kit solaire #SK-045', type: 'Charge trop lente', datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'Planifiée', alertes: 1 },
@@ -77,55 +108,72 @@ export class MaintenanceService {
     this.save(items);
   }
 
-  /** Prendre une alerte / un équipement en charge (admin + user) */
-  prendreAlerte(id: string, userName: string): void {
-    const items = this.maintenanceItems().map(item => {
-      if (item.id === id) {
-        return {
-          ...item,
-          prisPar: userName,
-          datePrise: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-          statut: 'En attente' as const
-        };
-      }
-      return item;
+  /**
+   * Prendre une alerte / un équipement en charge (technicien ou admin).
+   * La prise en charge est IMMÉDIATE : aucune validation admin n'est requise.
+   * Le nom du technicien et la date de prise sont enregistrés afin que les
+   * autres techniciens voient immédiatement que l'alerte est déjà prise.
+   *
+   * @returns true si la prise en charge a réussi,
+   *          false si l'alerte est déjà prise par quelqu'un d'autre.
+   */
+  prendreAlerte(id: string, userName: string): boolean {
+    const target = this.maintenanceItems().find(i => i.id === id);
+
+    // Garde anti-doublon : une seule personne peut prendre une même alerte
+    if (!target || target.prisPar) {
+      return false;
+    }
+
+    const datePrise = new Date().toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
     });
+
+    const items = this.maintenanceItems().map(item =>
+      item.id === id
+        ? { ...item, prisPar: userName, datePrise, statut: 'En cours' as const }
+        : item
+    );
     this.maintenanceItems.set(items);
     this.save(items);
 
-    // Créer une notification pour l'admin
-    const item = this.maintenanceItems().find(i => i.id === id);
-    if (item) {
-      const notif: NotificationItem = {
-        id: 'n' + Date.now(),
-        itemId: id,
-        equipment: item.equipment,
-        type: item.type,
-        technicien: userName,
-        message: `${userName} a pris l'alerte "${item.type}" sur ${item.equipment}. En attente de validation.`,
-        date: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-        read: false
-      };
-      this.notifications.set([...this.notifications(), notif]);
-    }
+    // Créer une notification informant que l'alerte est prise en charge
+    const notif: NotificationItem = {
+      id: 'n' + Date.now(),
+      itemId: id,
+      equipment: target.equipment,
+      type: target.type,
+      technicien: userName,
+      message: `${userName} a pris l'alerte "${target.type}" sur ${target.equipment}. Intervention en cours.`,
+      date: datePrise,
+      read: false
+    };
+    this.notifications.set([...this.notifications(), notif]);
+
+    return true;
   }
 
-  /** Valider une alerte prise par un technicien (admin uniquement) */
+  /**
+   * Valider une alerte côté admin (depuis le panneau de notifications).
+   * Accepte l'identifiant d'une notification ('n...') ou d'une maintenance ('m...').
+   */
   validerAlerte(id: string): void {
-    const items = this.maintenanceItems().map(item => {
-      if (item.id === id && item.statut === 'En attente') {
-        return { ...item, statut: 'En cours' as const };
-      }
-      return item;
-    });
+    if (id.startsWith('n')) {
+      // Validation depuis une notification : la marquer comme traitée
+      this.notifications.set(
+        this.notifications().map(n => (n.id === id ? { ...n, read: true } : n))
+      );
+      return;
+    }
+    // Validation directe d'un item : l'alerte est acquittée
+    const items = this.maintenanceItems().map(item =>
+      item.id === id ? { ...item, alertes: 0 } : item
+    );
     this.maintenanceItems.set(items);
     this.save(items);
-
-    // Marquer les notifications liées à cet item comme lues
-    const updatedNotifs = this.notifications().map(n =>
-      n.itemId === id ? { ...n, read: true } : n
-    );
-    this.notifications.set(updatedNotifs);
   }
 
   /** Marquer une maintenance comme terminée */
