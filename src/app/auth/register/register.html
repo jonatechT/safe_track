@@ -18,20 +18,8 @@
     }
 
     <form (ngSubmit)="onSubmit()" class="auth-form">
-      <!-- Prénom / Nom -->
+      <!-- Nom / Prénom -->
       <div class="form-grid">
-        <div class="input-wrapper">
-          <input
-            id="firstName"
-            type="text"
-            class="form-input"
-            placeholder="Prénom"
-            autocomplete="given-name"
-            [(ngModel)]="firstName"
-            name="firstName"
-            required
-          />
-        </div>
         <div class="input-wrapper">
           <input
             id="lastName"
@@ -41,6 +29,18 @@
             autocomplete="family-name"
             [(ngModel)]="lastName"
             name="lastName"
+            required
+          />
+        </div>
+        <div class="input-wrapper">
+          <input
+            id="firstName"
+            type="text"
+            class="form-input"
+            placeholder="Prénom"
+            autocomplete="given-name"
+            [(ngModel)]="firstName"
+            name="firstName"
             required
           />
         </div>
