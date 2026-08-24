@@ -15,14 +15,14 @@ export class DashboardComponent implements OnInit {
   anomalieDetectee: number = 2;
 
   // Équipements par catégorie (proportionnels au total = 100)
-  kits: number = 52;
+  kits: number = 75;
   motocyclettes: number = 27;
-  automobiles: number = 21;
+  automobiles: number = 15;
 
   // Pourcentages des barres de progression
-  kitsPourcent: number = 52;
+  kitsPourcent: number = 75;
   motocyclettesPourcent: number = 27;
-  automobilesPourcent: number = 21;
+  automobilesPourcent: number = 15;
 
   // Pourcentages pour les cercles de progression KPI
   totalEquipementsPourcent: number = 100;
@@ -41,14 +41,14 @@ export class DashboardComponent implements OnInit {
     this.alerteActive = 4;
     this.anomalieDetectee = 2;
 
-    // Catégories : 52 + 27 + 21 = 100 équipements
-    this.kits = 52;
+    // Catégories : 75 + 27 + 15 = 100 équipements (motocyclettes non affichées)
+    this.kits = 75;
     this.motocyclettes = 27;
-    this.automobiles = 21;
+    this.automobiles = 15;
 
-    this.kitsPourcent = 52;
+    this.kitsPourcent = 75;
     this.motocyclettesPourcent = 27;
-    this.automobilesPourcent = 21;
+    this.automobilesPourcent = 15;
 
     // Calcul des pourcentages pour les cercles de progression
     this.totalEquipementsPourcent = 100;

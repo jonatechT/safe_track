@@ -10,17 +10,26 @@
   </div>
 
   <div class="sa-stats-grid">
-    <div class="sa-stat-card">
-      <span class="sa-stat-label">Structures totales</span>
-      <span class="sa-stat-value">{{ stats().total }}</span>
+    <div class="sa-stat-card sa-stat-card--blue">
+      <div class="sa-stat-main">
+        <span class="sa-stat-label">Structures totales</span>
+        <span class="sa-stat-value">{{ stats().total }}</span>
+      </div>
+      <i class="fa-solid fa-building sa-stat-icon sa-stat-icon--blue"></i>
     </div>
-    <div class="sa-stat-card">
-      <span class="sa-stat-label">Structures actives</span>
-      <span class="sa-stat-value">{{ stats().actives }}</span>
+    <div class="sa-stat-card sa-stat-card--green">
+      <div class="sa-stat-main">
+        <span class="sa-stat-label">Structures actives</span>
+        <span class="sa-stat-value">{{ stats().actives }}</span>
+      </div>
+      <i class="fa-solid fa-circle-check sa-stat-icon sa-stat-icon--green"></i>
     </div>
-    <div class="sa-stat-card">
-      <span class="sa-stat-label">Structures inactives</span>
-      <span class="sa-stat-value">{{ stats().inactives }}</span>
+    <div class="sa-stat-card sa-stat-card--orange">
+      <div class="sa-stat-main">
+        <span class="sa-stat-label">Structures inactives</span>
+        <span class="sa-stat-value">{{ stats().inactives }}</span>
+      </div>
+      <i class="fa-solid fa-circle-pause sa-stat-icon sa-stat-icon--orange"></i>
     </div>
   </div>
 

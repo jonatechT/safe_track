@@ -37,44 +37,8 @@ export class StructureService {
   }
 
   private seedStructures(): void {
-    const now = new Date().toISOString();
-    const seed: Structure[] = [
-      {
-        id: 'STR-001',
-        nom: 'Alioth system',
-        code: 'ALIOTH-SYSTEM',
-        description: 'Solutions technologiques et systèmes embarqués.',
-        email: 'contact@alioth-system.com',
-        telephone: '+226 25 41 56 78',
-        adresse: 'Rue de la technologie',
-        ville: 'Bobo-Dioulasso',
-        pays: 'Burkina Faso',
-        statut: 'ACTIVE',
-        dateCreation: '2024-03-20T10:00:00.000Z',
-        dateModification: now,
-        adminNom: 'Admin Alioth',
-        adminEmail: 'admin@alioth-system.com',
-        adminTelephone: '+226 70 98 76 54'
-      },
-      {
-        id: 'STR-002',
-        nom: 'Orange energie',
-        code: 'ORANGE-ENERGIE',
-        description: 'Fournisseur d\'énergie solaire.',
-        email: 'contact@orange-energie.com',
-        telephone: '+226 25 40 12 34',
-        adresse: 'Zone industrielle',
-        ville: 'Ouagadougou',
-        pays: 'Burkina Faso',
-        statut: 'ACTIVE',
-        dateCreation: '2024-01-15T10:00:00.000Z',
-        dateModification: now,
-        adminNom: 'Admin Orange',
-        adminEmail: 'admin@orange-energie.com',
-        adminTelephone: '+226 70 12 34 56'
-      }
-    ];
-    this.saveStructures(seed);
+    // Aucune structure par défaut : le superadmin les crée lui-même
+    this.saveStructures([]);
   }
 
   getAllStructures(): Structure[] {

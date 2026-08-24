@@ -17,26 +17,27 @@ import { AuthService } from '../../auth/auth.service';
       </div>
       <div class="rapports-content">
         <!-- KPI Cards -->
-        <div class="kpi-container">
-          <div class="stat-grid">
-            <div class="stat-card">
-              <div class="stat-main">
-                <span class="stat-label">Rapports rédigés</span>
-                <span class="stat-value"><strong>{{ getRapportsCount() }}</strong></span>
-              </div>
+        <div class="stat-grid">
+          <div class="stat-card stat-card--green">
+            <div class="stat-main">
+              <span class="stat-label">Rapports rédigés</span>
+              <span class="stat-value"><strong>{{ getRapportsCount() }}</strong></span>
             </div>
-            <div class="stat-card">
-              <div class="stat-main">
-                <span class="stat-label">Interventions terminées</span>
-                <span class="stat-value"><strong>{{ getTermineesCount() }}</strong></span>
-              </div>
+            <i class="fa-solid fa-file-lines stat-icon stat-icon--green"></i>
+          </div>
+          <div class="stat-card stat-card--blue">
+            <div class="stat-main">
+              <span class="stat-label">Interventions terminées</span>
+              <span class="stat-value"><strong>{{ getTermineesCount() }}</strong></span>
             </div>
-            <div class="stat-card">
-              <div class="stat-main">
-                <span class="stat-label">Sans rapport</span>
-                <span class="stat-value"><strong>{{ getSansRapportCount() }}</strong></span>
-              </div>
+            <i class="fa-solid fa-circle-check stat-icon stat-icon--blue"></i>
+          </div>
+          <div class="stat-card stat-card--orange">
+            <div class="stat-main">
+              <span class="stat-label">Sans rapport</span>
+              <span class="stat-value"><strong>{{ getSansRapportCount() }}</strong></span>
             </div>
+            <i class="fa-solid fa-file-circle-exclamation stat-icon stat-icon--orange"></i>
           </div>
         </div>
 
@@ -217,15 +218,37 @@ import { AuthService } from '../../auth/auth.service';
   `,
   styles: [`
     .rapports-content { display: flex; flex-direction: column; gap: 24px; width: 100%; }
-    .kpi-container { background: #EFF6FF; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); }
-    .kpi-container-header { margin-bottom: 20px; }
-    .kpi-container-title { font-size: 16px; font-weight: 700; color: #0F172A; margin: 0; }
     .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .stat-card { background: #FFFFFF; border-radius: 16px; padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; color: #0F172A; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); min-width: 200px; min-height: 110px; justify-content: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .stat-card:hover { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18); transform: translateY(-2px); }
-    .stat-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-    .stat-label { font-size: 16px; font-weight: 400; color: #64748B; }
-    .stat-value { font-size: 18px; font-weight: 600; color: #0F172A; }
+    .stat-card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: #0F172A;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      min-width: 0;
+      min-height: 124px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .stat-card:hover { box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); transform: translateY(-2px); }
+    .stat-main { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+    .stat-label { font-size: 13px; font-weight: 600; color: #475569; letter-spacing: 0.2px; }
+    .stat-value { font-size: 30px; font-weight: 700; line-height: 1.05; color: #0F172A; }
+    .stat-value strong { font-size: 1em; }
+    .stat-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .stat-card--blue { background: #DBEAFE; border-color: rgba(59, 130, 246, 0.24); }
+    .stat-icon--blue { color: #2563EB; }
+    .stat-card--green { background: #D1FAE5; border-color: rgba(16, 185, 129, 0.24); }
+    .stat-icon--green { color: #059669; }
+    .stat-card--orange { background: #FFEDD5; border-color: rgba(234, 88, 12, 0.24); }
+    .stat-icon--orange { color: #EA580C; }
 
     /* ===== Tableau moderne ===== */
     .table-card {
@@ -244,13 +267,13 @@ import { AuthService } from '../../auth/auth.service';
     .data-table thead th {
       text-align: left;
       padding: 14px 18px;
-      color: #64748B;
+      color: #FFFFFF;
       font-weight: 600;
       font-size: 10.5px;
       text-transform: uppercase;
       letter-spacing: 0.9px;
-      background: rgba(56, 189, 248, 0.10);
-      border-bottom: 1px solid #E2E8F0;
+      background: #2563EB;
+      border-bottom: 1px solid #2563EB;
     }
     .data-table thead tr { border-radius: 10px; }
     .data-table thead th:first-child { border-radius: 10px 0 0 10px; }
@@ -294,8 +317,8 @@ import { AuthService } from '../../auth/auth.service';
     .no-rapport { font-size: 12px; color: #94A3B8; font-style: italic; }
 
     .rapports-actions { display: flex; align-items: center; gap: 12px; }
-    .btn-rediger-top { background: #0B1A2E; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(11, 26, 46, 0.35); position: relative; top: 8px; }
-    .btn-rediger-top:hover { background: #081220; transform: translateY(-1px); }
+    .btn-rediger-top { background: #2563EB; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35); position: relative; top: 8px; }
+    .btn-rediger-top:hover { background: #1D4ED8; transform: translateY(-1px); }
     .btn-rediger-top:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .rapports-actions-hint { font-size: 12px; color: #94A3B8; font-style: italic; }
 

@@ -4,27 +4,37 @@
     <p class="dashboard-subtitle">Suivez en temps réel l'état de vos équipements et alertes.</p>
   </div>
 
-  <div class="kpi-container">
-    <div class="kpi-container-header">
-      <h2 class="kpi-container-title">Vue d'ensemble</h2>
+  <div class="kpi-row">
+    <div class="stat-card stat-card--blue">
+      <div class="stat-card-content">
+        <span class="stat-label">Total équipements</span>
+        <h3 class="stat-value">{{ totalEquipements }}</h3>
+      </div>
+      <i class="fa-solid fa-boxes-stacked stat-icon stat-icon--blue"></i>
     </div>
-    <div class="kpi-row">
-      <div class="kpi-card">
-        <span class="kpi-label">Total équipements</span>
-        <span class="kpi-value"><strong>{{ totalEquipements }}</strong></span>
+
+    <div class="stat-card stat-card--green">
+      <div class="stat-card-content">
+        <span class="stat-label">Équipements en ligne</span>
+        <h3 class="stat-value">{{ enLigne }}</h3>
       </div>
-      <div class="kpi-card">
-        <span class="kpi-label">Équipements en ligne</span>
-        <span class="kpi-value"><strong>{{ enLigne }}</strong></span>
+      <i class="fa-solid fa-circle-check stat-icon stat-icon--green"></i>
+    </div>
+
+    <div class="stat-card stat-card--pink">
+      <div class="stat-card-content">
+        <span class="stat-label">Alerte active</span>
+        <h3 class="stat-value">{{ alerteActive }}</h3>
       </div>
-      <div class="kpi-card">
-        <span class="kpi-label">Alerte active</span>
-        <span class="kpi-value"><strong>{{ alerteActive }}</strong></span>
+      <i class="fa-solid fa-bell stat-icon stat-icon--pink"></i>
+    </div>
+
+    <div class="stat-card stat-card--orange">
+      <div class="stat-card-content">
+        <span class="stat-label">Anomalie détecté</span>
+        <h3 class="stat-value">{{ anomalieDetectee }}</h3>
       </div>
-      <div class="kpi-card">
-        <span class="kpi-label">Anomalie détecté</span>
-        <span class="kpi-value"><strong>{{ anomalieDetectee }}</strong></span>
-      </div>
+      <i class="fa-solid fa-triangle-exclamation stat-icon stat-icon--orange"></i>
     </div>
   </div>
 
@@ -32,20 +42,19 @@
     <div class="card">
       <h2 class="card-title">Équipements par catégorie</h2>
       <div class="category-list">
-        <div class="category-item"><div class="category-header"><span class="category-name">Kits</span><span class="category-count">{{ kits }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="kitsPourcent" style="background: #1E3A8A;"></div></div></div>
-        <div class="category-item"><div class="category-header"><span class="category-name">Motocyclettes</span><span class="category-count">{{ motocyclettes }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="motocyclettesPourcent" style="background: #1E3A8A;"></div></div></div>
-        <div class="category-item"><div class="category-header"><span class="category-name">Automobiles</span><span class="category-count">{{ automobiles }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="automobilesPourcent" style="background: #1E3A8A;"></div></div></div>
+        <div class="category-item"><div class="category-header"><span class="category-name">Kits</span><span class="category-count">{{ kits }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="kitsPourcent" style="background: #2563EB;"></div></div></div>
+        <div class="category-item"><div class="category-header"><span class="category-name">Automobiles</span><span class="category-count">{{ automobiles }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="automobilesPourcent" style="background: #2563EB;"></div></div></div>
       </div>
     </div>
 
     <div class="card">
       <h2 class="card-title">Répartition par statut</h2>
       <div class="statut-wrapper">
-        <div class="donut-chart"><div class="donut-center"><span class="donut-value">67%</span></div></div>
+        <div class="donut-chart"></div>
         <div class="donut-legend">
-          <div class="legend-item"><span class="legend-dot" style="background: #10B981;"></span><span class="legend-label">Équipements en ligne</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background: #ff0000;"></span><span class="legend-label">Équipement hors ligne</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background: #ffe500;"></span><span class="legend-label">Équipement en maintenance</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #10B981;"></span><span class="legend-label">Équipements en ligne</span><span class="legend-value">90%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #ff0000;"></span><span class="legend-label">Équipement hors ligne</span><span class="legend-value">8%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #ffe500;"></span><span class="legend-label">Équipement en maintenance</span><span class="legend-value">2%</span></div>
         </div>
       </div>
     </div>

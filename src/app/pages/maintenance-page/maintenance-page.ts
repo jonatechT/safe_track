@@ -12,26 +12,27 @@ import { AuthService } from '../../auth/auth.service';
     <app-base-page title="Maintenance" subtitle="Planification et suivi des interventions de maintenance." icon="fa-solid fa-wrench">
       <div class="maintenance-content">
         <!-- KPI Cards -->
-        <div class="kpi-container">
-          <div class="stat-grid">
-            <div class="stat-card">
-              <div class="stat-main">
-                <span class="stat-label">En cours</span>
-                <span class="stat-value"><strong>{{ getEnCours() }}</strong></span>
-              </div>
+        <div class="stat-grid">
+          <div class="stat-card stat-card--blue">
+            <div class="stat-main">
+              <span class="stat-label">En cours</span>
+              <span class="stat-value"><strong>{{ getEnCours() }}</strong></span>
             </div>
-            <div class="stat-card">
-              <div class="stat-main">
-                <span class="stat-label">Terminées</span>
-                <span class="stat-value"><strong>{{ getTerminees() }}</strong></span>
-              </div>
+            <i class="fa-solid fa-spinner stat-icon stat-icon--blue"></i>
+          </div>
+          <div class="stat-card stat-card--green">
+            <div class="stat-main">
+              <span class="stat-label">Terminées</span>
+              <span class="stat-value"><strong>{{ getTerminees() }}</strong></span>
             </div>
-            <div class="stat-card">
-              <div class="stat-main">
-                <span class="stat-label">Alertes actives</span>
-                <span class="stat-value"><strong>{{ getAlertesActives() }}</strong></span>
-              </div>
+            <i class="fa-solid fa-circle-check stat-icon stat-icon--green"></i>
+          </div>
+          <div class="stat-card stat-card--pink">
+            <div class="stat-main">
+              <span class="stat-label">Alertes actives</span>
+              <span class="stat-value"><strong>{{ getAlertesActives() }}</strong></span>
             </div>
+            <i class="fa-solid fa-bell stat-icon stat-icon--pink"></i>
           </div>
         </div>
 
@@ -58,6 +59,7 @@ import { AuthService } from '../../auth/auth.service';
                   <th>Type</th>
                   <th>Date</th>
                   <th>Technicien</th>
+                  <th>Localisation</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -85,6 +87,20 @@ import { AuthService } from '../../auth/auth.service';
                         </span>
                       } @else {
                         <span class="tech-none">Non pris</span>
+                      }
+                    </td>
+                    <td>
+                      @if (item.lienLocalisation) {
+                        <a
+                          class="location-link-page"
+                          href="https://www.google.com/maps?q={{ item.lienLocalisation }}"
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          <i class="fa-solid fa-location-dot"></i> {{ item.localisation || 'Voir' }}
+                        </a>
+                      } @else {
+                        <span>{{ item.localisation || '—' }}</span>
                       }
                     </td>
                     <td class="actions-cell">
@@ -127,15 +143,37 @@ import { AuthService } from '../../auth/auth.service';
   `,
   styles: [`
     .maintenance-content { display: flex; flex-direction: column; gap: 24px; width: 100%; }
-    .kpi-container { background: #EFF6FF; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); }
-    .kpi-container-header { margin-bottom: 20px; }
-    .kpi-container-title { font-size: 16px; font-weight: 700; color: #0F172A; margin: 0; }
     .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .stat-card { background: #FFFFFF; border-radius: 16px; padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; color: #0F172A; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); min-width: 200px; min-height: 110px; justify-content: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .stat-card:hover { box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18); transform: translateY(-2px); }
-    .stat-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-    .stat-label { font-size: 16px; font-weight: 400; color: #64748B; }
-    .stat-value { font-size: 18px; font-weight: 600; color: #0F172A; }
+    .stat-card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: #0F172A;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      min-width: 0;
+      min-height: 124px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .stat-card:hover { box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); transform: translateY(-2px); }
+    .stat-main { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+    .stat-label { font-size: 13px; font-weight: 600; color: #475569; letter-spacing: 0.2px; }
+    .stat-value { font-size: 30px; font-weight: 700; line-height: 1.05; color: #0F172A; }
+    .stat-value strong { font-size: 1em; }
+    .stat-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .stat-card--blue { background: #DBEAFE; border-color: rgba(59, 130, 246, 0.24); }
+    .stat-icon--blue { color: #2563EB; }
+    .stat-card--green { background: #D1FAE5; border-color: rgba(16, 185, 129, 0.24); }
+    .stat-icon--green { color: #059669; }
+    .stat-card--pink { background: #FFE4E6; border-color: rgba(225, 29, 72, 0.22); }
+    .stat-icon--pink { color: #E11D48; }
 
     /* ===== Tableau moderne ===== */
     .table-card {
@@ -154,13 +192,13 @@ import { AuthService } from '../../auth/auth.service';
     .data-table thead th {
       text-align: left;
       padding: 14px 18px;
-      color: #64748B;
+      color: #FFFFFF;
       font-weight: 600;
       font-size: 10.5px;
       text-transform: uppercase;
       letter-spacing: 0.9px;
-      background: rgba(56, 189, 248, 0.10);
-      border-bottom: 1px solid #E2E8F0;
+      background: #2563EB;
+      border-bottom: 1px solid #2563EB;
     }
     .data-table thead tr { border-radius: 10px; }
     .data-table thead th:first-child { border-radius: 10px 0 0 10px; }
@@ -198,6 +236,9 @@ import { AuthService } from '../../auth/auth.service';
 
     .equipment-cell { display: flex; align-items: center; gap: 10px; }
     .equipment-name { font-weight: 600; color: #0F172A; font-size: 13px; }
+    .location-link-page { display: inline-flex; align-items: center; gap: 6px; color: #3B82F6; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
+    .location-link-page:hover { color: #1D4ED8; }
+    .location-link-page i { font-size: 12px; }
 
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; }
     .status-planifiee { background: #FFFBEB; color: #D97706; border: 1px solid #FCD39D; }
@@ -237,8 +278,8 @@ import { AuthService } from '../../auth/auth.service';
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .btn-prendre { background: #1E3A8A; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-prendre:hover { background: #0B1A2E; transform: translateY(-1px); }
+    .btn-prendre { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .btn-prendre:hover { background: #1D4ED8; transform: translateY(-1px); }
 
     .taken-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; font-weight: 600; }
     .taken-label i { font-size: 12px; }
@@ -247,11 +288,11 @@ import { AuthService } from '../../auth/auth.service';
     .done-label i { font-size: 12px; }
 
     .done-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
-    .btn-rapport { background: #1E3A8A; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-rapport:hover { background: #0B1A2E; transform: translateY(-1px); }
+    .btn-rapport { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .btn-rapport:hover { background: #1D4ED8; transform: translateY(-1px); }
 
-    .btn-terminer { background: #1E3A8A; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-terminer:hover { background: #0B1A2E; transform: translateY(-1px); }
+    .btn-terminer { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .btn-terminer:hover { background: #1D4ED8; transform: translateY(-1px); }
 
     @media (max-width: 1024px) {
       .stat-grid { grid-template-columns: repeat(2, 1fr); }

@@ -10,6 +10,8 @@ export interface MaintenanceItem {
   alertes: number;
   prisPar?: string;
   datePrise?: string;
+  localisation?: string;
+  lienLocalisation?: string;
   rapport?: RapportIntervention;
 }
 
@@ -79,9 +81,9 @@ export class MaintenanceService {
       }
     }
     const items: MaintenanceItem[] = [
-      { id: 'm1', equipment: 'Kit solaire #SK-045', type: 'Charge trop lente', datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'Planifiée', alertes: 1 },
-      { id: 'm2', equipment: 'Engin minier #EM-012', type: 'Panne batterie', datePrevue: '18 août 2026', technicien: 'M. Traore', statut: 'En cours', alertes: 2, prisPar: 'M. Traore', datePrise: 'Il y a 2 h' },
-      { id: 'm3', equipment: 'Groupe électrogène #GE-008', type: 'Problème de câblage', datePrevue: '12 août 2026', technicien: 'M. Ouedraogo', statut: 'Terminée', alertes: 0, prisPar: 'M. Ouedraogo', datePrise: 'Il y a 3 jours' }
+      { id: 'm1', equipment: 'Kit solaire #SK-045', type: 'Charge trop lente', datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'Planifiée', alertes: 1, localisation: '12.3685° N, -1.5250°', lienLocalisation: '12.3685,-1.5250' },
+      { id: 'm2', equipment: 'Engin minier #EM-012', type: 'Panne batterie', datePrevue: '18 août 2026', technicien: 'M. Traore', statut: 'En cours', alertes: 2, prisPar: 'M. Traore', datePrise: 'Il y a 2 h', localisation: '11.1784° N, -4.2979°', lienLocalisation: '11.1784,-4.2979' },
+      { id: 'm3', equipment: 'Groupe électrogène #GE-008', type: 'Problème de câblage', datePrevue: '12 août 2026', technicien: 'M. Ouedraogo', statut: 'Terminée', alertes: 0, prisPar: 'M. Ouedraogo', datePrise: 'Il y a 3 jours', localisation: '12.3714° N, -1.5197°', lienLocalisation: '12.3714,-1.5197' }
     ];
     this.save(items);
     return items;

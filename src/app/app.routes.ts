@@ -28,13 +28,13 @@ export interface PageData {
 
 export const pageData: Record<string, PageData> = {
   location: {
-    title: 'Localisation',
+    title: "Parc d'équipement",
     subtitle: 'Suivi en temps réel de vos équipements sur la carte.',
     icon: 'fa-solid fa-location-dot',
     statCards: [
-      { label: 'Équipements localisés', value: '1248', icon: 'fa-solid fa-cube', color: '#3B82F6', bgColor: '#EFF6FF', progress: 100 },
-      { label: 'Hors ligne', value: '225', icon: 'fa-solid fa-wifi', color: '#EF4444', bgColor: '#FEF2F2', progress: 18 },
-      { label: 'En ligne', value: '1023', icon: 'fa-solid fa-wifi', color: '#10B981', bgColor: '#ECFDF5', progress: 82 }
+      { label: 'Équipements localisés', value: '1248', icon: 'fa-solid fa-cube', color: '#3B82F6', bgColor: '#DBEAFE', progress: 100 },
+      { label: 'Hors ligne', value: '225', icon: 'fa-solid fa-wifi', color: '#EF4444', bgColor: '#FEE2E2', progress: 18 },
+      { label: 'En ligne', value: '1023', icon: 'fa-solid fa-wifi', color: '#10B981', bgColor: '#D1FAE5', progress: 82 }
     ],
     showMap: false,
     tableHeaders: ['Statut', 'Équipement', 'IMEI', 'Localisation', 'Dernière synchro'],
@@ -70,14 +70,14 @@ export const pageData: Record<string, PageData> = {
     subtitle: 'Toutes les alertes et notifications de votre parc.',
     icon: 'fa-solid fa-bell',
     statCards: [
-      { label: 'Critiques', value: '12', icon: 'fa-solid fa-circle-exclamation', color: '#EF4444', bgColor: '#FEF2F2', progress: 10 },
-      { label: 'Avertissements', value: '20', icon: 'fa-solid fa-triangle-exclamation', color: '#F59E0B', bgColor: '#FFFBEB', progress: 17 },
-      { label: 'Résolues', value: '87', icon: 'fa-solid fa-check-circle', color: '#10B981', bgColor: '#ECFDF5', progress: 73 }
+      { label: 'Critiques', value: '12', icon: 'fa-solid fa-circle-exclamation', color: '#EF4444', bgColor: '#FEE2E2', progress: 10 },
+      { label: 'Avertissements', value: '20', icon: 'fa-solid fa-triangle-exclamation', color: '#F59E0B', bgColor: '#FEF3C7', progress: 17 },
+      { label: 'Résolues', value: '87', icon: 'fa-solid fa-check-circle', color: '#10B981', bgColor: '#D1FAE5', progress: 73 }
     ],
-    tableHeaders: ['Type', 'Équipement', 'Sévérité', 'Date', 'Statut'],
+    tableHeaders: ['Type', 'Équipement', 'Localisation', 'Sévérité', 'Date', 'Statut', 'Technicien', 'Action'],
     tableRows: [
-      { 'Type': 'Violation de box', 'Équipement': 'Kit solaire #SK-045', 'Sévérité': 'Critique', 'Date': 'Il y a 5 min', 'Statut': 'Ouverte' },
-      { 'Type': 'Déplacement non autorisé', 'Équipement': 'Véhicule #V-007', 'Sévérité': 'Avertissement', 'Date': 'Il y a 12 min', 'Statut': 'Ouverte' }
+      { 'Type': 'Violation de box', 'Équipement': 'Kit solaire #SK-045', 'Localisation': 'Ouagadougou', 'LienLocalisation': '12.3685,-1.5250', 'Sévérité': 'Critique', 'Date': 'Il y a 5 min', 'Statut': 'Ouverte', 'Technicien': '—', 'Action': 'Prendre' },
+      { 'Type': 'Déplacement non autorisé', 'Équipement': 'Véhicule #V-007', 'Localisation': 'Bobo-Dioulasso', 'LienLocalisation': '11.1784,-4.2979', 'Sévérité': 'Avertissement', 'Date': 'Il y a 12 min', 'Statut': 'Ouverte', 'Technicien': '—', 'Action': 'Prendre' }
     ]
   },
   users: {

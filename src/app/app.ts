@@ -34,7 +34,7 @@ export class App {
 
   protected readonly menuItems: MenuItem[] = [
     { label: 'Tableau de bord', icon: 'fa-solid fa-chart-pie', route: '/dashboard', active: true },
-    { label: 'Localisation', icon: 'fa-solid fa-location-dot', route: '/location' },
+    { label: "Parc d'équipement", icon: 'fa-solid fa-location-dot', route: '/location' },
     { label: 'Maintenance', icon: 'fa-solid fa-wrench', route: '/maintenance' },
     { label: 'Rapports', icon: 'fa-solid fa-file-lines', route: '/rapports' },
     { label: 'Alertes', icon: 'fa-solid fa-bell', route: '/alerts' },

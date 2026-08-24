@@ -3,7 +3,8 @@
   flex-direction: column;
   gap: 24px;
   min-height: 100%;
-  background: #F0F7FF;
+  /* Fond de corps adouci : teinte bleutée "verre" réduite au profit d'un neutre clair */
+  background: #F8FAFC;
 }
 
 /* ===== En-tête du dashboard ===== */
@@ -26,26 +27,6 @@
   margin: 0;
 }
 
-/* ===== KPI container ===== */
-.kpi-container {
-  background: #EFF6FF;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-}
-
-.kpi-container-header {
-  margin-bottom: 20px;
-}
-
-.kpi-container-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0F172A;
-  margin: 0;
-}
-
 /* ===== KPI row ===== */
 .kpi-row {
   display: grid;
@@ -53,37 +34,105 @@
   gap: 16px;
 }
 
-.kpi-card {
-  background: #FFFFFF;
-  border-radius: 16px;
-  padding: 14px 20px;
+/* ===== Cartes statistiques (style SaaS moderne) ===== */
+.stat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background-color: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  min-width: 0;
+  min-height: 124px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.stat-card-content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  color: #0F172A;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
-  min-width: 200px;
-  min-height: 120px;
-  justify-content: center;
+  gap: 6px;
+  min-width: 0;
 }
 
-.kpi-label {
-  font-size: 16px;
-  font-weight: 400;
-  color: #64748B;
-  text-transform: none;
-  letter-spacing: 0.4px;
-}
-
-.kpi-value {
-  font-size: 18px;
+.stat-label {
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1;
+  color: #475569;
+  letter-spacing: 0.2px;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.05;
   color: #0F172A;
 }
 
-.kpi-value strong {
-  font-size: 1.2em;
+.stat-subtitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94A3B8;
+}
+
+/* --- Icône Font Awesome colorée (sans cercle) --- */
+.stat-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* --- Variantes de couleur : fond pastel uni + icône colorée --- */
+.stat-card--blue {
+  background: #DBEAFE;
+  border-color: rgba(59, 130, 246, 0.24);
+}
+
+.stat-icon--blue {
+  color: #2563EB;
+}
+
+.stat-card--green {
+  background: #D1FAE5;
+  border-color: rgba(16, 185, 129, 0.24);
+}
+
+.stat-icon--green {
+  color: #059669;
+}
+
+.stat-card--purple {
+  background: #EDE9FE;
+  border-color: rgba(139, 92, 246, 0.24);
+}
+
+.stat-icon--purple {
+  color: #7C3AED;
+}
+
+.stat-card--pink {
+  background: #FFE4E6;
+  border-color: rgba(225, 29, 72, 0.22);
+}
+
+.stat-icon--pink {
+  color: #E11D48;
+}
+
+.stat-card--orange {
+  background: #FFEDD5;
+  border-color: rgba(234, 88, 12, 0.24);
+}
+
+.stat-icon--orange {
+  color: #EA580C;
 }
 
 /* ===== Cercle de progression ===== */
@@ -200,46 +249,28 @@
 }
 
 .donut-chart {
-  width: 180px;
-  height: 180px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   background: conic-gradient(
-    #10B981 0% 67%,
-    #ff0000 67% 88%,
-    #ffe500 88% 100%
+    #10B981 0% 90%,
+    #ff0000 90% 98%,
+    #ffe500 98% 100%
   );
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
+  flex-shrink: 0;
 }
 
 .donut-chart::before {
   content: '';
   position: absolute;
-  width: 120px;
-  height: 120px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: #fff;
-}
-
-.donut-center {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-}
-
-.donut-value {
-  display: block;
-  font-size: 28px;
-  font-weight: 800;
-  color: #0F172A;
-}
-
-.donut-label {
-  display: block;
-  font-size: 12px;
-  color: #64748B;
 }
 
 .donut-legend {
@@ -264,6 +295,13 @@
 .legend-label {
   font-size: 14px;
   color: #334155;
+  flex: 1;
+}
+
+.legend-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
 }
 
 /* ===== Activités & Alertes ===== */
@@ -462,5 +500,14 @@
   .statut-wrapper {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .stat-card {
+    padding: 16px 18px;
+    min-height: 108px;
+  }
+
+  .stat-value {
+    font-size: 26px;
   }
 }

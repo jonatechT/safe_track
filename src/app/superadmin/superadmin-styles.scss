@@ -21,12 +21,32 @@
 
 /* Stats grid - style identique aux KPI du dashboard */
 .sa-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-.sa-stat-card { background: #FFFFFF; border-radius: 16px; padding: 14px 20px; display: flex; flex-direction: column; gap: 4px; color: #0F172A; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); min-width: 200px; min-height: 110px; justify-content: center; border: none; transition: all 0.2s ease; }
-.sa-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18); }
-.sa-stat-icon { display: none; }
-.sa-stat-info { display: flex; flex-direction: column; }
-.sa-stat-value { font-size: 18px; font-weight: 600; color: #0F172A; line-height: 1.2; }
-.sa-stat-label { font-size: 16px; font-weight: 400; color: #64748B; margin-top: 0; }
+.sa-stat-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: #0F172A;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  min-width: 0;
+  min-height: 124px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.sa-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.sa-stat-main { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.sa-stat-icon { font-size: 20px; flex-shrink: 0; }
+.sa-stat-value { font-size: 30px; font-weight: 700; color: #0F172A; line-height: 1.05; }
+.sa-stat-label { font-size: 13px; font-weight: 600; color: #475569; letter-spacing: 0.2px; }
+.sa-stat-card--blue { background: #DBEAFE; border-color: rgba(59, 130, 246, 0.24); }
+.sa-stat-icon--blue { color: #2563EB; }
+.sa-stat-card--green { background: #D1FAE5; border-color: rgba(16, 185, 129, 0.24); }
+.sa-stat-icon--green { color: #059669; }
+.sa-stat-card--orange { background: #FFEDD5; border-color: rgba(234, 88, 12, 0.24); }
+.sa-stat-icon--orange { color: #EA580C; }
 
 /* Cards */
 .sa-card { background: #FFF; border-radius: 20px; padding: 28px; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04); margin-bottom: 24px; transition: box-shadow 0.3s ease; }
@@ -40,7 +60,7 @@
 /* Tables */
 .sa-table-wrapper { overflow-x: auto; border-radius: 14px; border: 1px solid #EDF2F7; background: #FBFDFF; padding: 6px; }
 .sa-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 13px; }
-.sa-table th { text-align: left; padding: 12px 16px; color: #64748B; font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.9px; border-bottom: 1px solid #E2E8F0; background: rgba(56, 189, 248, 0.10); white-space: nowrap; }
+.sa-table th { text-align: left; padding: 12px 16px; color: #FFFFFF; font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.9px; border-bottom: 1px solid #2563EB; background: #2563EB; white-space: nowrap; }
 .sa-table th:first-child { border-radius: 10px 0 0 10px; }
 .sa-table th:last-child { border-radius: 0 10px 10px 0; }
 .sa-table td { padding: 14px 16px; border-bottom: 1px solid #EAF1FA; border-top: 1px solid #EAF1FA; color: #334155; vertical-align: middle; background: #FFFFFF; }

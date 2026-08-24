@@ -16,8 +16,8 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-header .users-btn-primary { position: relative; top: 5px; }
     .users-title { font-size: 24px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px; }
     .users-subtitle { font-size: 14px; color: #64748B; margin-top: 4px; }
-    .users-btn-primary { background: #1E3A8A; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2); }
-    .users-btn-primary:hover { background: #1E40AF; transform: translateY(-1px); }
+    .users-btn-primary { background: #2563EB; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+    .users-btn-primary:hover { background: #1D4ED8; transform: translateY(-1px); }
     .users-btn-secondary { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
     .users-btn-secondary:hover { background: #E2E8F0; }
     .users-btn-danger { background: #FEF2F2; color: #EF4444; border: 1px solid #FECACA; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
@@ -45,13 +45,13 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-table th {
       text-align: left;
       padding: 14px 18px;
-      color: #64748B;
+      color: #FFFFFF;
       font-weight: 600;
       font-size: 10.5px;
       text-transform: uppercase;
       letter-spacing: 0.9px;
-      background: rgba(56, 189, 248, 0.10);
-      border-bottom: 1px solid #E2E8F0;
+      background: #2563EB;
+      border-bottom: 1px solid #2563EB;
     }
     .users-table th:first-child { border-radius: 10px 0 0 10px; }
     .users-table th:last-child { border-radius: 0 10px 10px 0; }
