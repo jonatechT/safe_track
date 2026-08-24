@@ -164,7 +164,11 @@ export class StructureFormComponent implements OnInit {
             name: this.formData.adminNom,
             email: this.formData.adminEmail.toLowerCase(),
             role: 'ADMIN_STRUCTURE',
-            structureId: created.id
+            structureId: created.id,
+            statut: 'ACTIVE',
+            telephone: this.formData.adminTelephone || undefined,
+            dateCreation: new Date().toISOString(),
+            motDePasse: this.formData.adminMotDePasse
           };
           this.authService.registerUser(adminUser);
         }

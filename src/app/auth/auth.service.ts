@@ -12,6 +12,7 @@ export interface User {
   statut?: 'ACTIVE' | 'INACTIVE';
   telephone?: string;
   dateCreation?: string;
+  motDePasse?: string;
 }
 
 @Injectable({
@@ -21,11 +22,64 @@ export class AuthService {
   private readonly TOKEN_KEY = 'safe_track_token';
   private readonly USER_KEY = 'safe_track_user';
   private readonly USERS_REGISTRY_KEY = 'safe_track_users';
+  private readonly USERS_VERSION_KEY = 'safe_track_users_version';
+  private readonly USERS_CURRENT_VERSION = '2';
 
   private readonly SUPER_ADMIN_EMAIL = 'superadmin@safetrack.com';
   private readonly SUPER_ADMIN_PASSWORD = 'admin123';
 
   isLoggedIn = signal<boolean>(this.hasToken());
+
+  constructor() {
+    this.seedDemoUsers();
+  }
+
+  /** Comptes de démonstration pour les structures */
+  private seedDemoUsers(): void {
+    if (typeof window === 'undefined') return;
+    const version = localStorage.getItem(this.USERS_VERSION_KEY);
+    if (version === this.USERS_CURRENT_VERSION) return;
+
+    const raw = localStorage.getItem(this.USERS_REGISTRY_KEY);
+    const registered: User[] = raw ? JSON.parse(raw) : [];
+
+    const demoUsers: User[] = [
+      {
+        id: 1,
+        name: 'Admin Alioth',
+        email: 'admin@alioth-system.com',
+        role: 'ADMIN_STRUCTURE',
+        structureId: 'STR-001',
+        statut: 'ACTIVE',
+        telephone: '+226 70 98 76 54',
+        dateCreation: '2024-03-20T10:00:00.000Z',
+        motDePasse: 'alioth2024'
+      },
+      {
+        id: 2,
+        name: 'Admin Orange',
+        email: 'admin@orange-energie.com',
+        role: 'ADMIN_STRUCTURE',
+        structureId: 'STR-002',
+        statut: 'ACTIVE',
+        telephone: '+226 70 12 34 56',
+        dateCreation: '2024-01-15T10:00:00.000Z',
+        motDePasse: 'orange2024'
+      }
+    ];
+
+    demoUsers.forEach(demo => {
+      const existing = registered.find(u => u.email.toLowerCase() === demo.email.toLowerCase());
+      if (existing) {
+        Object.assign(existing, demo);
+      } else {
+        registered.push(demo);
+      }
+    });
+
+    localStorage.setItem(this.USERS_REGISTRY_KEY, JSON.stringify(registered));
+    localStorage.setItem(this.USERS_VERSION_KEY, this.USERS_CURRENT_VERSION);
+  }
 
   private hasToken(): boolean {
     if (typeof window !== 'undefined') {
@@ -75,6 +129,10 @@ export class AuthService {
         if (existing) {
           // Vérifier que le compte est actif
           if (existing.statut === 'INACTIVE') {
+            return false;
+          }
+          // Vérifier le mot de passe si le compte en a un défini
+          if (existing.motDePasse && existing.motDePasse !== password) {
             return false;
           }
           localStorage.setItem(this.TOKEN_KEY, 'mock-jwt-token');
