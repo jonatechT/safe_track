@@ -15,18 +15,38 @@
   </div>
 }
 
-<form (ngSubmit)="onSubmit()" #form="ngForm" class="sa-card">
-  <h2 class="sa-card-title" style="margin-bottom: 16px;">
-    Informations de la structure
-  </h2>
+<form (ngSubmit)="onSubmit()" #form="ngForm" class="sa-card sa-form-card">
+  <div class="sa-form-banner">
+    <div class="sa-form-banner-icon">
+      <i class="fa-solid" [class.fa-building]="!isEditMode" [class.fa-pen-to-square]="isEditMode"></i>
+    </div>
+    <div class="sa-form-banner-text">
+      <h2 class="sa-form-banner-title">{{ isEditMode ? 'Modifier la structure' : 'Nouvelle structure' }}</h2>
+      <p class="sa-form-banner-subtitle">{{ isEditMode ? 'Mettez à jour les informations ci-dessous.' : 'Remplissez le formulaire pour créer une nouvelle structure.' }}</p>
+    </div>
+    <span class="sa-form-banner-badge">
+      <i class="fa-solid fa-circle-info"></i> Champs marqués d'un * obligatoires
+    </span>
+  </div>
+
+  <div class="sa-section-panel">
+    <div class="sa-section-header">
+      <div class="sa-section-icon">
+        <i class="fa-solid fa-building"></i>
+      </div>
+      <div>
+        <h2 class="sa-card-title">Informations de la structure</h2>
+        <p class="sa-section-subtitle">Renseignez les informations générales de la structure</p>
+      </div>
+    </div>
 
   <div class="sa-form-grid">
     <div class="sa-form-group">
-      <label class="sa-form-label">Nom de la structure *</label>
+      <label class="sa-form-label">Nom de la structure <span class="sa-required">*</span></label>
       <input type="text" class="sa-form-input" name="nom" [(ngModel)]="formData.nom" placeholder="Ex : Centre de Santé ABC" required />
     </div>
     <div class="sa-form-group">
-      <label class="sa-form-label">Code / Identifiant unique *</label>
+      <label class="sa-form-label">Code / Identifiant unique <span class="sa-required">*</span></label>
       <input type="text" class="sa-form-input" name="code" [(ngModel)]="formData.code" placeholder="Ex : CS-ABC-001" required />
     </div>
     <div class="sa-form-group full-width">
@@ -34,7 +54,7 @@
       <textarea class="sa-form-textarea" name="description" [(ngModel)]="formData.description" placeholder="Description de la structure..."></textarea>
     </div>
     <div class="sa-form-group">
-      <label class="sa-form-label">Email *</label>
+      <label class="sa-form-label">Email <span class="sa-required">*</span></label>
       <input type="email" class="sa-form-input" name="email" [(ngModel)]="formData.email" placeholder="contact@structure.com" required />
     </div>
     <div class="sa-form-group">
@@ -46,11 +66,11 @@
       <input type="text" class="sa-form-input" name="adresse" [(ngModel)]="formData.adresse" placeholder="Adresse complète" />
     </div>
     <div class="sa-form-group">
-      <label class="sa-form-label">Ville *</label>
+      <label class="sa-form-label">Ville <span class="sa-required">*</span></label>
       <input type="text" class="sa-form-input" name="ville" [(ngModel)]="formData.ville" placeholder="Ex : Ouagadougou" required />
     </div>
     <div class="sa-form-group">
-      <label class="sa-form-label">Pays *</label>
+      <label class="sa-form-label">Pays <span class="sa-required">*</span></label>
       <input type="text" class="sa-form-input" name="pays" [(ngModel)]="formData.pays" placeholder="Ex : Burkina Faso" required />
     </div>
     <div class="sa-form-group">
@@ -62,32 +82,45 @@
     </div>
   </div>
 
-  @if (!isEditMode) {
-    <h2 class="sa-card-title" style="margin: 24px 0 16px;">
-      Administrateur de la structure (optionnel)
-    </h2>
+  </div>
 
-    <div class="sa-form-grid">
-      <div class="sa-form-group">
-        <label class="sa-form-label">Nom complet</label>
-        <input type="text" class="sa-form-input" name="adminNom" [(ngModel)]="formData.adminNom" placeholder="Ex : M. Ouedraogo" />
+  @if (!isEditMode) {
+    <div class="sa-section-divider"></div>
+
+    <div class="sa-section-panel">
+      <div class="sa-section-header">
+        <div class="sa-section-icon sa-section-icon-admin">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+        <div>
+          <h2 class="sa-card-title">Administrateur de la structure</h2>
+          <p class="sa-section-subtitle">Optionnel — créez le compte administrateur de cette structure</p>
+        </div>
       </div>
-      <div class="sa-form-group">
-        <label class="sa-form-label">Email</label>
-        <input type="email" class="sa-form-input" name="adminEmail" [(ngModel)]="formData.adminEmail" placeholder="admin@structure.com" />
+
+      <div class="sa-form-grid">
+        <div class="sa-form-group">
+          <label class="sa-form-label">Nom complet</label>
+          <input type="text" class="sa-form-input" name="adminNom" [(ngModel)]="formData.adminNom" placeholder="Ex : M. Ouedraogo" />
+        </div>
+        <div class="sa-form-group">
+          <label class="sa-form-label">Email</label>
+          <input type="email" class="sa-form-input" name="adminEmail" [(ngModel)]="formData.adminEmail" placeholder="admin@structure.com" />
+        </div>
+        <div class="sa-form-group">
+          <label class="sa-form-label">Téléphone</label>
+          <input type="tel" class="sa-form-input" name="adminTelephone" [(ngModel)]="formData.adminTelephone" placeholder="+226 XX XX XX XX" />
+        </div>
+        <div class="sa-form-group">
+          <label class="sa-form-label">Mot de passe temporaire</label>
+          <input type="text" class="sa-form-input" name="adminMotDePasse" [(ngModel)]="formData.adminMotDePasse" placeholder="8 caractères minimum" />
+        </div>
       </div>
-      <div class="sa-form-group">
-        <label class="sa-form-label">Téléphone</label>
-        <input type="tel" class="sa-form-input" name="adminTelephone" [(ngModel)]="formData.adminTelephone" placeholder="+226 XX XX XX XX" />
-      </div>
-      <div class="sa-form-group">
-        <label class="sa-form-label">Mot de passe temporaire</label>
-        <input type="text" class="sa-form-input" name="adminMotDePasse" [(ngModel)]="formData.adminMotDePasse" placeholder="8 caractères minimum" />
+      <div class="sa-form-info">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>L'administrateur aura le rôle <strong>ADMIN_STRUCTURE</strong> et sera associé uniquement à cette structure.</span>
       </div>
     </div>
-    <p style="font-size: 12px; color: #94A3B8; margin-top: 8px;">
-      L'administrateur aura le rôle <strong>ADMIN_STRUCTURE</strong> et sera associé uniquement à cette structure.
-    </p>
   }
 
   <div class="sa-form-actions">

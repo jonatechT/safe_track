@@ -7,7 +7,7 @@ import { Structure, StructureStats } from '../models/structure.model';
 export class StructureService {
   private readonly STORAGE_KEY = 'safe_track_structures';
   private readonly STORAGE_VERSION_KEY = 'safe_track_structures_version';
-  private readonly CURRENT_VERSION = '3';
+  private readonly CURRENT_VERSION = '4';
 
   structures = signal<Structure[]>(this.loadStructures());
 
@@ -72,23 +72,6 @@ export class StructureService {
         adminNom: 'Admin Orange',
         adminEmail: 'admin@orange-energie.com',
         adminTelephone: '+226 70 12 34 56'
-      },
-      {
-        id: 'STR-003',
-        nom: 'Bissa gold',
-        code: 'BISSA-GOLD',
-        description: 'Exploitation minière aurifère.',
-        email: 'contact@bissa-gold.com',
-        telephone: '+226 25 42 33 44',
-        adresse: 'Site minier de Bissa',
-        ville: 'Boudry',
-        pays: 'Burkina Faso',
-        statut: 'ACTIVE',
-        dateCreation: '2023-11-05T10:00:00.000Z',
-        dateModification: now,
-        adminNom: 'Admin Bissa',
-        adminEmail: 'admin@bissa-gold.com',
-        adminTelephone: '+226 70 11 22 33'
       }
     ];
     this.saveStructures(seed);
