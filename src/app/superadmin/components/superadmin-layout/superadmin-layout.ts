@@ -189,7 +189,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-logo-img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
     .sa-logo-text-block { display: flex; flex-direction: column; }
     .sa-logo-text { font-size: 20px; font-weight: 800; color: #FFF; line-height: 1.2; text-align: center; width: 100%; }
-    .sa-logo-badge { font-size: 10px; font-weight: 700; color: #38BDF8; background: rgba(56, 189, 248, 0.15); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 4px; letter-spacing: 0.5px; }
+    .sa-logo-badge { font-size: 10px; font-weight: 700; color: #93C5FD; background: rgba(56, 189, 248, 0.15); padding: 2px 8px; border-radius: 8px; display: inline-block; margin-top: 4px; letter-spacing: 0.5px; }
     .sa-sidebar.collapsed .sa-logo-text-block { display: none; }
 
     .sa-sidebar-toggle {
@@ -204,11 +204,11 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-sidebar.collapsed .sa-logo-icon { display: none; }
 
     .sa-nav { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-    .sa-nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px; color: #94A3B8; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); outline: none; border: 1px solid transparent; position: relative; overflow: hidden; }
+    .sa-nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 12px; color: #E2E8F0; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); outline: none; border: 1px solid transparent; position: relative; overflow: hidden; }
     .sa-nav-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(56, 189, 248, 0.08), transparent); opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
     .sa-nav-item:hover::before { opacity: 1; }
     .sa-nav-item:hover { color: #E2E8F0; transform: translateX(3px); }
-    .sa-nav-item.active { background: rgba(56, 189, 248, 0.15); color: #38BDF8; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.2); }
+    .sa-nav-item.active { background: rgba(255, 255, 255, 0.18); color: #FFFFFF; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.2); }
     .sa-nav-item.active::before { opacity: 0; }
     .sa-nav-icon { width: 24px; text-align: center; font-size: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
     .sa-nav-label { white-space: nowrap; opacity: 1; transition: opacity 0.3s ease; }
@@ -216,7 +216,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-sidebar.collapsed .sa-nav-item { padding: 12px 0; justify-content: center; gap: 0; }
 
     .sa-sidebar-footer { display: flex; flex-direction: column; align-items: stretch; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; }
-    .sa-profile-btn { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 12px; border: 1px solid transparent; background: rgba(56, 189, 248, 0.12); color: #38BDF8; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; }
+    .sa-profile-btn { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 12px; border: 1px solid transparent; background: rgba(255, 255, 255, 0.12); color: #E2E8F0; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; }
     .sa-profile-btn i { font-size: 20px; }
     .sa-profile-btn:hover { background: rgba(56, 189, 248, 0.22); color: #7DD3FC; }
     .sa-profile-btn:focus-visible { outline: 2px solid #38BDF8; outline-offset: 2px; }
@@ -240,7 +240,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1E3A8A, #3B5BDB); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
     .sa-profile-info { display: flex; flex-direction: column; }
     .sa-profile-name { font-size: 13px; font-weight: 600; color: #0F172A; }
-    .sa-profile-role { font-size: 10px; font-weight: 600; color: #38BDF8; letter-spacing: 0.5px; }
+    .sa-profile-role { font-size: 10px; font-weight: 600; color: #93C5FD; letter-spacing: 0.5px; }
 
     /* Content */
     .sa-content { flex: 1; overflow-y: auto; padding: 24px; }
@@ -253,7 +253,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-profile-panel-avatar { width: 48px; height: 48px; border-radius: 50%; background: #FFF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
     .sa-profile-panel-title-block { flex: 1; display: flex; flex-direction: column; min-width: 0; }
     .sa-profile-panel-title { font-size: 16px; font-weight: 700; color: #FFF; margin: 0; }
-    .sa-profile-panel-role { font-size: 11px; font-weight: 600; color: #38BDF8; letter-spacing: 0.5px; text-transform: uppercase; }
+    .sa-profile-panel-role { font-size: 11px; font-weight: 600; color: #93C5FD; letter-spacing: 0.5px; text-transform: uppercase; }
     .sa-profile-panel-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: #E2E8F0; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
     .sa-profile-panel-close:hover { background: rgba(255,255,255,0.2); }
     .sa-profile-panel-close:focus-visible { outline: 2px solid #38BDF8; outline-offset: 2px; }
