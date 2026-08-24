@@ -1,136 +1,145 @@
 <div class="auth-page">
-  <div class="auth-card">
-    <!-- Logo -->
-    <div class="logo-container">
-      <img src="logo.jpg" alt="Safe Track" class="auth-logo" />
-    </div>
+  <!-- Image d'arrière-plan : champ de panneaux solaires au coucher du soleil -->
+  <img src="pannaux.jpg" alt="" class="auth-bg" aria-hidden="true" />
+  <div class="auth-overlay"></div>
 
-    <!-- Tabs -->
-    <div class="auth-tabs">
-      <a routerLink="/login" class="auth-tab">CONNECTION</a>
-      <a routerLink="/register" class="auth-tab active">INSCRIPTION</a>
-    </div>
+  <!-- Carte d'inscription en verre translucide -->
+  <div class="auth-card">
+    <header class="auth-header">
+      <h1 class="auth-title">Inscription</h1>
+      <p class="auth-subtitle">Créez votre compte pour commencer</p>
+    </header>
 
     @if (errorMessage) {
-      <div class="error-message">
+      <div class="error-message" role="alert">
         <i class="fa-solid fa-circle-exclamation"></i>
         <span>{{ errorMessage }}</span>
       </div>
     }
 
     <form (ngSubmit)="onSubmit()" class="auth-form">
+      <!-- Prénom / Nom -->
       <div class="form-grid">
-        <div class="form-group">
-          <div class="input-wrapper">
-            <input
-              id="firstName"
-              type="text"
-              class="form-input"
-              placeholder="Prénom"
-              [(ngModel)]="firstName"
-              name="firstName"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <div class="input-wrapper">
-            <input
-              id="lastName"
-              type="text"
-              class="form-input"
-              placeholder="Nom"
-              [(ngModel)]="lastName"
-              name="lastName"
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-        <div class="form-group">
-          <div class="input-wrapper">
-            <input
-              id="identifier"
+        <div class="input-wrapper">
+          <input
+            id="firstName"
             type="text"
             class="form-input"
-            placeholder="Email ou Numéro"
-            [(ngModel)]="identifier"
-            name="identifier"
+            placeholder="Prénom"
+            autocomplete="given-name"
+            [(ngModel)]="firstName"
+            name="firstName"
             required
           />
+          <i class="fa-regular fa-user input-icon" aria-hidden="true"></i>
         </div>
-      </div>
-
-        <div class="form-group">
-          <div class="input-wrapper">
-            <input
-              id="structure"
+        <div class="input-wrapper">
+          <input
+            id="lastName"
             type="text"
             class="form-input"
-            placeholder="Structure"
-            [(ngModel)]="structure"
-            name="structure"
+            placeholder="Nom"
+            autocomplete="family-name"
+            [(ngModel)]="lastName"
+            name="lastName"
             required
           />
+          <i class="fa-regular fa-user input-icon" aria-hidden="true"></i>
         </div>
       </div>
 
-        <div class="form-group">
-          <div class="input-wrapper">
-            <input
-              id="password"
-            [type]="showPassword ? 'text' : 'password'"
-            class="form-input"
-            placeholder="Mot de passe"
-            [(ngModel)]="password"
-            name="password"
-            required
-          />
-          <button
-            type="button"
-            class="toggle-password"
-            (click)="showPassword = !showPassword"
-          >
-            <i [class]="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
-          </button>
-        </div>
+      <!-- Email ou Numéro -->
+      <div class="input-wrapper">
+        <input
+          id="identifier"
+          type="text"
+          class="form-input"
+          placeholder="Email ou Numéro"
+          autocomplete="email"
+          [(ngModel)]="identifier"
+          name="identifier"
+          required
+        />
+        <i class="fa-regular fa-envelope input-icon" aria-hidden="true"></i>
       </div>
 
-        <div class="form-group">
-          <div class="input-wrapper">
-            <input
-              id="confirmPassword"
-            [type]="showConfirmPassword ? 'text' : 'password'"
-            class="form-input"
-            placeholder="Confirmer le mot de passe"
-            [(ngModel)]="confirmPassword"
-            name="confirmPassword"
-            required
-          />
-          <button
-            type="button"
-            class="toggle-password"
-            (click)="showConfirmPassword = !showConfirmPassword"
-          >
-            <i [class]="showConfirmPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
-          </button>
-        </div>
+      <!-- Structure -->
+      <div class="input-wrapper">
+        <input
+          id="structure"
+          type="text"
+          class="form-input"
+          placeholder="Structure"
+          autocomplete="organization"
+          [(ngModel)]="structure"
+          name="structure"
+          required
+        />
+        <i class="fa-regular fa-building input-icon" aria-hidden="true"></i>
       </div>
 
+      <!-- Mot de passe -->
+      <div class="input-wrapper">
+        <input
+          id="password"
+          [type]="showPassword ? 'text' : 'password'"
+          class="form-input"
+          placeholder="Mot de passe"
+          autocomplete="new-password"
+          [(ngModel)]="password"
+          name="password"
+          required
+        />
+        <button
+          type="button"
+          class="toggle-password"
+          (click)="showPassword = !showPassword"
+          [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+        >
+          <i [class]="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <!-- Confirmer le mot de passe -->
+      <div class="input-wrapper">
+        <input
+          id="confirmPassword"
+          [type]="showConfirmPassword ? 'text' : 'password'"
+          class="form-input"
+          placeholder="Confirmer le mot de passe"
+          autocomplete="new-password"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          required
+        />
+        <button
+          type="button"
+          class="toggle-password"
+          (click)="showConfirmPassword = !showConfirmPassword"
+          [attr.aria-label]="showConfirmPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+        >
+          <i [class]="showConfirmPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <!-- Bouton S'inscrire -->
       <button
         type="submit"
         class="auth-button"
-        [class.loading]="isLoading"
         [disabled]="isLoading"
       >
         @if (isLoading) {
-          <div class="spinner"></div>
+          <span class="spinner" aria-hidden="true"></span>
         } @else {
-          <span>CONTINUER</span>
+          <span>S&rsquo;inscrire</span>
         }
       </button>
     </form>
+
+    <!-- Lien vers la connexion -->
+    <p class="login-text">
+      Vous avez déjà un compte&nbsp;?
+      <a routerLink="/login" class="login-link">Se connecter</a>
+    </p>
   </div>
 </div>
