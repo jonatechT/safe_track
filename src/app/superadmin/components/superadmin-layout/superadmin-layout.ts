@@ -176,7 +176,7 @@ import { AuthService } from '../../../auth/auth.service';
     /* Sidebar - identique au sidebar admin */
     .sa-sidebar {
       width: 230px; min-width: 230px;
-      background: #0B1A2E;
+      background: #1E3A8A;
       display: flex; flex-direction: column; padding: 20px 10px;
       box-shadow: 4px 0 24px rgba(11, 26, 46, 0.15);
       transition: min-width 0.3s cubic-bezier(0.4,0,0.2,1), width 0.3s cubic-bezier(0.4,0,0.2,1);
@@ -237,7 +237,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-topbar-right { display: flex; align-items: center; gap: 16px; }
     .sa-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 6px 10px; border-radius: 10px; transition: all 0.15s ease; }
     .sa-profile:hover { background: #F1F5F9; }
-    .sa-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1E3A8A, #0B1A2E); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+    .sa-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #1E3A8A, #3B5BDB); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
     .sa-profile-info { display: flex; flex-direction: column; }
     .sa-profile-name { font-size: 13px; font-weight: 600; color: #0F172A; }
     .sa-profile-role { font-size: 10px; font-weight: 600; color: #38BDF8; letter-spacing: 0.5px; }
@@ -249,8 +249,8 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-profile-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); z-index: 1500; backdrop-filter: blur(2px); }
     .sa-profile-panel { position: fixed; top: 0; right: 0; width: 360px; max-width: 90vw; height: 100vh; background: #FFF; z-index: 1501; box-shadow: -8px 0 32px rgba(15, 23, 42, 0.15); display: flex; flex-direction: column; animation: saProfileSlideIn 0.3s cubic-bezier(0.4,0,0.2,1); }
     @keyframes saProfileSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-    .sa-profile-panel-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E2E8F0; background: linear-gradient(135deg, #0B1A2E, #1E3A8A); }
-    .sa-profile-panel-avatar { width: 48px; height: 48px; border-radius: 50%; background: #FFF; color: #0B1A2E; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+    .sa-profile-panel-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E2E8F0; background: linear-gradient(135deg, #1E3A8A, #3B5BDB); }
+    .sa-profile-panel-avatar { width: 48px; height: 48px; border-radius: 50%; background: #FFF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
     .sa-profile-panel-title-block { flex: 1; display: flex; flex-direction: column; min-width: 0; }
     .sa-profile-panel-title { font-size: 16px; font-weight: 700; color: #FFF; margin: 0; }
     .sa-profile-panel-role { font-size: 11px; font-weight: 600; color: #38BDF8; letter-spacing: 0.5px; text-transform: uppercase; }
