@@ -294,8 +294,8 @@ import { AuthService } from '../../auth/auth.service';
     .no-rapport { font-size: 12px; color: #94A3B8; font-style: italic; }
 
     .rapports-actions { display: flex; align-items: center; gap: 12px; }
-    .btn-rediger-top { background: #1E3A8A; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25); position: relative; top: 8px; }
-    .btn-rediger-top:hover { background: #0B1A2E; transform: translateY(-1px); }
+    .btn-rediger-top { background: #0B1A2E; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(11, 26, 46, 0.35); position: relative; top: 8px; }
+    .btn-rediger-top:hover { background: #081220; transform: translateY(-1px); }
     .btn-rediger-top:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .rapports-actions-hint { font-size: 12px; color: #94A3B8; font-style: italic; }
 
