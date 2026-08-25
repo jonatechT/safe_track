@@ -38,7 +38,7 @@ export interface RapportIntervention {
   providedIn: 'root'
 })
 export class MaintenanceService {
-  private readonly STORAGE_KEY = 'safe_track_maintenance_v2';
+  private readonly STORAGE_KEY = 'safe_track_maintenance_v5';
 
   readonly maintenanceItems = signal<MaintenanceItem[]>(this.loadInitialData());
   readonly notifications = signal<NotificationItem[]>([]);
@@ -61,9 +61,12 @@ export class MaintenanceService {
   }
 
   private loadInitialData(): MaintenanceItem[] {
-    // Nettoyage de l'ancienne clé de stockage (migration v1 -> v2)
+    // Nettoyage des anciennes clés de stockage (migration v1 -> v2 -> v3 -> v4 -> v5)
     if (typeof window !== 'undefined') {
       localStorage.removeItem('safe_track_maintenance');
+      localStorage.removeItem('safe_track_maintenance_v2');
+      localStorage.removeItem('safe_track_maintenance_v3');
+      localStorage.removeItem('safe_track_maintenance_v4');
     }
     // Charger les données persistées : les prises d'alerte doivent survivre
     // à un rafraîchissement pour que tous les techniciens voient qui a pris quoi.
@@ -81,9 +84,7 @@ export class MaintenanceService {
       }
     }
     const items: MaintenanceItem[] = [
-      { id: 'm1', equipment: 'Kit solaire #SK-045', type: 'Charge trop lente', datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'Planifiée', alertes: 1, localisation: '12.3685° N, -1.5250°', lienLocalisation: '12.3685,-1.5250' },
-      { id: 'm2', equipment: 'Engin minier #EM-012', type: 'Panne batterie', datePrevue: '18 août 2026', technicien: 'M. Traore', statut: 'En cours', alertes: 2, prisPar: 'M. Traore', datePrise: 'Il y a 2 h', localisation: '11.1784° N, -4.2979°', lienLocalisation: '11.1784,-4.2979' },
-      { id: 'm3', equipment: 'Groupe électrogène #GE-008', type: 'Problème de câblage', datePrevue: '12 août 2026', technicien: 'M. Ouedraogo', statut: 'Terminée', alertes: 0, prisPar: 'M. Ouedraogo', datePrise: 'Il y a 3 jours', localisation: '12.3714° N, -1.5197°', lienLocalisation: '12.3714,-1.5197' }
+      { id: 'm1', equipment: 'Kit solaire #SK-045', type: 'Charge trop lente', datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'Planifiée', alertes: 1, localisation: '12.3685°N, -1.5250°E', lienLocalisation: '12.3685,-1.5250' }
     ];
     this.save(items);
     return items;

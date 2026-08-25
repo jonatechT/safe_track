@@ -10,9 +10,9 @@ export class DashboardComponent implements OnInit {
 
   // Valeurs par défaut (mock) - à remplacer par un appel API
   totalEquipements: number = 100;
-  enLigne: number = 82;
-  alerteActive: number = 4;
-  anomalieDetectee: number = 2;
+  enLigne: number = 90;
+  alerteActive: number = 7;
+  anomalieDetectee: number = 3;
 
   // Équipements par catégorie (proportionnels au total = 100)
   kits: number = 75;
@@ -26,9 +26,9 @@ export class DashboardComponent implements OnInit {
 
   // Pourcentages pour les cercles de progression KPI
   totalEquipementsPourcent: number = 100;
-  enLignePourcent: number = 82;
-  alerteActivePourcent: number = 4;
-  anomalieDetecteePourcent: number = 2;
+  enLignePourcent: number = 90;
+  alerteActivePourcent: number = 7;
+  anomalieDetecteePourcent: number = 3;
 
   ngOnInit(): void {
     this.loadKpiData();
@@ -37,9 +37,9 @@ export class DashboardComponent implements OnInit {
   private loadKpiData(): void {
     // Données mock rechargées à chaque ouverture du dashboard (à remplacer par un appel API)
     this.totalEquipements = 100;
-    this.enLigne = 82;
-    this.alerteActive = 4;
-    this.anomalieDetectee = 2;
+    this.enLigne = 90;
+    this.alerteActive = 7;
+    this.anomalieDetectee = 3;
 
     // Catégories : 75 + 27 + 15 = 100 équipements (motocyclettes non affichées)
     this.kits = 75;

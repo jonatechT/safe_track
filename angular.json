@@ -34,7 +34,7 @@
               "src/styles.scss"
             ],
             "outputMode": "static",
-            "baseHref": "/safe_track_front/",
+            "baseHref": "/safe_track/",
             "allowedCommonJsDependencies": [
               "leaflet"
             ]

@@ -37,8 +37,62 @@ export class StructureService {
   }
 
   private seedStructures(): void {
-    // Aucune structure par défaut : le superadmin les crée lui-même
-    this.saveStructures([]);
+    // Structures de démonstration avec administrateurs associés
+    const now = new Date().toISOString();
+    const structures: Structure[] = [
+      {
+        id: 'STR-001',
+        nom: 'Alioth Systems',
+        code: 'ALIOTH',
+        description: 'Structure principale de gestion des équipements solaires.',
+        email: 'contact@alioth-system.com',
+        telephone: '+226 25 40 12 34',
+        adresse: 'Zone industrielle Kossodo, Ouagadougou',
+        ville: 'Ouagadougou',
+        pays: 'Burkina Faso',
+        statut: 'ACTIVE',
+        dateCreation: '2024-03-20T10:00:00.000Z',
+        dateModification: now,
+        adminNom: 'Admin Alioth',
+        adminEmail: 'admin@alioth-system.com',
+        adminTelephone: '+226 70 98 76 54'
+      },
+      {
+        id: 'STR-002',
+        nom: 'Orange Énergie',
+        code: 'ORANGE',
+        description: 'Structure de distribution d\'énergie solaire.',
+        email: 'contact@orange-energie.com',
+        telephone: '+226 25 30 56 78',
+        adresse: 'Avenue Kwame Nkrumah, Ouagadougou',
+        ville: 'Ouagadougou',
+        pays: 'Burkina Faso',
+        statut: 'ACTIVE',
+        dateCreation: '2024-01-15T10:00:00.000Z',
+        dateModification: now,
+        adminNom: 'Admin Orange',
+        adminEmail: 'admin@orange-energie.com',
+        adminTelephone: '+226 70 12 34 56'
+      },
+      {
+        id: 'STR-003',
+        nom: 'Bobo Services',
+        code: 'BOBO',
+        description: 'Structure de maintenance des équipements miniers.',
+        email: 'contact@bobo-services.com',
+        telephone: '+226 20 97 11 22',
+        adresse: 'Zone industrielle, Bobo-Dioulasso',
+        ville: 'Bobo-Dioulasso',
+        pays: 'Burkina Faso',
+        statut: 'INACTIVE',
+        dateCreation: '2024-06-10T10:00:00.000Z',
+        dateModification: now,
+        adminNom: 'M. Sanogo',
+        adminEmail: 'sanogo@bobo-services.com',
+        adminTelephone: '+226 76 54 32 10'
+      }
+    ];
+    this.saveStructures(structures);
   }
 
   getAllStructures(): Structure[] {

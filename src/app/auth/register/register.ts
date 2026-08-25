@@ -47,9 +47,10 @@ export class RegisterComponent {
       const success = this.authService.register(fullName, this.identifier, this.password);
       this.isLoading = false;
       if (success) {
-        this.router.navigate(['/dashboard']);
+        // Aucune session ouverte : redirection vers la page d'attente de validation
+        this.router.navigate(['/pending']);
       } else {
-        this.errorMessage = 'Une erreur est survenue.';
+        this.errorMessage = 'Cet identifiant est déjà utilisé.';
       }
     }, 500);
   }

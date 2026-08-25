@@ -31,15 +31,18 @@ export class LoginComponent {
     }
     this.isLoading.set(true);
     setTimeout(() => {
-      const success = this.authService.login(this.identifier(), this.password());
+      const result = this.authService.login(this.identifier(), this.password());
       this.isLoading.set(false);
-      if (success) {
+      if (result.success) {
         const user = this.authService.getUser();
         if (user?.role === 'SUPERADMIN') {
           this.router.navigate(['/superadmin']);
         } else {
           this.router.navigate(['/dashboard']);
         }
+      } else if (result.pending) {
+        // Compte en attente de validation admin : accès bloqué
+        this.router.navigate(['/pending']);
       } else {
         this.errorMessage.set('Identifiants incorrects.');
       }

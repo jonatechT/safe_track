@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 export type UserRole = 'SUPERADMIN' | 'ADMIN_STRUCTURE' | 'USER';
+export type UserStatut = 'ACTIVE' | 'INACTIVE' | 'PENDING';
 
 export interface User {
   id: number;
@@ -9,7 +10,7 @@ export interface User {
   email: string;
   role: UserRole;
   structureId?: string;
-  statut?: 'ACTIVE' | 'INACTIVE';
+  statut?: UserStatut;
   telephone?: string;
   dateCreation?: string;
   motDePasse?: string;
@@ -65,6 +66,39 @@ export class AuthService {
         telephone: '+226 70 12 34 56',
         dateCreation: '2024-01-15T10:00:00.000Z',
         motDePasse: 'orange2024'
+      },
+      {
+        id: 3,
+        name: 'M. Ouedraogo',
+        email: 'mamadou@safe-track.com',
+        role: 'USER',
+        structureId: 'STR-001',
+        statut: 'ACTIVE',
+        telephone: '+226 70 11 22 33',
+        dateCreation: '2024-04-10T10:00:00.000Z',
+        motDePasse: 'technicien123'
+      },
+      {
+        id: 4,
+        name: 'M. Traore',
+        email: 'traore@safe-track.com',
+        role: 'USER',
+        structureId: 'STR-001',
+        statut: 'ACTIVE',
+        telephone: '+226 76 44 55 66',
+        dateCreation: '2024-05-12T10:00:00.000Z',
+        motDePasse: 'technicien123'
+      },
+      {
+        id: 5,
+        name: 'M. Sanogo',
+        email: 'sanogo@safe-track.com',
+        role: 'USER',
+        structureId: 'STR-002',
+        statut: 'ACTIVE',
+        telephone: '+226 71 77 88 99',
+        dateCreation: '2024-06-18T10:00:00.000Z',
+        motDePasse: 'technicien123'
       }
     ];
 
@@ -103,7 +137,12 @@ export class AuthService {
     return this.getUser()?.structureId ?? null;
   }
 
-  login(email: string, password: string): boolean {
+  /**
+   * Connexion.
+   * @returns un objet indiquant si la connexion a réussi et si le compte
+   *          est en attente de validation par un administrateur.
+   */
+  login(email: string, password: string): { success: boolean; pending: boolean } {
     if (email && password) {
       // Compte SuperAdmin de démonstration
       if (email.trim().toLowerCase() === this.SUPER_ADMIN_EMAIL && password === this.SUPER_ADMIN_PASSWORD) {
@@ -116,7 +155,7 @@ export class AuthService {
         localStorage.setItem(this.TOKEN_KEY, 'mock-jwt-token-superadmin');
         localStorage.setItem(this.USER_KEY, JSON.stringify(user));
         this.isLoggedIn.set(true);
-        return true;
+        return { success: true, pending: false };
       }
 
       // Vérifier la base des utilisateurs enregistrés
@@ -127,22 +166,26 @@ export class AuthService {
           (u: User) => u.email.toLowerCase() === email.trim().toLowerCase()
         );
         if (existing) {
+          // Compte en attente de validation admin : accès refusé
+          if (existing.statut === 'PENDING') {
+            return { success: false, pending: true };
+          }
           // Vérifier que le compte est actif
           if (existing.statut === 'INACTIVE') {
-            return false;
+            return { success: false, pending: false };
           }
           // Vérifier le mot de passe si le compte en a un défini
           if (existing.motDePasse && existing.motDePasse !== password) {
-            return false;
+            return { success: false, pending: false };
           }
           localStorage.setItem(this.TOKEN_KEY, 'mock-jwt-token');
           localStorage.setItem(this.USER_KEY, JSON.stringify(existing));
           this.isLoggedIn.set(true);
-          return true;
+          return { success: true, pending: false };
         }
       }
 
-      // Fallback: utilisateur générique
+      // Fallback: utilisateur générique (compte actif)
       const user: User = {
         id: Date.now(),
         name: 'OUEDRAOGO Ali',
@@ -154,34 +197,73 @@ export class AuthService {
       localStorage.setItem(this.TOKEN_KEY, 'mock-jwt-token');
       localStorage.setItem(this.USER_KEY, JSON.stringify(user));
       this.isLoggedIn.set(true);
+      return { success: true, pending: false };
+    }
+    return { success: false, pending: false };
+  }
+
+  /**
+   * Inscription publique : le compte est créé avec le statut PENDING.
+   * Aucune session n'est ouverte : l'utilisateur devra attendre la
+   * validation d'un administrateur avant de pouvoir se connecter.
+   */
+  register(name: string, email: string, password: string): boolean {
+    if (name && email && password) {
+      if (typeof window !== 'undefined') {
+        const raw = localStorage.getItem(this.USERS_REGISTRY_KEY);
+        const registered: User[] = raw ? JSON.parse(raw) : [];
+
+        // Refuser un email déjà utilisé
+        const exists = registered.some(
+          (u: User) => u.email.toLowerCase() === email.trim().toLowerCase()
+        );
+        if (exists) {
+          return false;
+        }
+
+        const user: User = {
+          id: Date.now(),
+          name: name,
+          email: email.trim().toLowerCase(),
+          role: 'USER',
+          statut: 'PENDING',
+          dateCreation: new Date().toISOString()
+        };
+        registered.push(user);
+        localStorage.setItem(this.USERS_REGISTRY_KEY, JSON.stringify(registered));
+      }
+      // Aucun token ni session : l'accès reste bloqué jusqu'à validation
       return true;
     }
     return false;
   }
 
-  register(name: string, email: string, password: string): boolean {
-    if (name && email && password) {
-      const user: User = {
-        id: Date.now(),
-        name: name,
-        email: email.trim().toLowerCase(),
-        role: 'USER',
-        statut: 'ACTIVE',
-        dateCreation: new Date().toISOString()
-      };
-      // Ajouter à la base des utilisateurs enregistrés
-      if (typeof window !== 'undefined') {
-        const raw = localStorage.getItem(this.USERS_REGISTRY_KEY);
-        const registered = raw ? JSON.parse(raw) : [];
-        registered.push(user);
+  /** Récupérer tous les comptes en attente de validation */
+  getPendingUsers(): User[] {
+    return this.getAllUsers().filter(u => u.statut === 'PENDING');
+  }
+
+  /** Valider un compte en attente (admin uniquement) */
+  validerCompte(userId: number): void {
+    if (typeof window !== 'undefined') {
+      const raw = localStorage.getItem(this.USERS_REGISTRY_KEY);
+      const registered: User[] = raw ? JSON.parse(raw) : [];
+      const target = registered.find(u => u.id === userId);
+      if (target) {
+        target.statut = 'ACTIVE';
         localStorage.setItem(this.USERS_REGISTRY_KEY, JSON.stringify(registered));
       }
-      localStorage.setItem(this.TOKEN_KEY, 'mock-jwt-token');
-      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-      this.isLoggedIn.set(true);
-      return true;
     }
-    return false;
+  }
+
+  /** Rejeter un compte en attente (suppression définitive) */
+  rejeterCompte(userId: number): void {
+    if (typeof window !== 'undefined') {
+      const raw = localStorage.getItem(this.USERS_REGISTRY_KEY);
+      const registered: User[] = raw ? JSON.parse(raw) : [];
+      const filtered = registered.filter(u => u.id !== userId);
+      localStorage.setItem(this.USERS_REGISTRY_KEY, JSON.stringify(filtered));
+    }
   }
 
   /** Enregistrer un utilisateur créé par le SuperAdmin ou l'Admin de structure */

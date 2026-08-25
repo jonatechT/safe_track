@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { BasePageComponent } from '../base-page/base-page';
+import { AuthService } from '../../auth/auth.service';
 
 interface StatCard {
   label: string;
@@ -23,9 +24,9 @@ interface TableRow {
   template: `
     <app-base-page [title]="title" [subtitle]="subtitle" [icon]="icon">
       <div class="generic-content">
-        @if (statCards.length) {
+        @if (cards.length) {
           <div class="stat-grid">
-            @for (stat of statCards; track stat.label) {
+            @for (stat of cards; track stat.label) {
               <div class="stat-card" [style.background]="stat.bgColor" [style.borderColor]="stat.color + '33'">
                 <div class="stat-main">
                   <span class="stat-label">{{ stat.label }}</span>
@@ -54,44 +55,62 @@ interface TableRow {
                 <thead>
                   <tr>
                     @for (header of tableHeaders; track header) {
-                      @if (header !== 'Statut') {
-                        <th>{{ header }}</th>
-                      }
+                      <th>{{ header }}</th>
                     }
                   </tr>
                 </thead>
                 <tbody>
-                  @for (row of tableRows; track $index) {
+                  @for (row of rows; track $index) {
                     <tr>
                       @for (header of tableHeaders; track header) {
-                        @if (header !== 'Statut') {
-                          <td>
-                            @if (header === 'Équipement') {
-                              <div class="equipment-cell">
-                                <span class="equipment-name">{{ row[header] }}</span>
-                              </div>
-                            } @else if (header === 'IMEI') {
-                              <span class="imei-code">{{ row[header] }}</span>
-                            } @else if (header === 'Localisation' && row['LienLocalisation']) {
-                              <a
-                                class="location-link"
-                                href="https://www.google.com/maps?q={{ row['LienLocalisation'] }}"
-                                target="_blank"
-                                rel="noopener"
-                              >
-                                {{ row[header] }}
-                              </a>
-                            } @else if (header === 'Dernière synchro') {
-                              <span class="sync-time">{{ row[header] }}</span>
-                            } @else if (header === 'Action') {
-                              <button class="action-take-btn">
+                        <td>
+                          @if (header === 'Équipement') {
+                            <div class="equipment-cell">
+                              <span class="equipment-name">{{ row[header] }}</span>
+                            </div>
+                          } @else if (header === 'IMEI') {
+                            <span class="imei-code">{{ row[header] }}</span>
+                          } @else if (header === 'Localisation' && row['LienLocalisation']) {
+                            <a
+                              class="location-link"
+                              href="https://www.google.com/maps?q={{ row['LienLocalisation'] }}"
+                              target="_blank"
+                              rel="noopener"
+                            >
+                              {{ row[header] }}
+                            </a>
+                          } @else if (header === 'Dernière synchro') {
+                            <span class="sync-time">{{ row[header] }}</span>
+                          } @else if (header === 'Statut') {
+                            <span
+                              class="statut-badge"
+                              [class.statut-ouverte]="row['Statut'] === 'Ouverte'"
+                              [class.statut-en-cours]="row['Statut'] === 'En cours'"
+                              [class.statut-termine]="row['Statut'] === 'Terminée'"
+                            >{{ row['Statut'] }}</span>
+                          } @else if (header === 'Action') {
+                            @if (row['Statut'] === 'Ouverte') {
+                              <button class="action-take-btn" (click)="prendreAlerte(row)">
                                 <i class="fa-solid fa-hand"></i> {{ row[header] }}
                               </button>
+                            } @else if (row['Statut'] === 'En cours') {
+                              <div class="done-actions">
+                                <span class="taken-label">
+                                  <i class="fa-solid fa-clock"></i> En cours
+                                </span>
+                                <button class="action-take-btn" (click)="terminerAlerte(row)">
+                                  <i class="fa-solid fa-flag-checkered"></i> Terminer
+                                </button>
+                              </div>
                             } @else {
-                              {{ row[header] }}
+                              <span class="done-label">
+                                <i class="fa-solid fa-check"></i> Terminée
+                              </span>
                             }
-                          </td>
-                        }
+                          } @else {
+                            {{ row[header] }}
+                          }
+                        </td>
                       }
                     </tr>
                   }
@@ -100,7 +119,7 @@ interface TableRow {
             </div>
           </div>
         }
-        @if (!statCards.length && !tableHeaders.length && !showMap) {
+        @if (!cards.length && !tableHeaders.length && !showMap) {
           <div class="empty-state">
             <i class="fa-solid fa-inbox empty-icon"></i>
             <p>Aucune donnée disponible pour le moment.</p>
@@ -204,6 +223,13 @@ interface TableRow {
     .status-alert { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
     .status-inspection { background: #FFFBEB; color: #D97706; border: 1px solid #FCD39D; }
     .status-normal { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+    .statut-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+    .statut-ouverte { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+    .statut-en-cours { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
+    .statut-termine { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+    .taken-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; font-weight: 600; }
+    .done-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #059669; font-weight: 600; }
+    .done-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
     .location-link { display: inline-flex; align-items: center; gap: 6px; color: #3B82F6; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
     .location-link:hover { color: #1D4ED8; }
     .location-link i { font-size: 12px; }
@@ -230,9 +256,24 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
   @Input() tableHeaders: string[] = [];
   @Input() tableRows: TableRow[] = [];
 
+  private tableRowsSignal = signal<TableRow[]>([]);
+  private statCardsSignal = signal<StatCard[]>([]);
+
   @ViewChild('mapPageContainer') mapPageContainer!: ElementRef<HTMLDivElement>;
 
-  constructor(private route: ActivatedRoute, @Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private authService: AuthService
+  ) {}
+
+  get rows(): TableRow[] {
+    return this.tableRowsSignal();
+  }
+
+  get cards(): StatCard[] {
+    return this.statCardsSignal();
+  }
 
   ngOnInit(): void {
     const data = this.route.snapshot.data as any;
@@ -244,6 +285,8 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
       this.showMap = data['showMap'] ?? this.showMap;
       this.tableHeaders = data['tableHeaders'] ?? this.tableHeaders;
       this.tableRows = data['tableRows'] ?? this.tableRows;
+      this.statCardsSignal.set([...(data['statCards'] ?? [])]);
+      this.tableRowsSignal.set([...(data['tableRows'] ?? [])]);
     }
   }
 
@@ -251,6 +294,72 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     if (this.showMap && isPlatformBrowser(this.platformId) && this.mapPageContainer) {
       this.initMap();
     }
+  }
+
+  /** Prendre une alerte : met à jour le statut et le technicien dans le tableau */
+  prendreAlerte(row: TableRow): void {
+    const userName = this.authService.getUser()?.name || 'Utilisateur';
+    const updated = this.tableRowsSignal().map(r => {
+      if (r['Équipement'] === row['Équipement'] && r['Statut'] === 'Ouverte') {
+        return {
+          ...r,
+          'Statut': 'En cours',
+          'Technicien': userName,
+          'Action': 'En cours'
+        };
+      }
+      return r;
+    });
+    this.tableRowsSignal.set(updated);
+    this.refreshAlertCounters();
+  }
+
+  /** Terminer une alerte : met à jour le statut en "Terminée" */
+  terminerAlerte(row: TableRow): void {
+    const updated = this.tableRowsSignal().map(r => {
+      if (r['Équipement'] === row['Équipement'] && r['Statut'] === 'En cours') {
+        return {
+          ...r,
+          'Statut': 'Terminée',
+          'Action': 'Terminée'
+        };
+      }
+      return r;
+    });
+    this.tableRowsSignal.set(updated);
+    this.refreshAlertCounters();
+  }
+
+  /**
+   * Recalcule les compteurs d'alertes (Critiques / Avertissements / Résolues)
+   * à partir de l'état actuel des lignes du tableau.
+   * Une alerte "Terminée" passe au compteur Résolues et sort de son compteur de sévérité.
+   */
+  private refreshAlertCounters(): void {
+    // Uniquement pour les pages qui affichent une colonne Sévérité (page Alertes)
+    if (!this.tableHeaders.includes('Sévérité')) return;
+
+    const rows = this.tableRowsSignal();
+    const critiques = rows.filter(r => r['Sévérité'] === 'Critique' && r['Statut'] !== 'Terminée').length;
+    const avertissements = rows.filter(r => r['Sévérité'] === 'Avertissement' && r['Statut'] !== 'Terminée').length;
+    const resolues = rows.filter(r => r['Statut'] === 'Terminée').length;
+    const total = Math.max(1, rows.length);
+
+    this.statCardsSignal.set(
+      this.statCardsSignal().map(card => {
+        const label = card.label.toLowerCase();
+        if (label.startsWith('critique')) {
+          return { ...card, value: String(critiques), progress: Math.round((critiques / total) * 100) };
+        }
+        if (label.startsWith('avertissement')) {
+          return { ...card, value: String(avertissements), progress: Math.round((avertissements / total) * 100) };
+        }
+        if (label.startsWith('résolue') || label.startsWith('resolue')) {
+          return { ...card, value: String(resolues), progress: Math.round((resolues / total) * 100) };
+        }
+        return card;
+      })
+    );
   }
 
   /** Génère le style conic-gradient pour un cercle de progression */
