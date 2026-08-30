@@ -33,16 +33,18 @@
   object-fit: cover;
   object-position: center;
   animation: authBgZoom 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: transform;
+  will-change: transform, filter;
 }
 
 /* Voile sombre bleu nuit pour améliorer la lisibilité.
-   L'image reste visible à travers le voile. */
+   L'image reste visible à travers le voile.
+   Le voile fond en progressivement : l'image s'assombrit pendant l'animation. */
 .auth-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(160deg, rgba(10, 18, 45, 0.38) 0%, rgba(4, 10, 32, 0.58) 100%);
   z-index: 1;
+  animation: authOverlayIn 2.4s ease 0.15s both;
 }
 
 /* --- Carte en verre translucide ------------------------------------------ */
@@ -323,8 +325,19 @@
    ========================================================================== */
 
 @keyframes authBgZoom {
-  from { transform: scale(1.14); }
-  to   { transform: scale(1); }
+  from {
+    transform: scale(1.14);
+    filter: brightness(1.35) saturate(1.1);
+  }
+  to {
+    transform: scale(1);
+    filter: brightness(1) saturate(1);
+  }
+}
+
+@keyframes authOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @keyframes authCardIn {
@@ -366,6 +379,7 @@
 /* Accessibilité : désactiver les animations si l'utilisateur préfère */
 @media (prefers-reduced-motion: reduce) {
   .auth-bg,
+  .auth-overlay,
   .auth-card,
   .auth-header,
   .error-message,
