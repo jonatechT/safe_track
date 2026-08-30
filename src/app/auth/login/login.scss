@@ -36,12 +36,12 @@
   will-change: transform, filter;
 }
 
-/* Voile sombre bleu nuit pour améliorer la lisibilité.
+/* Voile sombre bleu nuit dense pour améliorer la lisibilité.
    L'image reste visible à travers le voile (statique). */
 .auth-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, rgba(10, 18, 45, 0.38) 0%, rgba(4, 10, 32, 0.58) 100%);
+  background: linear-gradient(160deg, rgba(10, 18, 45, 0.55) 0%, rgba(4, 10, 32, 0.78) 100%);
   z-index: 1;
 }
 
@@ -322,11 +322,11 @@
    Animations d'entrée de la page
    ========================================================================== */
 
-/* L'image démarre sombre (ombre) puis s'éclaircit progressivement (lumière) */
+/* L'image démarre très sombre (ombre) puis s'éclaircit progressivement (lumière) */
 @keyframes authBgZoom {
   from {
     transform: scale(1.14);
-    filter: brightness(0.45) saturate(0.85);
+    filter: brightness(0.22) saturate(0.8);
   }
   to {
     transform: scale(1);
