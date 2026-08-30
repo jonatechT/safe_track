@@ -17,16 +17,23 @@
   overflow-y: auto;
 }
 
-/* --- Image d'arrière-plan plein écran ------------------------------------ */
+/* --- Image d'arrière-plan plein écran (avec zoom d'entrée) ---------------- */
 
-.auth-bg {
+/* Conteneur : masque le débordement créé par le zoom de l'image */
+.auth-bg-wrap {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.auth-bg {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  z-index: 0;
+  animation: authBgZoom 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform;
 }
 
 /* Voile sombre bleu nuit pour améliorer la lisibilité.
@@ -52,12 +59,14 @@
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow: 0 24px 60px rgba(4, 32, 18, 0.28);
+  animation: authCardIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
 /* --- En-tête -------------------------------------------------------------- */
 
 .auth-header {
   margin-bottom: 28px;
+  animation: authFadeIn 0.9s ease 0.45s both;
 }
 
 .auth-title {
@@ -306,6 +315,62 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   Animations d'entrée de la page
+   ========================================================================== */
+
+@keyframes authBgZoom {
+  from { transform: scale(1.14); }
+  to   { transform: scale(1); }
+}
+
+@keyframes authCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes authItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes authFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Apparition en cascade des éléments du formulaire */
+.auth-form > :nth-child(1) { animation: authItemIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both; }
+.auth-form > :nth-child(2) { animation: authItemIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.62s both; }
+.auth-form > :nth-child(3) { animation: authItemIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.74s both; }
+.auth-form > :nth-child(4) { animation: authItemIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.86s both; }
+
+/* Message d'erreur : apparition douce */
+.error-message { animation: authItemIn 0.5s ease both; }
+
+/* Accessibilité : désactiver les animations si l'utilisateur préfère */
+@media (prefers-reduced-motion: reduce) {
+  .auth-bg,
+  .auth-card,
+  .auth-header,
+  .error-message,
+  .auth-form > * {
+    animation: none !important;
   }
 }
 
