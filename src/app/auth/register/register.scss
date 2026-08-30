@@ -103,13 +103,6 @@
   gap: 18px;
 }
 
-/* Grille Prénom / Nom côte à côte */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
 .input-wrapper {
   position: relative;
   display: flex;
@@ -148,6 +141,17 @@
   }
 }
 
+/* Icône dans les champs de saisie (non cliquable) */
+.input-icon {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 17px;
+  pointer-events: none;
+}
+
 /* Bouton œil : afficher / masquer le mot de passe */
 .toggle-password {
   position: absolute;
@@ -177,6 +181,17 @@
     outline: 2px solid rgba(255, 255, 255, 0.7);
     outline-offset: 2px;
   }
+}
+
+/* --- Select personnalisé ---------------------------------------------------- */
+
+.form-select {
+  appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 24 14'%3E%3Cpath fill='%23fff' d='M2.5 3.5L12 12L21.5 3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 12px;
 }
 
 /* --- Bouton S'inscrire ---------------------------------------------------- */
@@ -234,28 +249,31 @@
   }
 }
 
-/* --- Lien Se connecter ------------------------------------------------------ */
+/* --- Pied de page : lien vers la connexion --------------------------------- */
 
-.login-text {
-  margin-top: 24px;
+.auth-footer {
+  margin-top: 22px;
   text-align: center;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
 }
 
-.login-link {
+.auth-footer-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13.5px;
+  font-weight: 300;
+  margin: 0;
+}
+
+.auth-link {
   color: #fff;
   font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, 0.5);
-  text-underline-offset: 4px;
-  transition:
-    color 0.2s ease,
-    text-decoration-color 0.2s ease;
+  text-decoration: none;
+  margin-left: 6px;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
 
   &:hover {
-    color: #9db8ff;
-    text-decoration-color: #9db8ff;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
   }
 }
 
@@ -290,15 +308,15 @@
     font-size: 12px;
   }
 
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
   .form-input {
     height: 42px;
     padding: 0 42px 0 16px;
     font-size: 13.5px;
+  }
+
+  .input-icon {
+    right: 15px;
+    font-size: 16px;
   }
 
   .toggle-password {
@@ -308,9 +326,5 @@
   .auth-button {
     height: 42px;
     font-size: 16px;
-  }
-
-  .login-text {
-    font-size: 13px;
   }
 }

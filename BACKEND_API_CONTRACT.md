@@ -43,9 +43,15 @@ Ce document définit le contrat entre le frontend et le futur backend.
 {
   "name": "User A1",
   "email": "user@structure.com",
-  "password": "motdepasse"
+  "password": "motdepasse",
+  "structureId": "STR-001"
 }
 ```
+
+**Note** : Le `structureId` est choisi par l'utilisateur parmi les structures
+déjà enregistrées sur la plateforme (liste déroulante). Le compte est créé avec
+le statut `PENDING` et la demande de validation est envoyée à l'administrateur
+de la structure concernée.
 
 **Response 201** :
 ```json
@@ -54,7 +60,8 @@ Ce document définit le contrat entre le frontend et le futur backend.
   "name": "User A1",
   "email": "user@structure.com",
   "role": "USER",
-  "structureId": null
+  "structureId": "STR-001",
+  "statut": "PENDING"
 }
 ```
 

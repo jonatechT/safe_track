@@ -64,4 +64,14 @@ export class UsersService {
     const newStatus = user.statut === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     return this.updateUser(id, { statut: newStatus });
   }
+
+  /** Supprimer un utilisateur (technicien ou compte rejeté) */
+  deleteUser(id: number): void {
+    this.saveUsers(this.users().filter(u => u.id !== id));
+  }
+
+  /** Recharger les utilisateurs depuis le stockage local */
+  reload(): void {
+    this.users.set(this.loadUsers());
+  }
 }

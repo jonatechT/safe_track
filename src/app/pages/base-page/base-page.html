@@ -1,12 +1,14 @@
 <div class="base-page">
   <div class="page-header">
     <div class="page-title-row">
-      <h1 class="page-title-main">{{ title }}</h1>
+      <div class="page-title-group">
+        <h1 class="page-title-main">{{ title }}</h1>
+        <p class="page-subtitle-main">{{ subtitle }}</p>
+      </div>
       <div class="page-header-actions">
         <ng-content select="[page-actions]"></ng-content>
       </div>
     </div>
-    <p class="page-subtitle-main">{{ subtitle }}</p>
   </div>
   <div class="page-content">
     <ng-content></ng-content>

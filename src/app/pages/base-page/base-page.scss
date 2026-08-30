@@ -15,7 +15,14 @@
 .page-title-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+}
+
+.page-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .page-header-actions {
@@ -30,12 +37,13 @@
   font-weight: 700;
   letter-spacing: -0.5px;
   color: #0F172A;
+  margin: 0;
 }
 
 .page-subtitle-main {
   font-size: 14px;
   color: #64748B;
-  margin-top: 4px;
+  margin: 0;
 }
 
 .page-content {

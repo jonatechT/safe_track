@@ -39,13 +39,10 @@ export const pageData: Record<string, PageData> = {
     showMap: false,
     tableHeaders: ['Équipement', 'IMEI', 'Localisation', 'Mise en ligne'],
     tableRows: [
-      { 'Statut': '⚠️ En alerte', 'Équipement': 'Kit solaire #SK-045', 'IMEI': '354123456789012', 'Localisation': '12.3685°N, -1.5250°E', 'LienLocalisation': '12.3685,-1.5250', 'Mise en ligne': '14 mars 2024' },
-      { 'Statut': '⚠️ En alerte', 'Équipement': 'Véhicule #V-007', 'IMEI': '354123456789014', 'Localisation': '11.1784°N, -4.2979°E', 'LienLocalisation': '11.1784,-4.2979', 'Mise en ligne': '22 janvier 2024' },
-      { 'Statut': '🔍 Inspection', 'Équipement': 'Kit solaire #SK-089', 'IMEI': '354123456789015', 'Localisation': '12.2513°N, -2.3510°E', 'LienLocalisation': '12.2513,-2.3510', 'Mise en ligne': '5 juin 2024' },
-      { 'Statut': '🔍 Inspection', 'Équipement': 'Engin minier #EM-034', 'IMEI': '354123456789016', 'Localisation': '12.3714°N, -1.5197°E', 'LienLocalisation': '12.3714,-1.5197', 'Mise en ligne': '18 septembre 2023' },
-      { 'Statut': '✅ Normal', 'Équipement': 'Kit solaire #SK-012', 'IMEI': '354123456789017', 'Localisation': '12.3658°N, -1.5312°E', 'LienLocalisation': '12.3658,-1.5312', 'Mise en ligne': '2 décembre 2023' },
-      { 'Statut': '✅ Normal', 'Équipement': 'Véhicule #V-015', 'IMEI': '354123456789018', 'Localisation': '12.4500°N, -3.4700°E', 'LienLocalisation': '12.4500,-3.4700', 'Mise en ligne': '27 février 2024' },
-      { 'Statut': '✅ Normal', 'Équipement': 'Engin minier #EM-056', 'IMEI': '354123456789019', 'Localisation': '12.5200°N, -4.1200°E', 'LienLocalisation': '12.5200,-4.1200', 'Mise en ligne': '11 juillet 2024' }
+      { 'Statut': 'En alerte', 'Équipement': 'Kit solaire #SK-045', 'IMEI': '354123456789012', 'Localisation': '12.3685°N, -1.5250°E', 'LienLocalisation': '12.3685,-1.5250', 'Mise en ligne': '14 mars 2024' },
+      { 'Statut': 'En alerte', 'Équipement': 'Véhicule #V-007', 'IMEI': '354123456789014', 'Localisation': '11.1784°N, -4.2979°E', 'LienLocalisation': '11.1784,-4.2979', 'Mise en ligne': '22 janvier 2024' },
+      { 'Statut': 'Inspection', 'Équipement': 'Kit solaire #SK-089', 'IMEI': '354123456789015', 'Localisation': '12.2513°N, -2.3510°E', 'LienLocalisation': '12.2513,-2.3510', 'Mise en ligne': '5 juin 2024' },
+      { 'Statut': 'Inspection', 'Équipement': 'Engin minier #EM-034', 'IMEI': '354123456789016', 'Localisation': '12.3714°N, -1.5197°E', 'LienLocalisation': '12.3714,-1.5197', 'Mise en ligne': '18 septembre 2023' }
     ]
   },
   maintenance: {
@@ -74,7 +71,7 @@ export const pageData: Record<string, PageData> = {
       { label: 'Avertissements', value: '1', icon: 'fa-solid fa-triangle-exclamation', color: '#F59E0B', bgColor: '#FEF3C7', progress: 50 },
       { label: 'Résolues', value: '0', icon: 'fa-solid fa-check-circle', color: '#10B981', bgColor: '#D1FAE5', progress: 0 }
     ],
-    tableHeaders: ['Type', 'Équipement', 'Localisation', 'Sévérité', 'Date', 'Statut', 'Technicien', 'Action'],
+    tableHeaders: ['Type', 'Équipement', 'Sévérité', 'Date', 'Statut', 'Technicien', 'Action'],
     tableRows: [
       { 'Type': 'Violation de box', 'Équipement': 'Kit solaire #SK-045', 'Localisation': '12.3685°N, -1.5250°E', 'LienLocalisation': '12.3685,-1.5250', 'Sévérité': 'Critique', 'Date': 'Il y a 5 min', 'Statut': 'Ouverte', 'Technicien': '', 'Action': 'Prendre' },
       { 'Type': 'Déplacement non autorisé', 'Équipement': 'Véhicule #V-007', 'Localisation': '11.1784°N, -4.2979°E', 'LienLocalisation': '11.1784,-4.2979', 'Sévérité': 'Avertissement', 'Date': 'Il y a 12 min', 'Statut': 'Ouverte', 'Technicien': '', 'Action': 'Prendre' }
@@ -104,7 +101,8 @@ export const routes: Route[] = [
   { path: 'register', loadComponent: () => import('./auth/register/register').then(m => m.RegisterComponent) },
   { path: 'pending', loadComponent: () => import('./auth/pending/pending').then(m => m.PendingComponent) },
   { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent), canActivate: [authGuard] },
-  { path: 'location', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['location'], canActivate: [authGuard] },
+  { path: 'location', loadComponent: () => import('./pages/equipment-list-page/equipment-list-page').then(m => m.EquipmentListPageComponent), canActivate: [authGuard] },
+  { path: 'equipements/:imei', loadComponent: () => import('./pages/equipment-detail-page/equipment-detail-page').then(m => m.EquipmentDetailPageComponent), canActivate: [authGuard] },
   { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
   { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['alerts'], canActivate: [authGuard] },

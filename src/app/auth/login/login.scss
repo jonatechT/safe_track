@@ -309,31 +309,6 @@
   }
 }
 
-/* --- Lien Signup -------------------------------------------------------------- */
-
-.signup-text {
-  margin-top: 24px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-}
-
-.signup-link {
-  color: #fff;
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: rgba(255, 255, 255, 0.5);
-  text-underline-offset: 4px;
-  transition:
-    color 0.2s ease,
-    text-decoration-color 0.2s ease;
-
-  &:hover {
-    color: #9db8ff;
-    text-decoration-color: #9db8ff;
-  }
-}
-
 /* ==========================================================================
    Responsive
    ========================================================================== */
@@ -383,9 +358,5 @@
   .auth-button {
     height: 42px;
     font-size: 16px;
-  }
-
-  .signup-text {
-    font-size: 13px;
   }
 }

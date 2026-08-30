@@ -6,136 +6,136 @@
   <!-- Carte d'inscription en verre translucide -->
   <div class="auth-card">
     <header class="auth-header">
-      <h1 class="auth-title">Inscription</h1>
-      <p class="auth-subtitle">Créez votre compte pour commencer</p>
+      <h1 class="auth-title">Créer un compte</h1>
+      <p class="auth-subtitle">Inscrivez-vous en choisissant votre structure</p>
     </header>
 
-    @if (errorMessage) {
+    @if (errorMessage()) {
       <div class="error-message" role="alert">
         <i class="fa-solid fa-circle-exclamation"></i>
-        <span>{{ errorMessage }}</span>
+        <span>{{ errorMessage() }}</span>
       </div>
     }
 
     <form (ngSubmit)="onSubmit()" class="auth-form">
-      <!-- Nom / Prénom -->
-      <div class="form-grid">
-        <div class="input-wrapper">
-          <input
-            id="lastName"
-            type="text"
-            class="form-input"
-            placeholder="Nom"
-            autocomplete="family-name"
-            [(ngModel)]="lastName"
-            name="lastName"
-            required
-          />
-        </div>
-        <div class="input-wrapper">
-          <input
-            id="firstName"
-            type="text"
-            class="form-input"
-            placeholder="Prénom"
-            autocomplete="given-name"
-            [(ngModel)]="firstName"
-            name="firstName"
-            required
-          />
-        </div>
+      <!-- Prénom -->
+      <div class="input-wrapper">
+        <input
+          id="prenom"
+          type="text"
+          class="form-input"
+          placeholder="Prénom"
+          autocomplete="given-name"
+          [(ngModel)]="prenom"
+          name="prenom"
+          required
+        />
+        <i class="fa-regular fa-user input-icon" aria-hidden="true"></i>
       </div>
 
-      <!-- Email ou Numéro -->
+      <!-- Nom -->
       <div class="input-wrapper">
         <input
-          id="identifier"
+          id="nom"
           type="text"
           class="form-input"
-          placeholder="Email ou Numéro"
-          autocomplete="email"
-          [(ngModel)]="identifier"
-            name="identifier"
-            required
-          />
-        </div>
+          placeholder="Nom"
+          autocomplete="family-name"
+          [(ngModel)]="nom"
+          name="nom"
+          required
+        />
+        <i class="fa-regular fa-user input-icon" aria-hidden="true"></i>
+      </div>
 
-      <!-- Structure -->
+      <!-- Email -->
       <div class="input-wrapper">
         <input
-          id="structure"
-          type="text"
+          id="email"
+          type="email"
           class="form-input"
-          placeholder="Structure"
-          autocomplete="organization"
-          [(ngModel)]="structure"
-            name="structure"
-            required
-          />
-        </div>
+          placeholder="Adresse email"
+          autocomplete="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+        />
+        <i class="fa-regular fa-envelope input-icon" aria-hidden="true"></i>
+      </div>
+
+      <!-- Téléphone -->
+      <div class="input-wrapper">
+        <input
+          id="telephone"
+          type="tel"
+          class="form-input"
+          placeholder="Téléphone (optionnel)"
+          autocomplete="tel"
+          [(ngModel)]="telephone"
+          name="telephone"
+        />
+        <i class="fa-solid fa-phone input-icon" aria-hidden="true"></i>
+      </div>
 
       <!-- Mot de passe -->
       <div class="input-wrapper">
         <input
-          id="password"
-          [type]="showPassword ? 'text' : 'password'"
+          id="motDePasse"
+          [type]="showPassword() ? 'text' : 'password'"
           class="form-input"
-          placeholder="Mot de passe"
+          placeholder="Mot de passe (min. 8 caractères)"
           autocomplete="new-password"
-          [(ngModel)]="password"
-          name="password"
+          [(ngModel)]="motDePasse"
+          name="motDePasse"
           required
         />
         <button
           type="button"
           class="toggle-password"
-          (click)="showPassword = !showPassword"
-          [attr.aria-label]="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+          (click)="showPassword.set(!showPassword())"
+          [attr.aria-label]="showPassword() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
         >
-          <i [class]="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" aria-hidden="true"></i>
+          <i [class]="showPassword() ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" aria-hidden="true"></i>
         </button>
       </div>
 
-      <!-- Confirmer le mot de passe -->
+      <!-- Structure -->
       <div class="input-wrapper">
-        <input
-          id="confirmPassword"
-          [type]="showConfirmPassword ? 'text' : 'password'"
-          class="form-input"
-          placeholder="Confirmer le mot de passe"
-          autocomplete="new-password"
-          [(ngModel)]="confirmPassword"
-          name="confirmPassword"
+        <select
+          id="structureId"
+          class="form-input form-select"
+          [(ngModel)]="structureId"
+          name="structureId"
           required
-        />
-        <button
-          type="button"
-          class="toggle-password"
-          (click)="showConfirmPassword = !showConfirmPassword"
-          [attr.aria-label]="showConfirmPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
         >
-          <i [class]="showConfirmPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'" aria-hidden="true"></i>
-        </button>
+          <option value="" disabled selected>Choisir une structure</option>
+          @for (structure of structures; track structure.id) {
+            <option [value]="structure.id">{{ structure.nom }}</option>
+          }
+        </select>
+        <i class="fa-solid fa-building input-icon" aria-hidden="true"></i>
       </div>
 
       <!-- Bouton S'inscrire -->
       <button
         type="submit"
         class="auth-button"
-        [disabled]="isLoading"
+        [disabled]="isLoading()"
       >
-        @if (isLoading) {
+        @if (isLoading()) {
           <span class="spinner" aria-hidden="true"></span>
         } @else {
-          <span>S&rsquo;inscrire</span>
+          <span>S'inscrire</span>
         }
       </button>
     </form>
 
     <!-- Lien vers la connexion -->
-    <p class="login-text">
-      Vous avez déjà un compte&nbsp;?
-      <a routerLink="/login" class="login-link">Se connecter</a>
-    </p>
+    <div class="auth-footer">
+      <p class="auth-footer-text">
+        Vous avez déjà un compte ?
+        <a routerLink="/login" class="auth-link">Se connecter</a>
+      </p>
+    </div>
   </div>
 </div>

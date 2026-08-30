@@ -1,8 +1,9 @@
 import { Component, computed, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { StructureService } from '../../services/structure.service';
-import { AuthService, User } from '../../../auth/auth.service';
+import { UsersService } from '../../../services/users.service';
+import { User } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-superadmin-dashboard',
@@ -16,35 +17,25 @@ export class SuperAdminDashboardComponent {
   protected recentStructures = computed(() =>
     this.structureService.getAllStructures().slice(0, 5)
   );
-
-  /** Comptes en attente de validation admin */
-  protected pendingUsers = signal<User[]>([]);
+  protected pendingUsers = computed(() =>
+    this.usersService.getAllUsers().filter(u => u.statut === 'PENDING')
+  );
   protected feedbackMessage = signal('');
 
   constructor(
     private structureService: StructureService,
-    private authService: AuthService
-  ) {
-    this.reloadPendingUsers();
-  }
+    private usersService: UsersService
+  ) {}
 
-  private reloadPendingUsers(): void {
-    this.pendingUsers.set(this.authService.getPendingUsers());
-  }
-
-  /** Valider un compte : l'utilisateur pourra se connecter */
-  validerCompte(user: User): void {
-    this.authService.validerCompte(user.id);
-    this.feedbackMessage.set(`Le compte « ${user.name} » a été validé avec succès.`);
-    this.reloadPendingUsers();
+  protected validerCompte(user: User): void {
+    this.usersService.updateUser(user.id, { statut: 'ACTIVE' });
+    this.feedbackMessage.set(`Le compte de « ${user.name} » a été validé avec succès.`);
     setTimeout(() => this.feedbackMessage.set(''), 4000);
   }
 
-  /** Rejeter un compte : suppression définitive */
-  rejeterCompte(user: User): void {
-    this.authService.rejeterCompte(user.id);
-    this.feedbackMessage.set(`Le compte « ${user.name} » a été rejeté.`);
-    this.reloadPendingUsers();
+  protected rejeterCompte(user: User): void {
+    this.usersService.deleteUser(user.id);
+    this.feedbackMessage.set(`Le compte de « ${user.name} » a été rejeté.`);
     setTimeout(() => this.feedbackMessage.set(''), 4000);
   }
 }

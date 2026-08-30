@@ -170,8 +170,8 @@ import { AuthService } from '../../../auth/auth.service';
     }
   `,
   styles: [`
-    :host { display: block; height: 100vh; }
-    .sa-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+    :host { display: block; height: 100vh; background: #FFFFFF; }
+    .sa-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: #FFFFFF; }
 
     /* Sidebar - identique au sidebar admin */
     .sa-sidebar {
@@ -225,7 +225,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-sidebar.collapsed .sa-profile-btn-label { display: none; }
 
     /* Main area */
-    .sa-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #F1F5F9; }
+    .sa-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #FFFFFF; }
 
     /* Topbar */
     .sa-topbar {
@@ -243,7 +243,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-profile-role { font-size: 10px; font-weight: 600; color: #93C5FD; letter-spacing: 0.5px; }
 
     /* Content */
-    .sa-content { flex: 1; overflow-y: auto; padding: 24px; }
+    .sa-content { flex: 1; overflow-y: auto; padding: 24px; background: #FFFFFF; }
 
     /* Profile panel */
     .sa-profile-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); z-index: 1500; backdrop-filter: blur(2px); }
@@ -301,7 +301,8 @@ export class SuperAdminLayoutComponent {
 
   protected readonly menuItems = [
     { label: 'Dashboard', icon: 'fa-solid fa-chart-pie', route: '/superadmin', exact: true },
-    { label: 'Structures', icon: 'fa-solid fa-building', route: '/superadmin/structures', exact: false }
+    { label: 'Structures', icon: 'fa-solid fa-building', route: '/superadmin/structures', exact: true },
+    { label: 'Ajouter', icon: 'fa-solid fa-plus', route: '/superadmin/structures/new', exact: true }
   ];
 
   isSidebarCollapsed = false;

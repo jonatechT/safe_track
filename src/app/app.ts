@@ -34,7 +34,7 @@ export class App {
 
   protected readonly menuItems: MenuItem[] = [
     { label: 'Tableau de bord', icon: 'fa-solid fa-chart-pie', route: '/dashboard', active: true },
-    { label: "Parc d'équipement", icon: 'fa-solid fa-location-dot', route: '/location' },
+    { label: "Parc d'équipement", icon: 'fa-solid fa-cube', route: '/location' },
     { label: 'Maintenance', icon: 'fa-solid fa-wrench', route: '/maintenance' },
     { label: 'Rapports', icon: 'fa-solid fa-file-lines', route: '/rapports' },
     { label: 'Alertes', icon: 'fa-solid fa-bell', route: '/alerts' },
@@ -52,7 +52,7 @@ export class App {
 
   protected isAuthPage(): boolean {
     const url = this.router.url;
-    return url === '/login' || url === '/register';
+    return url === '/login';
   }
 
   protected isSuperAdminPage(): boolean {

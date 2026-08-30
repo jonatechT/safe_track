@@ -202,43 +202,7 @@ export class AuthService {
     return { success: false, pending: false };
   }
 
-  /**
-   * Inscription publique : le compte est créé avec le statut PENDING.
-   * Aucune session n'est ouverte : l'utilisateur devra attendre la
-   * validation d'un administrateur avant de pouvoir se connecter.
-   */
-  register(name: string, email: string, password: string): boolean {
-    if (name && email && password) {
-      if (typeof window !== 'undefined') {
-        const raw = localStorage.getItem(this.USERS_REGISTRY_KEY);
-        const registered: User[] = raw ? JSON.parse(raw) : [];
-
-        // Refuser un email déjà utilisé
-        const exists = registered.some(
-          (u: User) => u.email.toLowerCase() === email.trim().toLowerCase()
-        );
-        if (exists) {
-          return false;
-        }
-
-        const user: User = {
-          id: Date.now(),
-          name: name,
-          email: email.trim().toLowerCase(),
-          role: 'USER',
-          statut: 'PENDING',
-          dateCreation: new Date().toISOString()
-        };
-        registered.push(user);
-        localStorage.setItem(this.USERS_REGISTRY_KEY, JSON.stringify(registered));
-      }
-      // Aucun token ni session : l'accès reste bloqué jusqu'à validation
-      return true;
-    }
-    return false;
-  }
-
-  /** Récupérer tous les comptes en attente de validation */
+  /** Récupérer tous les comptes en attente de validation (vue globale superadmin) */
   getPendingUsers(): User[] {
     return this.getAllUsers().filter(u => u.statut === 'PENDING');
   }

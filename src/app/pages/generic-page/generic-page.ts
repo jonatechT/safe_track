@@ -1,7 +1,9 @@
 import { Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef, Inject, PLATFORM_ID, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { BasePageComponent } from '../base-page/base-page';
+import { EquipmentService } from '../../services/equipment.service';
+import { MaintenanceService } from '../../services/maintenance.service';
 import { AuthService } from '../../auth/auth.service';
 
 interface StatCard {
@@ -23,7 +25,7 @@ interface TableRow {
   imports: [BasePageComponent],
   template: `
     <app-base-page [title]="title" [subtitle]="subtitle" [icon]="icon">
-      <div class="generic-content">
+      <div class="generic-content" [class.parc-equipement]="isParcEquipement">
         @if (cards.length) {
           <div class="stat-grid">
             @for (stat of cards; track stat.label) {
@@ -61,7 +63,7 @@ interface TableRow {
                 </thead>
                 <tbody>
                   @for (row of rows; track $index) {
-                    <tr>
+                    <tr (click)="ouvrirDetail(row)">
                       @for (header of tableHeaders; track header) {
                         <td>
                           @if (header === 'Équipement') {
@@ -76,7 +78,9 @@ interface TableRow {
                               href="https://www.google.com/maps?q={{ row['LienLocalisation'] }}"
                               target="_blank"
                               rel="noopener"
+                              (click)="$event.stopPropagation()"
                             >
+                              <i class="fa-solid fa-location-dot"></i>
                               {{ row[header] }}
                             </a>
                           } @else if (header === 'Dernière synchro') {
@@ -90,15 +94,15 @@ interface TableRow {
                             >{{ row['Statut'] }}</span>
                           } @else if (header === 'Action') {
                             @if (row['Statut'] === 'Ouverte') {
-                              <button class="action-take-btn" (click)="prendreAlerte(row)">
-                                <i class="fa-solid fa-hand"></i> {{ row[header] }}
+                              <button class="action-take-btn" (click)="prendreAlerte(row); $event.stopPropagation()">
+                                {{ row[header] }}
                               </button>
                             } @else if (row['Statut'] === 'En cours') {
                               <div class="done-actions">
                                 <span class="taken-label">
                                   <i class="fa-solid fa-clock"></i> En cours
                                 </span>
-                                <button class="action-take-btn" (click)="terminerAlerte(row)">
+                                <button class="action-take-btn" (click)="terminerAlerte(row); $event.stopPropagation()">
                                   <i class="fa-solid fa-flag-checkered"></i> Terminer
                                 </button>
                               </div>
@@ -162,63 +166,84 @@ interface TableRow {
     .card-subtitle { font-size: 12px; color: #94A3B8; margin-top: 2px; }
     .map-card-page { padding: 24px; margin-bottom: 0; }
     .map-container-page { height: 340px; border-radius: 16px; overflow: hidden; border: 1px solid #E2E8F0; background: #FFFFFF; }
-    /* ===== Tableau moderne ===== */
+    /* ===== Tableau moderne (wrapper sans carte) ===== */
     .table-card {
-      background: #EFF6FF;
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      border-radius: 16px;
-      padding: 8px 20px 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04);
-      transition: box-shadow 0.3s ease;
-      margin-top: 24px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      overflow: visible;
+      box-shadow: none;
+      margin-top: 0;
     }
-    .table-wrapper { overflow-x: auto; border-radius: 12px; margin: 0 -8px; }
-    .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 13px; }
+    .table-wrapper {
+      overflow-x: auto;
+      border: none;
+      border-radius: 0;
+    }
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: 13px; }
 
     .data-table thead th {
       text-align: left;
-      padding: 14px 18px;
+      padding: 12px 14px;
+      height: 40px;
       color: #FFFFFF;
       font-weight: 600;
-      font-size: 10.5px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.9px;
-      background: #2563EB;
+      letter-spacing: 0.5px;
+      background-color: #2563EB;
       border-bottom: 1px solid #2563EB;
+      vertical-align: middle;
     }
-    .data-table thead tr { border-radius: 10px; }
-    .data-table thead th:first-child { border-radius: 10px 0 0 10px; }
-    .data-table thead th:last-child { text-align: right; border-radius: 0 10px 10px 0; }
+    .data-table thead th:first-child { border-radius: 8px 0 0 8px; }
+    .data-table thead th:last-child { text-align: right; border-radius: 0 8px 8px 0; }
 
     .data-table tbody tr {
-      transition: all 0.2s ease;
-      border-radius: 12px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-      background: #F7FAFE;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      background-color: #FFFFFF;
+      cursor: pointer;
+    }
+    .data-table tbody tr.active {
+      background-color: #2563EB;
+      color: #FFFFFF;
+    }
+    .data-table tbody tr.active td {
+      color: #FFFFFF;
+      border-color: #2563EB;
     }
     .data-table tbody td {
-      background: transparent;
-      padding: 15px 18px;
-      border-bottom: 1px solid #EAF1FA;
-      border-top: 1px solid #EAF1FA;
+      background-color: #FFFFFF;
+      padding: 13px 14px;
+      border-top: 1px solid #E2E8F0;
+      border-bottom: 1px solid #E2E8F0;
       color: #334155;
       font-weight: 400;
       vertical-align: middle;
     }
-    .data-table tbody td:first-child {
-      border-left: 1px solid #F1F5F9;
-      border-radius: 12px 0 0 12px;
+    .data-table tbody td:first-child { border-left: 1px solid #E2E8F0; border-radius: 8px 0 0 8px; color: #1E293B; font-weight: 600; font-size: 13px; }
+    .data-table tbody td:last-child { border-right: 1px solid #E2E8F0; border-radius: 0 8px 8px 0; }
+    .data-table tbody tr:hover td { background-color: #F8FAFC; border-color: #BFDBFE; }
+    .data-table tbody tr.active:hover td { background-color: #2563EB; border-color: #2563EB; }
+    .data-table tbody td:nth-child(2) {
+      color: #64748B;
+      font-size: 12px;
     }
-    .data-table tbody td:last-child {
-      border-right: 1px solid #F1F5F9;
-      border-radius: 0 12px 12px 0;
-      text-align: right;
+    .data-table tbody td:nth-child(3) {
+      color: #2563EB;
+      font-weight: 500;
     }
-    .data-table tbody tr:hover td {
-      background: rgba(56, 189, 248, 0.10);
-      border-color: rgba(56, 189, 248, 0.35);
+    .data-table tbody td:nth-child(4) {
+      color: #64748B;
+      font-size: 12px;
     }
+    .data-table tbody td:last-child { text-align: right; }
+    .imei-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; color: #64748B; letter-spacing: 0.3px; }
+    .sync-time { color: #64748B; font-size: 12px; }
+    .data-table tbody tr.active .imei-code,
+    .data-table tbody tr.active .sync-time { color: rgba(255, 255, 255, 0.9); }
+    .data-table tbody tr.active .location-link { color: #FFFFFF; }
+    .data-table tbody tr.active .location-link:hover { color: #FFFFFF; }
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; }
     .status-alert { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
     .status-inspection { background: #FFFBEB; color: #D97706; border: 1px solid #FCD39D; }
@@ -230,13 +255,32 @@ interface TableRow {
     .taken-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; font-weight: 600; }
     .done-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #059669; font-weight: 600; }
     .done-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
-    .location-link { display: inline-flex; align-items: center; gap: 6px; color: #3B82F6; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
+    .location-link { display: inline-flex; align-items: center; gap: 6px; color: #2563EB; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
     .location-link:hover { color: #1D4ED8; }
     .location-link i { font-size: 12px; }
-    .action-take-btn { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .action-take-btn:hover { background: #1D4ED8; transform: translateY(-1px); }
+    .action-take-btn { background: transparent; color: #2563EB; border: 1px solid #2563EB; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .action-take-btn:hover { background: #2563EB; color: #FFFFFF; }
     .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 48px; color: #6B7280; text-align: center; }
     .empty-icon { font-size: 36px; color: #9CA3AF; }
+
+    /* ===== Spécifique page « Parc d'équipement » : lignes plus hautes + police plus grande ===== */
+    .parc-equipement .data-table thead th {
+      padding: 14px 18px;
+      font-size: 13px;
+    }
+    .parc-equipement .data-table tbody td {
+      padding: 16px 18px;
+      font-size: 14px;
+    }
+    .parc-equipement .data-table tbody td:first-child { font-size: 15px; }
+    .parc-equipement .data-table tbody td:nth-child(2) { font-size: 13px; }
+    .parc-equipement .data-table tbody td:nth-child(3) { font-size: 14px; }
+    .parc-equipement .data-table tbody td:nth-child(4) { font-size: 14px; }
+    .parc-equipement .imei-code { font-size: 13px; }
+    .parc-equipement .sync-time { font-size: 14px; }
+    .parc-equipement .location-link { font-size: 14px; }
+    .parc-equipement .location-link i { font-size: 13px; }
+    .parc-equipement .equipment-name { font-size: 15px; }
 
     @media (max-width: 1024px) {
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -264,7 +308,9 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     @Inject(PLATFORM_ID) private platformId: Object,
-    private authService: AuthService
+    private equipmentService: EquipmentService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   get rows(): TableRow[] {
@@ -273,6 +319,11 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
 
   get cards(): StatCard[] {
     return this.statCardsSignal();
+  }
+
+  /** Classe spécifique pour la page « Parc d'équipement » (styles dédiés) */
+  get isParcEquipement(): boolean {
+    return this.title === "Parc d'équipement";
   }
 
   ngOnInit(): void {
@@ -328,6 +379,16 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     });
     this.tableRowsSignal.set(updated);
     this.refreshAlertCounters();
+  }
+
+  ouvrirDetail(row: TableRow): void {
+    const equipmentName = row['Équipement'];
+    if (equipmentName) {
+      const equipment = this.equipmentService.getAll().find(e => e.nom === equipmentName);
+      if (equipment) {
+        this.router.navigate(['/equipements', equipment.imei], { queryParams: { source: 'alerts' } });
+      }
+    }
   }
 
   /**

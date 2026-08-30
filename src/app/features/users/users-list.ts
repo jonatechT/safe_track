@@ -22,13 +22,15 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-btn-secondary:hover { background: #E2E8F0; }
     .users-btn-danger { background: #FEF2F2; color: #EF4444; border: 1px solid #FECACA; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
     .users-btn-danger:hover { background: #FEE2E2; }
-    .users-btn-icon { width: 32px; height: 32px; border-radius: 8px; background: #F1F5F9; color: #475569; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border: none; cursor: pointer; transition: all 0.2s ease; }
-    .users-btn-icon:hover { background: #E2E8F0; color: #1E3A8A; }
+    .users-btn-icon { width: 32px; height: 32px; border-radius: 6px; background: transparent; color: #64748B; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; border: none; cursor: pointer; transition: all 0.15s ease; }
+    .users-btn-icon:hover { background: #EFF6FF; color: #2563EB; }
     .users-icon-warning:hover { background: #FFFBEB; color: #F59E0B; }
     .users-alert { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-radius: 12px; font-size: 13px; font-weight: 500; margin-bottom: 20px; }
     .users-alert-success { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
     .users-alert-error { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
     .users-card { background: #FFF; border-radius: 16px; padding: 24px; border: 1px solid #E2E8F0; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04); }
+    /* Carte contenant un tableau : apparence de carte supprimée */
+    .users-card--table { background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; }
     .users-card-title { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 16px; }
     .users-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
     .users-form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -39,53 +41,58 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-form-select:focus { border-color: #1E3A8A; }
     .users-form-info { font-size: 12px; color: #94A3B8; margin-top: 8px; }
     .users-form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid #F1F5F9; }
-    .users-table-wrapper { overflow-x: auto; border-radius: 12px; margin: 0 -8px; padding: 0 8px; }
-    .users-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 13px; }
+    .users-table-wrapper { overflow-x: auto; border: none; border-radius: 0; }
+    .users-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: 13px; }
 
     .users-table th {
       text-align: left;
-      padding: 14px 18px;
+      padding: 12px 14px;
+      height: 40px;
       color: #FFFFFF;
       font-weight: 600;
-      font-size: 10.5px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.9px;
-      background: #2563EB;
+      letter-spacing: 0.5px;
+      background-color: #2563EB;
       border-bottom: 1px solid #2563EB;
+      vertical-align: middle;
     }
-    .users-table th:first-child { border-radius: 10px 0 0 10px; }
-    .users-table th:last-child { border-radius: 0 10px 10px 0; }
+    .users-table th:first-child { border-radius: 8px 0 0 8px; }
+    .users-table th:last-child { text-align: right; border-radius: 0 8px 8px 0; }
 
     .users-table tbody tr {
-      transition: all 0.2s ease;
-      border-radius: 12px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-      background: #F7FAFE;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      background-color: #FFFFFF;
+    }
+    .users-table tbody tr.active {
+      background-color: #2563EB;
+    }
+    .users-table tbody tr.active td {
+      color: #FFFFFF;
+      border-color: #2563EB;
     }
     .users-table td {
-      background: transparent;
-      padding: 15px 18px;
-      border-bottom: 1px solid #EAF1FA;
-      border-top: 1px solid #EAF1FA;
+      background-color: #FFFFFF;
+      padding: 13px 14px;
+      border-top: 1px solid #E2E8F0;
+      border-bottom: 1px solid #E2E8F0;
       color: #334155;
       vertical-align: middle;
     }
-    .users-table tbody td:first-child {
-      border-left: 1px solid #EAF1FA;
-      border-radius: 12px 0 0 12px;
-    }
-    .users-table tbody td:last-child {
-      border-right: 1px solid #EAF1FA;
-      border-radius: 0 12px 12px 0;
-    }
-    .users-table tbody tr:hover td {
-      background: rgba(56, 189, 248, 0.10);
-      border-color: rgba(56, 189, 248, 0.35);
-    }
+    .users-table tbody td:first-child { border-left: 1px solid #E2E8F0; border-radius: 8px 0 0 8px; color: #1E293B; font-weight: 600; font-size: 13px; }
+    .users-table tbody td:last-child { border-right: 1px solid #E2E8F0; border-radius: 0 8px 8px 0; }
+    .users-table tbody td:nth-child(2),
+    .users-table tbody td:nth-child(3) { color: #64748B; font-size: 12px; }
+    .users-table tbody td:last-child { text-align: right; }
+    .users-table tbody tr:hover td { background-color: #F8FAFC; border-color: #BFDBFE; }
+    .users-table tbody tr.active:hover td { background-color: #2563EB; border-color: #2563EB; }
     .users-cell-main { display: flex; align-items: center; gap: 10px; }
-    .users-cell-avatar { width: 36px; height: 36px; border-radius: 10px; background: #EFF6FF; color: #3B82F6; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .users-cell-avatar { width: 36px; height: 36px; border-radius: 10px; background: #EFF6FF; color: #2563EB; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
     .users-cell-name { font-weight: 600; color: #0F172A; }
     .users-cell-sub { font-size: 11px; color: #94A3B8; }
+    .users-table tbody tr.active .users-cell-name,
+    .users-table tbody tr.active .users-cell-sub { color: #FFFFFF; }
+    .users-table tbody tr.active .users-cell-avatar { background: rgba(255, 255, 255, 0.2); color: #FFFFFF; }
     .users-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
     .users-badge i { font-size: 6px; }
     .users-badge-active { background: #ECFDF5; color: #10B981; }

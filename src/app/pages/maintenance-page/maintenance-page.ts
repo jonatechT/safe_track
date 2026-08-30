@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BasePageComponent } from '../base-page/base-page';
 import { MaintenanceService, MaintenanceItem } from '../../services/maintenance.service';
+import { EquipmentService } from '../../services/equipment.service';
 import { AuthService } from '../../auth/auth.service';
 
 @Component({
@@ -59,13 +60,12 @@ import { AuthService } from '../../auth/auth.service';
                   <th>Type</th>
                   <th>Date</th>
                   <th>Technicien</th>
-                  <th>Localisation</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 @for (item of items; track item.id) {
-                  <tr>
+                  <tr (click)="ouvrirDetail(item.id)">
                     <td>
                       <div class="equipment-cell">
                         <span class="equipment-name">{{ item.equipment }}</span>
@@ -89,44 +89,30 @@ import { AuthService } from '../../auth/auth.service';
                         <span class="tech-none">Non pris</span>
                       }
                     </td>
-                    <td>
-                      @if (item.lienLocalisation) {
-                        <a
-                          class="location-link-page"
-                          href="https://www.google.com/maps?q={{ item.lienLocalisation }}"
-                          target="_blank"
-                          rel="noopener"
-                        >
-                          <i class="fa-solid fa-location-dot"></i> {{ item.localisation || 'Voir' }}
-                        </a>
-                      } @else {
-                        <span>{{ item.localisation || '—' }}</span>
-                      }
-                    </td>
                     <td class="actions-cell">
                       @if (item.alertes > 0 && !item.prisPar) {
-                        <button class="btn-prendre" (click)="prendreAlerte(item)">
-                          <i class="fa-solid fa-hand"></i> Prendre l'alerte
+                        <button class="btn-prendre" (click)="prendreAlerte(item); $event.stopPropagation()">
+                          Prendre l'alerte
                         </button>
                       } @else if (item.statut === 'En cours' && item.prisPar) {
                         <div class="done-actions">
                           <span class="taken-label">
                             <i class="fa-solid fa-clock"></i> Intervention en cours
                           </span>
-                          <button class="btn-terminer" (click)="terminerMaintenance(item)">
+                          <button class="btn-terminer" (click)="terminerMaintenance(item); $event.stopPropagation()">
                             <i class="fa-solid fa-flag-checkered"></i> Terminer
                           </button>
                         </div>
                       } @else if (item.statut === 'Planifiée' && item.alertes === 0) {
-                        <button class="btn-prendre" (click)="prendreAlerte(item)">
-                          <i class="fa-solid fa-hand"></i> Prendre en charge
+                        <button class="btn-prendre" (click)="prendreAlerte(item); $event.stopPropagation()">
+                          Prendre en charge
                         </button>
                       } @else if (item.statut === 'Terminée') {
                         <div class="done-actions">
                           <span class="done-label">
                             <i class="fa-solid fa-check"></i> Terminée
                           </span>
-                          <button class="btn-rapport" (click)="allerAuxRapports()" title="Voir les rapports">
+                          <button class="btn-rapport" (click)="allerAuxRapports(); $event.stopPropagation()" title="Voir les rapports">
                             <i class="fa-solid fa-file-lines"></i> Rapport
                           </button>
                         </div>
@@ -175,70 +161,83 @@ import { AuthService } from '../../auth/auth.service';
     .stat-card--pink { background: #FFE4E6; border-color: rgba(225, 29, 72, 0.22); }
     .stat-icon--pink { color: #E11D48; }
 
-    /* ===== Tableau moderne ===== */
+    /* ===== Tableau moderne (wrapper sans carte) ===== */
     .table-card {
-      background: #EFF6FF;
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      border-radius: 16px;
-      padding: 8px 20px 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04);
-      transition: box-shadow 0.3s ease;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      overflow: visible;
+      box-shadow: none;
       margin-top: 0;
     }
-    .table-wrapper { overflow-x: auto; border-radius: 12px; margin: 0 -8px; }
-    .data-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-size: 13px; }
+    .table-wrapper {
+      overflow-x: auto;
+      border: none;
+      border-radius: 0;
+    }
+    .data-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; font-size: 13px; }
 
     .data-table thead th {
       text-align: left;
-      padding: 14px 18px;
+      padding: 12px 14px;
+      height: 40px;
       color: #FFFFFF;
       font-weight: 600;
-      font-size: 10.5px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.9px;
-      background: #2563EB;
+      letter-spacing: 0.5px;
+      background-color: #2563EB;
       border-bottom: 1px solid #2563EB;
+      vertical-align: middle;
     }
-    .data-table thead tr { border-radius: 10px; }
-    .data-table thead th:first-child { border-radius: 10px 0 0 10px; }
-    .data-table thead th:last-child { text-align: right; border-radius: 0 10px 10px 0; }
+    .data-table thead th:first-child { border-radius: 8px 0 0 8px; }
+    .data-table thead th:last-child { text-align: right; border-radius: 0 8px 8px 0; }
 
     .data-table tbody tr {
-      transition: all 0.2s ease;
-      border-radius: 12px;
-      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-      background: #F7FAFE;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      background-color: #FFFFFF;
+      cursor: pointer;
+    }
+    .data-table tbody tr.active {
+      background-color: #2563EB;
+      color: #FFFFFF;
+    }
+    .data-table tbody tr.active td {
+      color: #FFFFFF;
+      border-color: #2563EB;
     }
     .data-table tbody td {
-      background: transparent;
-      padding: 15px 18px;
-      border-bottom: 1px solid #EAF1FA;
-      border-top: 1px solid #EAF1FA;
+      background-color: #FFFFFF;
+      padding: 13px 14px;
+      border-top: 1px solid #E2E8F0;
+      border-bottom: 1px solid #E2E8F0;
       color: #334155;
       font-weight: 400;
       vertical-align: middle;
     }
-    .data-table tbody td:first-child {
-      border-left: 1px solid #F1F5F9;
-      border-radius: 12px 0 0 12px;
+    .data-table tbody td:first-child { border-left: 1px solid #E2E8F0; border-radius: 8px 0 0 8px; color: #1E293B; font-weight: 600; font-size: 13px; }
+    .data-table tbody td:last-child { border-right: 1px solid #E2E8F0; border-radius: 0 8px 8px 0; }
+    .data-table tbody tr:hover td { background-color: #F8FAFC; border-color: #BFDBFE; }
+    .data-table tbody tr.active:hover td { background-color: #2563EB; border-color: #2563EB; }
+    .data-table tbody td:nth-child(4) {
+      color: #64748B;
+      font-size: 12px;
     }
-    .data-table tbody td:last-child {
-      border-right: 1px solid #F1F5F9;
-      border-radius: 0 12px 12px 0;
-      text-align: right;
+    .data-table tbody td:nth-child(5) {
+      color: #64748B;
+      font-size: 12px;
     }
+    .data-table tbody td:last-child { text-align: right; }
     .actions-cell { text-align: right; }
-    .data-table tbody tr:hover td {
-      background: rgba(56, 189, 248, 0.10);
-      border-color: rgba(56, 189, 248, 0.35);
-    }
 
     .equipment-cell { display: flex; align-items: center; gap: 10px; }
     .equipment-name { font-weight: 600; color: #0F172A; font-size: 13px; }
-    .location-link-page { display: inline-flex; align-items: center; gap: 6px; color: #3B82F6; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
+    .location-link-page { display: inline-flex; align-items: center; gap: 6px; color: #2563EB; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
     .location-link-page:hover { color: #1D4ED8; }
     .location-link-page i { font-size: 12px; }
+    .data-table tbody tr.active .location-link-page { color: #FFFFFF; }
+    .data-table tbody tr.active .location-link-page:hover { color: #FFFFFF; }
 
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; }
     .status-planifiee { background: #FFFBEB; color: #D97706; border: 1px solid #FCD39D; }
@@ -278,8 +277,8 @@ import { AuthService } from '../../auth/auth.service';
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .btn-prendre { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-prendre:hover { background: #1D4ED8; transform: translateY(-1px); }
+    .btn-prendre { background: transparent; color: #2563EB; border: 1px solid #2563EB; border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .btn-prendre:hover { background: #2563EB; color: #FFFFFF; }
 
     .taken-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; font-weight: 600; }
     .taken-label i { font-size: 12px; }
@@ -288,11 +287,11 @@ import { AuthService } from '../../auth/auth.service';
     .done-label i { font-size: 12px; }
 
     .done-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
-    .btn-rapport { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-rapport:hover { background: #1D4ED8; transform: translateY(-1px); }
+    .btn-rapport { background: transparent; color: #2563EB; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .btn-rapport:hover { background: #EFF6FF; color: #2563EB; }
 
-    .btn-terminer { background: #2563EB; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-terminer:hover { background: #1D4ED8; transform: translateY(-1px); }
+    .btn-terminer { background: transparent; color: #2563EB; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .btn-terminer:hover { background: #EFF6FF; color: #2563EB; }
 
     @media (max-width: 1024px) {
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -311,6 +310,7 @@ export class MaintenancePageComponent {
 
   constructor(
     private maintenanceService: MaintenanceService,
+    private equipmentService: EquipmentService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -398,5 +398,15 @@ export class MaintenancePageComponent {
 
   allerAuxRapports(): void {
     this.router.navigate(['/rapports']);
+  }
+
+  ouvrirDetail(id: string): void {
+    const item = this.items.find(i => i.id === id);
+    if (item) {
+      const equipment = this.equipmentService.getAll().find(e => e.nom === item.equipment);
+      if (equipment) {
+        this.router.navigate(['/equipements', equipment.imei], { queryParams: { source: 'maintenance' } });
+      }
+    }
   }
 }
