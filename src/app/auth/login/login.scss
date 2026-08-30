@@ -44,8 +44,8 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 420px;
-  padding: 44px 38px 32px;
+  max-width: 380px;
+  padding: 44px 34px 32px;
   border-radius: 28px;
   background: rgba(255, 255, 255, 0.15);
   -webkit-backdrop-filter: blur(20px);
@@ -273,7 +273,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 10px 24px rgba(29, 46, 92, 0.35);
-  transition:
+  transition: 
     filter 0.25s ease,
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -316,8 +316,8 @@
 /* Tablette */
 @media (max-width: 768px) {
   .auth-card {
-    max-width: 400px;
-    padding: 40px 32px 30px;
+    max-width: 370px;
+    padding: 40px 30px 30px;
   }
 }
 
