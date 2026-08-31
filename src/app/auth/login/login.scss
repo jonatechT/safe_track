@@ -148,20 +148,32 @@
     background: rgba(255, 255, 255, 0.14);
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
   }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px rgba(30, 41, 59, 0.95) inset !important;
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #fff;
+    border-color: rgba(255, 255, 255, 0.45);
+    transition: background-color 5000s ease-in-out 0s;
+  }
 }
 
-/* Icône utilisateur (non cliquable) */
+/* Icône utilisateur (non cliquable) — toujours visible même avec autofill */
 .input-icon {
   position: absolute;
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: #fff;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 17px;
   pointer-events: none;
+  z-index: 1;
 }
 
-/* Bouton œil : afficher / masquer le mot de passe */
+/* Bouton œil : afficher / masquer le mot de passe — toujours visible même avec autofill */
 .toggle-password {
   position: absolute;
   right: 12px;
@@ -175,12 +187,13 @@
   background: transparent;
   border: none;
   border-radius: 50%;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
   cursor: pointer;
   transition:
     color 0.2s ease,
     background-color 0.2s ease;
+  z-index: 1;
 
   &:hover {
     background: rgba(255, 255, 255, 0.12);
