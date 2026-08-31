@@ -232,10 +232,7 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
       min-height: calc(100vh - 96px);
       padding: 26px 26px 34px;
       border-radius: 24px;
-      background:
-        radial-gradient(900px 420px at 88% -12%, rgba(109, 74, 255, 0.07), transparent 60%),
-        radial-gradient(820px 420px at -8% 4%, rgba(79, 124, 255, 0.09), transparent 55%),
-        linear-gradient(150deg, #F7F8FF 0%, #EEF2FF 48%, #F6F7FF 100%);
+      background: #FFFFFF;
       box-sizing: border-box;
     }
 
@@ -309,11 +306,10 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
     }
 
     .eqd-btn-ghost {
-      background: rgba(255, 255, 255, 0.78);
+      background: #FFFFFF;
       color: #3D4A63;
       border-color: rgba(23, 32, 51, 0.08);
       box-shadow: 0 2px 10px rgba(65, 78, 120, 0.06);
-      backdrop-filter: blur(6px);
     }
 
     .eqd-btn-ghost:hover {
@@ -343,8 +339,7 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
       justify-content: space-between;
       gap: 20px;
       flex-wrap: wrap;
-      background: rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(10px);
+      background: #FFFFFF;
       border: 1px solid rgba(79, 124, 255, 0.12);
       border-radius: 20px;
       padding: 22px 24px;
