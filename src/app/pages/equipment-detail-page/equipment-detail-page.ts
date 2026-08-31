@@ -796,7 +796,7 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
     }
 
     .eqd-bdiag-dur-value {
-      font-size: 32px;
+      font-size: 24px;
       font-weight: 800;
       letter-spacing: -0.8px;
       color: #172033;
