@@ -40,58 +40,6 @@
     </div>
   }
 
-  <!-- Comptes en attente de validation -->
-  <div class="sa-card sa-card--table">
-    <div class="sa-card-header">
-      <div>
-        <h2 class="sa-card-title">Comptes en attente de validation</h2>
-        <p class="sa-card-subtitle">Inscriptions publiques nécessitant une validation admin</p>
-      </div>
-      <span class="sa-badge sa-badge-pending">{{ pendingUsers().length }} en attente</span>
-    </div>
-    @if (pendingUsers().length === 0) {
-      <div class="sa-empty">
-        <i class="fa-solid fa-inbox sa-empty-icon"></i>
-        <p>Aucun compte en attente de validation.</p>
-      </div>
-    } @else {
-      <div class="sa-table-wrapper">
-        <table class="sa-table">
-          <thead>
-            <tr>
-              <th>Utilisateur</th>
-              <th>Email</th>
-              <th>Date d'inscription</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (u of pendingUsers(); track u.id) {
-              <tr>
-                <td>
-                  <div class="sa-cell-main">
-                    <div class="sa-cell-avatar">{{ u.name.charAt(0).toUpperCase() }}</div>
-                    <div class="sa-cell-name">{{ u.name }}</div>
-                  </div>
-                </td>
-                <td>{{ u.email }}</td>
-                <td>{{ u.dateCreation ? (u.dateCreation | date: 'dd/MM/yyyy') : '—' }}</td>
-                <td>
-                  <button class="sa-btn-validate" (click)="validerCompte(u)" title="Valider le compte">
-                    <i class="fa-solid fa-check"></i> Valider
-                  </button>
-                  <button class="sa-btn-reject" (click)="rejeterCompte(u)" title="Rejeter le compte">
-                    <i class="fa-solid fa-xmark"></i> Rejeter
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-  </div>
-
   <div class="sa-card sa-card--table">
     <div class="sa-card-header">
       <div>
