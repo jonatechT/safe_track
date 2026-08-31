@@ -71,7 +71,7 @@
 
 .auth-title {
   color: #fff;
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.5px;
@@ -271,7 +271,7 @@
   margin-top: 6px;
   border: none;
   border-radius: 15px;
-  background: linear-gradient(135deg, #33477a 0%, #1d2e5c 100%);
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   color: #fff;
   font-family: inherit;
   font-size: 17px;
@@ -281,7 +281,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 24px rgba(29, 46, 92, 0.35);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
   transition: 
     filter 0.25s ease,
     transform 0.25s ease,
@@ -290,7 +290,7 @@
   &:hover:not(:disabled) {
     filter: brightness(1.12);
     transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(29, 46, 92, 0.45);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.45);
   }
 
   &:active:not(:disabled) {
