@@ -226,7 +226,7 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
     :host {
       display: block;
       min-height: calc(100vh - 96px);
-      padding: 26px 26px 34px;
+      padding: 16px 26px 34px;
       border-radius: 24px;
       background: #FFFFFF;
       box-sizing: border-box;
