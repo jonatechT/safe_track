@@ -265,8 +265,8 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
     }
 
     .eqd-title {
-      margin: 14px 0 0;
-      font-size: 30px;
+      margin: 0;
+      font-size: 26px;
       font-weight: 800;
       letter-spacing: -0.8px;
       color: #172033;
