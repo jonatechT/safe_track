@@ -42,7 +42,7 @@ export class DashboardComponent implements OnInit {
       imei: '354123456789012'
     },
     {
-      title: 'Déplacement non autorisé — Véhicule #V-007',
+      title: 'Déplacement non autorisé — Kit solaire #SK-067',
       time: 'Il y a 28 min',
       imei: '354123456789014'
     }
