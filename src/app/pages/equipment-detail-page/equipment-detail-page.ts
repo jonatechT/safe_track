@@ -63,7 +63,6 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
         <!-- ===== Carte résumé de l'équipement ===== -->
         <section class="eqd-summary">
           <div class="eqd-summary-main">
-            <span class="eqd-summary-icon"><i [class]="'fa-solid ' + typeIcon"></i></span>
             <div class="eqd-summary-info">
               <h2 class="eqd-summary-name">{{ equipment.nom }}</h2>
               <div class="eqd-summary-imei">
