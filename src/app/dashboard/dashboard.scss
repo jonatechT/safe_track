@@ -319,76 +319,6 @@
   gap: 14px;
 }
 
-.activity-icon,
-.alert-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
-}
-
-/* --- Style "pastille circulaire avec dégradés" --- */
-.icon-ring {
-  position: relative;
-}
-
-.icon-ring::after {
-  content: '';
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 2px var(--ring-color, rgba(15, 23, 42, 0.15));
-  pointer-events: none;
-}
-
-.icon-blue {
-  --ring-color: rgba(59, 130, 246, 0.4);
-  background: linear-gradient(135deg, #60A5FA, #2563EB);
-}
-
-.icon-green {
-  --ring-color: rgba(16, 185, 129, 0.4);
-  background: linear-gradient(135deg, #34D399, #059669);
-}
-
-.icon-amber {
-  --ring-color: rgba(245, 158, 11, 0.4);
-  background: linear-gradient(135deg, #FBBF24, #D97706);
-}
-
-.icon-red {
-  --ring-color: rgba(239, 68, 68, 0.4);
-  background: linear-gradient(135deg, #F87171, #DC2626);
-  border: none;
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.icon-yellow {
-  --ring-color: rgba(250, 204, 21, 0.45);
-  background: linear-gradient(135deg, #FDE047, #EAB308);
-}
-
-.icon-sky {
-  --ring-color: rgba(14, 165, 233, 0.4);
-  background: linear-gradient(135deg, #38BDF8, #0284C7);
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 0 0 var(--ring-color);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
-  }
-}
-
 @keyframes alert-ring-pulse {
   0%, 100% {
     transform: scale(1);
@@ -428,6 +358,34 @@
   padding: 12px 16px;
   box-shadow: none;
   transition: all 0.2s ease;
+}
+
+/* ===== Éléments cliquables (Activités & Alertes) ===== */
+.activity-item.clickable,
+.alert-item.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.activity-item.clickable:hover,
+.alert-item.clickable:hover {
+  background: #F8FAFC;
+  border-color: #93C5FD;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.activity-item.clickable:focus,
+.alert-item.clickable:focus {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.activity-item.clickable:active,
+.alert-item.clickable:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .activity-item:hover,

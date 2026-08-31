@@ -51,9 +51,9 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 380px;
-  padding: 44px 34px 32px;
-  border-radius: 28px;
+  max-width: 340px;
+  padding: 32px 28px 28px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.15);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
@@ -65,7 +65,7 @@
 /* --- En-tête -------------------------------------------------------------- */
 
 .auth-header {
-  margin-bottom: 28px;
+  margin-bottom: 22px;
   animation: authFadeIn 0.9s ease 0.45s both;
 }
 
@@ -109,7 +109,7 @@
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .input-wrapper {
@@ -388,8 +388,8 @@
 /* Tablette */
 @media (max-width: 768px) {
   .auth-card {
-    max-width: 370px;
-    padding: 40px 30px 30px;
+    max-width: 340px;
+    padding: 30px 26px 26px;
   }
 }
 
@@ -400,8 +400,8 @@
   }
 
   .auth-card {
-    padding: 34px 22px 26px;
-    border-radius: 24px;
+    padding: 28px 20px 24px;
+    border-radius: 18px;
   }
 
   .auth-title {

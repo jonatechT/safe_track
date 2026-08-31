@@ -1,8 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { EquipmentService, Equipment, EquipmentDiagnostic } from '../../services/equipment.service';
+import { EquipmentService, Equipment, EquipmentDiagnostic, BatteryDiagnostic } from '../../services/equipment.service';
 import { MaintenanceService } from '../../services/maintenance.service';
 import { AuthService } from '../../auth/auth.service';
+
+/**
+ * MOCK TEMPORAIRE — Prévisualisation de la carte « Diagnostic batterie ».
+ * À supprimer lorsque l'API backend fournira les données réelles.
+ * Remplacer alors par : this.batteryDiagnostic = equipment.batteryDiagnostic;
+ */
+const mockBatteryDiagnostic: BatteryDiagnostic = {
+  etat: 'A_remplacer',
+  duree_estimee_jours: 77,
+  duree_min_jours: 36,
+  duree_max_jours: 118,
+  priorite: 'Haute',
+  message: 'Batterie en fin de vie - planifier le remplacement !'
+};
 
 @Component({
   selector: 'app-equipment-detail-page',
@@ -139,29 +153,70 @@ import { AuthService } from '../../auth/auth.service';
           </article>
         </section>
 
-        <!-- ===== Carte diagnostic ===== -->
-        <section class="eqd-diagnostic">
-          <header class="eqd-diag-head">
-            <span class="eqd-chip eqd-chip-blue eqd-chip-lg"><i class="fa-solid fa-stethoscope"></i></span>
-            <div class="eqd-diag-head-text">
-              <h3 class="eqd-diag-title">Diagnostic de l'équipement</h3>
-              <p class="eqd-diag-sub">Analyse automatique basée sur l'état actuel de l'équipement</p>
+        <!-- ===== Carte diagnostic batterie ===== -->
+        <section class="eqd-battery-diag">
+          <header class="eqd-bdiag-head">
+            <span class="eqd-chip eqd-chip-purple eqd-chip-lg"><i class="fa-solid fa-battery-full"></i></span>
+            <div class="eqd-bdiag-head-text">
+              <h3 class="eqd-bdiag-title">Diagnostic batterie</h3>
+              <p class="eqd-bdiag-sub">Analyse automatique de l'état de la batterie</p>
             </div>
+            @if (batteryDiagnostic) {
+              <span [class]="'eqd-badge eqd-badge-lg ' + batteryStateBadgeClass">
+                {{ batteryEtatDisplay }}
+              </span>
+            }
           </header>
-          <div class="eqd-diag-grid">
-            <div class="eqd-diag-item">
-              <span class="eqd-diag-key">État</span>
-              <span [class]="'eqd-badge ' + etatBadgeClass">{{ diagnostic.etat }}</span>
+
+          @if (!batteryDiagnostic) {
+            <!-- ===== Diagnostic indisponible ===== -->
+            <div class="eqd-bdiag-unavailable">
+              <span class="eqd-bdiag-unavail-icon"><i class="fa-solid fa-circle-info"></i></span>
+              <h4 class="eqd-bdiag-unavail-title">Diagnostic indisponible</h4>
+              <p class="eqd-bdiag-unavail-text">
+                Le diagnostic automatique n'est actuellement pas disponible.
+              </p>
             </div>
-            <div class="eqd-diag-item">
-              <span class="eqd-diag-key">Gravité</span>
-              <span [class]="'eqd-badge ' + graviteBadgeClass">{{ diagnostic.gravite }}</span>
+          } @else {
+            <!-- ===== Grille état / priorité ===== -->
+            <div class="eqd-bdiag-grid">
+              <div class="eqd-bdiag-stat-card">
+                <span class="eqd-bdiag-stat-key">ÉTAT</span>
+                <div class="eqd-bdiag-stat-value">
+                  <span class="eqd-bdiag-state-icon" [class]="batteryStateIconClass">
+                    <i [class]="batteryStateIcon"></i>
+                  </span>
+                  <span>{{ batteryEtatDisplay }}</span>
+                </div>
+                <span class="eqd-bdiag-state-hint">{{ batteryStateHint }}</span>
+              </div>
+              <div class="eqd-bdiag-stat-card">
+                <span class="eqd-bdiag-stat-key">PRIORITÉ</span>
+                <div class="eqd-bdiag-stat-value">
+                  <span [class]="'eqd-badge eqd-badge-lg ' + batteryPriorityBadgeClass">
+                    {{ batteryDiagnostic.priorite }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="eqd-diag-item">
-              <span class="eqd-diag-key">Anomalie</span>
-              <span [class]="'eqd-badge eqd-badge-wrap ' + anomalieBadgeClass">{{ diagnostic.anomalie || 'Aucune' }}</span>
+
+            <!-- ===== Durée de vie estimée ===== -->
+            <div class="eqd-bdiag-duration">
+              <span class="eqd-bdiag-dur-key">Durée de vie estimée</span>
+              <div class="eqd-bdiag-dur-main">
+                <span class="eqd-bdiag-dur-value">~{{ batteryDiagnostic.duree_estimee_jours }} jours</span>
+                <span class="eqd-bdiag-dur-range">
+                  Entre {{ batteryDiagnostic.duree_min_jours }} et {{ batteryDiagnostic.duree_max_jours }} jours
+                </span>
+              </div>
             </div>
-          </div>
+
+            <!-- ===== Message ===== -->
+            <div [class]="'eqd-bdiag-message ' + batteryMessageClass">
+              <span class="eqd-bdiag-msg-icon"><i [class]="batteryMessageIcon"></i></span>
+              <span class="eqd-bdiag-msg-text">{{ batteryDiagnostic.message }}</span>
+            </div>
+          }
         </section>
       }
     </div>
@@ -616,6 +671,258 @@ import { AuthService } from '../../auth/auth.service';
       color: #8A93A8;
     }
 
+    /* ===== Carte diagnostic batterie ===== */
+    .eqd-battery-diag {
+      background: #FFFFFF;
+      border: 1px solid rgba(23, 32, 51, 0.06);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 12px 40px rgba(65, 78, 120, 0.10);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .eqd-bdiag-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed rgba(23, 32, 51, 0.10);
+    }
+
+    .eqd-bdiag-head-text { min-width: 0; }
+
+    .eqd-bdiag-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: #172033;
+    }
+
+    .eqd-bdiag-sub {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: #7A8499;
+    }
+
+    /* ===== Grille état / priorité ===== */
+    .eqd-bdiag-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .eqd-bdiag-stat-card {
+      background: linear-gradient(160deg, #F8F9FF 0%, #F3F5FE 100%);
+      border: 1px solid rgba(79, 124, 255, 0.10);
+      border-radius: 16px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .eqd-bdiag-stat-key {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #8A93A8;
+    }
+
+    .eqd-bdiag-stat-value {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: #172033;
+    }
+
+    .eqd-bdiag-state-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: background 0.22s ease, color 0.22s ease;
+    }
+
+    .eqd-bdiag-state-icon--success {
+      background: rgba(32, 201, 151, 0.12);
+      color: #12B886;
+    }
+
+    .eqd-bdiag-state-icon--warning {
+      background: rgba(245, 158, 11, 0.12);
+      color: #D97706;
+    }
+
+    .eqd-bdiag-state-icon--danger {
+      background: rgba(239, 68, 68, 0.12);
+      color: #E5484D;
+    }
+
+    .eqd-bdiag-state-icon--neutral {
+      background: rgba(122, 132, 153, 0.12);
+      color: #7A8499;
+    }
+
+    .eqd-bdiag-state-hint {
+      font-size: 12.5px;
+      color: #7A8499;
+      margin-top: 2px;
+    }
+
+    /* ===== Durée de vie estimée ===== */
+    .eqd-bdiag-duration {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .eqd-bdiag-dur-key {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #8A93A8;
+    }
+
+    .eqd-bdiag-dur-main {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .eqd-bdiag-dur-value {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: #172033;
+    }
+
+    .eqd-bdiag-dur-range {
+      font-size: 13.5px;
+      color: #7A8499;
+    }
+
+    /* ===== Message ===== */
+    .eqd-bdiag-message {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(23, 32, 51, 0.06);
+      font-size: 14px;
+      line-height: 1.5;
+      color: #3D4A63;
+    }
+
+    .eqd-bdiag-msg-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .eqd-bdiag-msg-text {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .eqd-bdiag-msg--success {
+      background: rgba(32, 201, 151, 0.06);
+      border-color: rgba(32, 201, 151, 0.18);
+    }
+
+    .eqd-bdiag-msg--success .eqd-bdiag-msg-icon {
+      background: rgba(32, 201, 151, 0.12);
+      color: #12B886;
+    }
+
+    .eqd-bdiag-msg--warning {
+      background: rgba(245, 158, 11, 0.06);
+      border-color: rgba(245, 158, 11, 0.18);
+    }
+
+    .eqd-bdiag-msg--warning .eqd-bdiag-msg-icon {
+      background: rgba(245, 158, 11, 0.12);
+      color: #D97706;
+    }
+
+    .eqd-bdiag-msg--danger {
+      background: rgba(239, 68, 68, 0.06);
+      border-color: rgba(239, 68, 68, 0.18);
+    }
+
+    .eqd-bdiag-msg--danger .eqd-bdiag-msg-icon {
+      background: rgba(239, 68, 68, 0.12);
+      color: #E5484D;
+    }
+
+    .eqd-bdiag-msg--neutral {
+      background: rgba(122, 132, 153, 0.06);
+      border-color: rgba(122, 132, 153, 0.18);
+    }
+
+    .eqd-bdiag-msg--neutral .eqd-bdiag-msg-icon {
+      background: rgba(122, 132, 153, 0.12);
+      color: #7A8499;
+    }
+
+    /* ===== Diagnostic indisponible ===== */
+    .eqd-bdiag-unavailable {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+      padding: 32px 20px;
+    }
+
+    .eqd-bdiag-unavail-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(122, 132, 153, 0.10);
+      color: #7A8499;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .eqd-bdiag-unavail-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #172033;
+    }
+
+    .eqd-bdiag-unavail-text {
+      margin: 0;
+      font-size: 13.5px;
+      color: #7A8499;
+      max-width: 420px;
+    }
+
     /* ===== État vide ===== */
     .eqd-empty {
       background: #FFFFFF;
@@ -651,6 +958,7 @@ import { AuthService } from '../../auth/auth.service';
     /* ===== Responsive ===== */
     @media (max-width: 900px) {
       .eqd-diag-grid { grid-template-columns: 1fr; }
+      .eqd-bdiag-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 768px) {
@@ -683,6 +991,8 @@ import { AuthService } from '../../auth/auth.service';
         width: 100%;
         flex-wrap: wrap;
       }
+
+      .eqd-battery-diag { padding: 22px; }
     }
 
     @media (max-width: 560px) {
@@ -697,6 +1007,16 @@ import { AuthService } from '../../auth/auth.service';
       }
 
       .eqd-card-value { font-size: 20px; }
+
+      .eqd-battery-diag { padding: 20px; }
+
+      .eqd-bdiag-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .eqd-bdiag-dur-value { font-size: 26px; }
     }
 
     @media (max-width: 400px) {
@@ -707,12 +1027,15 @@ import { AuthService } from '../../auth/auth.service';
       .eqd-card { padding: 18px; }
 
       .eqd-diagnostic { padding: 18px; }
+
+      .eqd-battery-diag { padding: 18px; }
     }
   `]
 })
 export class EquipmentDetailPageComponent implements OnInit {
   equipment: Equipment | null = null;
   diagnostic: EquipmentDiagnostic = { etat: 'État normal', gravite: '—', anomalie: null };
+  batteryDiagnostic: BatteryDiagnostic | null = null;
   source: 'equipment' | 'alerts' | 'maintenance' = 'equipment';
   isAlertTaken = false;
 
@@ -741,6 +1064,10 @@ export class EquipmentDetailPageComponent implements OnInit {
         this.checkAlertStatus();
       }
     }
+
+    // MOCK TEMPORAIRE — À remplacer par les données réelles du backend :
+    // this.batteryDiagnostic = this.equipment?.batteryDiagnostic ?? null;
+    this.batteryDiagnostic = mockBatteryDiagnostic;
   }
 
   private checkAlertStatus(): void {
@@ -798,6 +1125,89 @@ export class EquipmentDetailPageComponent implements OnInit {
   get anomalieBadgeClass(): string {
     if (!this.diagnostic.anomalie) return 'eqd-badge-neutral';
     return this.diagnostic.anomalie.includes('Alerte') ? 'eqd-badge-danger' : 'eqd-badge-warning';
+  }
+
+  /* ===== Getters pour le diagnostic batterie ===== */
+
+  /** Affichage de l'état de la batterie (A_remplacer → À remplacer) */
+  get batteryEtatDisplay(): string {
+    if (!this.batteryDiagnostic) return '';
+    return this.batteryDiagnostic.etat === 'A_remplacer' ? 'À remplacer' : this.batteryDiagnostic.etat;
+  }
+
+  /** Classe de badge de l'état de la batterie */
+  get batteryStateBadgeClass(): string {
+    if (!this.batteryDiagnostic) return 'eqd-badge-neutral';
+    switch (this.batteryDiagnostic.etat) {
+      case 'Bon': return 'eqd-badge-success';
+      case 'Surveiller': return 'eqd-badge-warning';
+      case 'A_remplacer': return 'eqd-badge-danger';
+      default: return 'eqd-badge-neutral';
+    }
+  }
+
+  /** Classe du conteneur d'icône d'état */
+  get batteryStateIconClass(): string {
+    if (!this.batteryDiagnostic) return 'eqd-bdiag-state-icon--neutral';
+    switch (this.batteryDiagnostic.etat) {
+      case 'Bon': return 'eqd-bdiag-state-icon--success';
+      case 'Surveiller': return 'eqd-bdiag-state-icon--warning';
+      case 'A_remplacer': return 'eqd-bdiag-state-icon--danger';
+      default: return 'eqd-bdiag-state-icon--neutral';
+    }
+  }
+
+  /** Icône FontAwesome selon l'état de la batterie */
+  get batteryStateIcon(): string {
+    if (!this.batteryDiagnostic) return 'fa-solid fa-battery';
+    switch (this.batteryDiagnostic.etat) {
+      case 'Bon': return 'fa-solid fa-battery-full';
+      case 'Surveiller': return 'fa-solid fa-battery-quarter';
+      case 'A_remplacer': return 'fa-solid fa-battery-empty';
+      default: return 'fa-solid fa-battery';
+    }
+  }
+
+  /** Message d'information sous l'état de la batterie */
+  get batteryStateHint(): string {
+    if (!this.batteryDiagnostic) return '';
+    switch (this.batteryDiagnostic.etat) {
+      case 'Bon': return 'Aucune action particulière nécessaire.';
+      case 'Surveiller': return 'Surveillance régulière recommandée.';
+      case 'A_remplacer': return 'Planifier le remplacement de la batterie.';
+      default: return '';
+    }
+  }
+
+  /** Classe de badge de la priorité */
+  get batteryPriorityBadgeClass(): string {
+    if (!this.batteryDiagnostic) return 'eqd-badge-neutral';
+    const p = this.batteryDiagnostic.priorite.toUpperCase();
+    if (p.includes('HAUT') || p.includes('ÉLEVÉE') || p.includes('CRITIQUE')) return 'eqd-badge-danger';
+    if (p.includes('MOYENNE') || p.includes('MEDIUM')) return 'eqd-badge-warning';
+    return 'eqd-badge-neutral';
+  }
+
+  /** Classe du conteneur de message */
+  get batteryMessageClass(): string {
+    if (!this.batteryDiagnostic) return '';
+    switch (this.batteryDiagnostic.etat) {
+      case 'Bon': return 'eqd-bdiag-msg--success';
+      case 'Surveiller': return 'eqd-bdiag-msg--warning';
+      case 'A_remplacer': return 'eqd-bdiag-msg--danger';
+      default: return 'eqd-bdiag-msg--neutral';
+    }
+  }
+
+  /** Icône du message */
+  get batteryMessageIcon(): string {
+    if (!this.batteryDiagnostic) return 'fa-solid fa-circle-info';
+    switch (this.batteryDiagnostic.etat) {
+      case 'Bon': return 'fa-solid fa-check-circle';
+      case 'Surveiller': return 'fa-solid fa-exclamation-triangle';
+      case 'A_remplacer': return 'fa-solid fa-circle-exclamation';
+      default: return 'fa-solid fa-circle-info';
+    }
   }
 
   retour(): void {

@@ -64,26 +64,32 @@
     <div class="card">
       <h2 class="card-title">Activités récentes</h2>
       <div class="activity-list">
-        <div class="activity-item">
-          <div class="activity-info"><span class="activity-title">Maintenance Kit solaire #SK-045</span><span class="activity-time">Il y a 10 min</span></div>
-          <span class="status-pill status-progress">En cours</span>
-        </div>
-
+        @for (activity of activities; track activity.imei) {
+          <div class="activity-item clickable" (click)="goToEquipment(activity.imei)" [attr.aria-label]="'Voir le détail de ' + activity.title" tabindex="0" (keydown.enter)="goToEquipment(activity.imei)">
+            <div class="activity-info">
+              <span class="activity-title">{{ activity.title }}</span>
+              <span class="activity-time">{{ activity.time }}</span>
+            </div>
+            @if (activity.status) {
+              <span class="status-pill" [class]="activity.statusClass">{{ activity.status }}</span>
+            }
+          </div>
+        }
       </div>
     </div>
 
     <div class="card">
       <h2 class="card-title">Alertes récentes</h2>
       <div class="alerts-list">
-        <div class="alert-item">
-          <div class="alert-info"><span class="alert-title">Violation de box — Kit solaire #SK-045</span><span class="alert-time">Il y a 5 min</span></div>
-          <span class="alert-pulse"></span>
-        </div>
-
-        <div class="alert-item">
-          <div class="alert-info"><span class="alert-title">Déplacement non autorisé — Véhicule #V-007</span><span class="alert-time">Il y a 28 min</span></div>
-          <span class="alert-pulse"></span>
-        </div>
+        @for (alert of alerts; track alert.imei) {
+          <div class="alert-item clickable" (click)="goToEquipment(alert.imei)" [attr.aria-label]="'Voir le détail de ' + alert.title" tabindex="0" (keydown.enter)="goToEquipment(alert.imei)">
+            <div class="alert-info">
+              <span class="alert-title">{{ alert.title }}</span>
+              <span class="alert-time">{{ alert.time }}</span>
+            </div>
+            <span class="alert-pulse"></span>
+          </div>
+        }
       </div>
     </div>
   </div>

@@ -39,7 +39,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
           </div>
         </div>
 
-        <!-- Tableau : Équipement | IMEI | Mise en ligne | Détail -->
+<!-- Tableau : Équipement | IMEI | Mise en ligne | Détail (bouton "Voir") -->
         <div class="table-card">
           <div class="table-wrapper">
             <table class="data-table">
@@ -63,7 +63,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
                     <td><span class="sync-time">{{ eq.miseEnLigne }}</span></td>
                     <td class="detail-cell">
                       <button class="btn-detail" (click)="ouvrirDetail(eq.imei); $event.stopPropagation()">
-                        Détail
+                        Voir
                       </button>
                     </td>
                   </tr>
@@ -143,7 +143,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
     .equipment-name { font-weight: 600; color: #1E293B; font-size: 15px; }
     .imei-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 14px; font-weight: 500; color: #475569; letter-spacing: 0.3px; }
     .sync-time { color: #64748B; font-size: 14px; }
-    /* Bouton Détail (petit badge bleu autour du mot) */
+    /* Bouton Voir (petit badge bleu autour du mot) */
     .btn-detail {
       background-color: transparent;
       color: #2563EB;

@@ -1,4 +1,19 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+interface Activity {
+  title: string;
+  time: string;
+  status?: string;
+  statusClass?: string;
+  imei: string;
+}
+
+interface Alert {
+  title: string;
+  time: string;
+  imei: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -7,6 +22,31 @@ import { Component, OnInit } from '@angular/core';
   styleUrl: './dashboard.scss'
 })
 export class DashboardComponent implements OnInit {
+
+  // Activités récentes (mock) — à remplacer par un appel API
+  activities: Activity[] = [
+    {
+      title: 'Maintenance Kit solaire #SK-045',
+      time: 'Il y a 10 min',
+      status: 'En cours',
+      statusClass: 'status-progress',
+      imei: '354123456789012'
+    }
+  ];
+
+  // Alertes récentes (mock) — à remplacer par un appel API
+  alerts: Alert[] = [
+    {
+      title: 'Violation de box — Kit solaire #SK-045',
+      time: 'Il y a 5 min',
+      imei: '354123456789012'
+    },
+    {
+      title: 'Déplacement non autorisé — Véhicule #V-007',
+      time: 'Il y a 28 min',
+      imei: '354123456789014'
+    }
+  ];
 
   // Valeurs par défaut (mock) - à remplacer par un appel API
   totalEquipements: number = 100;
@@ -30,8 +70,17 @@ export class DashboardComponent implements OnInit {
   alerteActivePourcent: number = 7;
   anomalieDetecteePourcent: number = 3;
 
+  constructor(private router: Router) {}
+
   ngOnInit(): void {
     this.loadKpiData();
+  }
+
+  /** Navigation vers la page détail d'un équipement */
+  goToEquipment(imei: string | undefined): void {
+    if (imei) {
+      this.router.navigate(['/equipements', imei]);
+    }
   }
 
   private loadKpiData(): void {

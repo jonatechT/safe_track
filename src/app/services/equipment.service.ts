@@ -26,6 +26,19 @@ export interface EquipmentDiagnostic {
   anomalie: string | null;
 }
 
+/**
+ * Diagnostic batterie fourni par le backend.
+ * Les champs sont optionnels car le backend n'est pas encore connecté.
+ */
+export interface BatteryDiagnostic {
+  etat: 'Bon' | 'Surveiller' | 'A_remplacer';
+  duree_estimee_jours: number;
+  duree_min_jours: number;
+  duree_max_jours: number;
+  priorite: string;
+  message: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EquipmentService {
   /** Données identiques à celles affichées jusqu'ici dans le tableau du parc */
