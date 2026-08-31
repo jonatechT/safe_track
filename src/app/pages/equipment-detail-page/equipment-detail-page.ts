@@ -27,10 +27,6 @@ const mockBatteryDiagnostic: BatteryDiagnostic = {
       <!-- ===== Header premium ===== -->
       <header class="eqd-header">
         <div class="eqd-header-text">
-          <span class="eqd-eyebrow">
-            <i class="fa-solid fa-solar-panel"></i>
-            Parc d'équipement
-          </span>
           <h1 class="eqd-title">Détail de l'équipement</h1>
           <p class="eqd-subtitle">Informations techniques et diagnostic en temps réel.</p>
         </div>
