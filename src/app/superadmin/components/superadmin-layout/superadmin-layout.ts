@@ -301,8 +301,7 @@ export class SuperAdminLayoutComponent {
 
   protected readonly menuItems = [
     { label: 'Dashboard', icon: 'fa-solid fa-chart-pie', route: '/superadmin', exact: true },
-    { label: 'Structures', icon: 'fa-solid fa-building', route: '/superadmin/structures', exact: true },
-    { label: 'Ajouter', icon: 'fa-solid fa-plus', route: '/superadmin/structures/new', exact: true }
+    { label: 'Structures', icon: 'fa-solid fa-building', route: '/superadmin/structures', exact: true }
   ];
 
   isSidebarCollapsed = false;
