@@ -26,6 +26,13 @@ export class AuthService {
   private readonly USERS_VERSION_KEY = 'safe_track_users_version';
   private readonly USERS_CURRENT_VERSION = '2';
 
+  /** Version de la session de connexion (clé séparée du registre des comptes) */
+  private readonly SESSION_VERSION_KEY = 'safe_track_session_version';
+  private readonly SESSION_CURRENT_VERSION = '2';
+
+  /** Rôles valides — toute session avec un autre rôle est considérée obsolète */
+  private readonly VALID_ROLES: UserRole[] = ['SUPERADMIN', 'ADMIN_STRUCTURE', 'USER'];
+
   private readonly SUPER_ADMIN_EMAIL = 'superadmin@safetrack.com';
   private readonly SUPER_ADMIN_PASSWORD = 'admin123';
 
@@ -33,6 +40,7 @@ export class AuthService {
 
   constructor() {
     this.seedDemoUsers();
+    this.migrateSession();
   }
 
   /** Comptes de démonstration pour les structures */
@@ -120,6 +128,42 @@ export class AuthService {
       return !!localStorage.getItem(this.TOKEN_KEY);
     }
     return false;
+  }
+
+  /**
+   * Migration de la session de connexion.
+   * localStorage est propre à chaque origine : la session en ligne
+   * (GitHub Pages) peut provenir d'un ancien déploiement avec une forme
+   * de données obsolète (rôle absent/invalide), ce qui faisait disparaître
+   * les actions réservées aux admins alors que tout fonctionnait en local.
+   * Toute session sans version courante ou de forme invalide est purgée :
+   * l'utilisateur se reconnecte et obtient un rôle fiable.
+   */
+  private migrateSession(): void {
+    if (typeof window === 'undefined') return;
+    const version = localStorage.getItem(this.SESSION_VERSION_KEY);
+    if (version === this.SESSION_CURRENT_VERSION) return;
+
+    const raw = localStorage.getItem(this.USER_KEY);
+    if (raw) {
+      try {
+        const user = JSON.parse(raw) as User;
+        if (!user || !this.VALID_ROLES.includes(user.role)) {
+          this.clearInvalidSession();
+        }
+      } catch {
+        this.clearInvalidSession();
+      }
+    }
+    localStorage.setItem(this.SESSION_VERSION_KEY, this.SESSION_CURRENT_VERSION);
+  }
+
+  /** Purge une session obsolète ou corrompue. */
+  private clearInvalidSession(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.isLoggedIn.set(false);
   }
 
   /** Utilisateur actuellement connecté */
@@ -288,7 +332,19 @@ export class AuthService {
   getUser(): User | null {
     if (typeof window !== 'undefined') {
       const userStr = localStorage.getItem(this.USER_KEY);
-      return userStr ? JSON.parse(userStr) : null;
+      if (!userStr) return null;
+      try {
+        const user = JSON.parse(userStr) as User;
+        if (!user || !this.VALID_ROLES.includes(user.role)) {
+          // Session de forme inconnue (ancien déploiement) : invalide
+          this.clearInvalidSession();
+          return null;
+        }
+        return user;
+      } catch {
+        this.clearInvalidSession();
+        return null;
+      }
     }
     return null;
   }
