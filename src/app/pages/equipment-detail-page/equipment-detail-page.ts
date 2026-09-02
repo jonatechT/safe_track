@@ -373,7 +373,6 @@ import { BatteryExportService } from '../../services/battery-export.service';
             <span class="eqd-chip eqd-chip-cyan eqd-chip-lg"><i class="fa-solid fa-route"></i></span>
             <div class="eqd-bdiag-head-text">
               <h3 class="eqd-bdiag-title">Historique de localisation</h3>
-              <p class="eqd-bdiag-sub">Déplacements du kit : où il se trouvait, et où il se trouve maintenant.</p>
             </div>
           </header>
 
