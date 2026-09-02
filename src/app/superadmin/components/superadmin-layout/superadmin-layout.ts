@@ -42,10 +42,10 @@ import { AuthService } from '../../../auth/auth.service';
         </nav>
 
         <div class="sa-sidebar-footer">
-          <button class="sa-profile-btn" (click)="openProfile()" title="Profil" aria-label="Profil">
+          <a class="sa-profile-btn" routerLink="/profile" title="Profil" aria-label="Profil">
             <i class="fa-solid fa-user"></i>
             <span class="sa-profile-btn-label">Profil</span>
-          </button>
+          </a>
         </div>
       </aside>
 
@@ -216,7 +216,7 @@ import { AuthService } from '../../../auth/auth.service';
     .sa-sidebar.collapsed .sa-nav-item { padding: 12px 0; justify-content: center; gap: 0; }
 
     .sa-sidebar-footer { display: flex; flex-direction: column; align-items: stretch; gap: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; }
-    .sa-profile-btn { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 12px; border: 1px solid transparent; background: rgba(255, 255, 255, 0.12); color: #E2E8F0; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; }
+    .sa-profile-btn { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 12px; border: 1px solid transparent; background: rgba(255, 255, 255, 0.12); color: #E2E8F0; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); position: relative; overflow: hidden; text-decoration: none; }
     .sa-profile-btn i { font-size: 20px; }
     .sa-profile-btn:hover { background: rgba(56, 189, 248, 0.22); color: #7DD3FC; }
     .sa-profile-btn:focus-visible { outline: 2px solid #38BDF8; outline-offset: 2px; }

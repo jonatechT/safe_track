@@ -1,12 +1,11 @@
 import { Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { StructureService } from '../../services/structure.service';
 
 @Component({
   selector: 'app-superadmin-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink],
   templateUrl: './superadmin-dashboard.html',
   styleUrl: '../../superadmin-styles.scss'
 })

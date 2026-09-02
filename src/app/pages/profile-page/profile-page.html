@@ -1,0 +1,118 @@
+<app-base-page
+  title="Profil"
+  subtitle="Informations de votre compte et de votre structure."
+  icon="fa-solid fa-user"
+>
+  @if (user; as u) {
+    <div class="profile-content">
+      <!-- ===== En-tête profil ===== -->
+      <div class="profile-hero">
+        <div class="profile-avatar">{{ initials() }}</div>
+        <div class="profile-hero-info">
+          <h2 class="profile-name">{{ u.name }}</h2>
+          <span class="profile-role-badge" [class]="roleClass()">
+            <i class="fa-solid fa-user-shield"></i>
+            {{ roleLabel() }}
+          </span>
+        </div>
+      </div>
+
+      <!-- ===== Cartes d'informations ===== -->
+      <div class="profile-grid">
+        <div class="profile-card">
+          <h3 class="profile-card-title">
+            <span class="profile-card-icon profile-card-icon--blue"><i class="fa-solid fa-address-card"></i></span>
+            Informations personnelles
+          </h3>
+          <div class="profile-field">
+            <span class="profile-field-icon"><i class="fa-solid fa-envelope"></i></span>
+            <div class="profile-field-content">
+              <span class="profile-field-label">Adresse e-mail</span>
+              <span class="profile-field-value">{{ u.email }}</span>
+            </div>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-icon"><i class="fa-solid fa-phone"></i></span>
+            <div class="profile-field-content">
+              <span class="profile-field-label">Téléphone</span>
+              <span class="profile-field-value">{{ u.telephone || 'Non renseigné' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <h3 class="profile-card-title">
+            <span class="profile-card-icon profile-card-icon--green"><i class="fa-solid fa-building"></i></span>
+            Structure
+          </h3>
+          @if (u.structureId) {
+            <div class="profile-field">
+              <span class="profile-field-icon"><i class="fa-solid fa-location-dot"></i></span>
+              <div class="profile-field-content">
+                <span class="profile-field-label">Structure</span>
+                <span class="profile-field-value">{{ structureName }}</span>
+              </div>
+            </div>
+            <div class="profile-field">
+              <span class="profile-field-icon"><i class="fa-solid fa-hashtag"></i></span>
+              <div class="profile-field-content">
+                <span class="profile-field-label">Identifiant structure</span>
+                <span class="profile-field-value">{{ u.structureId }}</span>
+              </div>
+            </div>
+          } @else {
+            <div class="profile-empty-mini">
+              <i class="fa-solid fa-building-circle-exclamation"></i>
+              <span>Aucune structure associée.</span>
+            </div>
+          }
+        </div>
+
+        <div class="profile-card">
+          <h3 class="profile-card-title">
+            <span class="profile-card-icon profile-card-icon--purple"><i class="fa-solid fa-shield-halved"></i></span>
+            Compte
+          </h3>
+          <div class="profile-field">
+            <span class="profile-field-icon"><i class="fa-solid fa-user-tag"></i></span>
+            <div class="profile-field-content">
+              <span class="profile-field-label">Rôle</span>
+              <span class="profile-field-value">{{ roleLabel() }}</span>
+            </div>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-icon"><i class="fa-solid fa-circle-check"></i></span>
+            <div class="profile-field-content">
+              <span class="profile-field-label">Statut</span>
+              <span class="profile-field-value">
+                <span class="profile-status-badge" [class]="statutClass()">{{ statutLabel() }}</span>
+              </span>
+            </div>
+          </div>
+          @if (u.dateCreation) {
+            <div class="profile-field">
+              <span class="profile-field-icon"><i class="fa-solid fa-calendar-days"></i></span>
+              <div class="profile-field-content">
+                <span class="profile-field-label">Membre depuis le</span>
+                <span class="profile-field-value">{{ u.dateCreation | date: 'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- ===== Actions ===== -->
+      <div class="profile-actions">
+        <button type="button" class="profile-logout-btn" (click)="logout()">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Se déconnecter
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="profile-empty">
+      <span class="profile-empty-icon"><i class="fa-solid fa-user-slash"></i></span>
+      <p>Aucune session utilisateur active. Veuillez vous reconnecter.</p>
+    </div>
+  }
+</app-base-page>

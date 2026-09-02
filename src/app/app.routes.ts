@@ -107,7 +107,11 @@ export const routes: Route[] = [
   { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['alerts'], canActivate: [authGuard] },
   { path: 'users', loadComponent: () => import('./features/users/users-list').then(m => m.UsersListComponent), canActivate: [structureAdminGuard] },
-  { path: 'profile', redirectTo: '/dashboard', pathMatch: 'full' },
+  {
+    path: 'profile',
+    loadComponent: () => import('./pages/profile-page/profile-page').then(m => m.ProfilePageComponent),
+    canActivate: [authGuard]
+  },
 
   // ===== SUPERADMIN (espace isolé) =====
   {
