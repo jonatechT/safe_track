@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, ViewChild, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -6,7 +7,8 @@ import {
   Equipment,
   EquipmentDiagnostic,
   BatteryCurrentDiagnostic,
-  BatteryHistoryEntry
+  BatteryHistoryEntry,
+  LocationHistoryEntry
 } from '../../services/equipment.service';
 import { MaintenanceService } from '../../services/maintenance.service';
 import { AuthService } from '../../auth/auth.service';
@@ -16,7 +18,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
 @Component({
   selector: 'app-equipment-detail-page',
   standalone: true,
-  imports: [BatteryHistoryChartsComponent],
+  imports: [BatteryHistoryChartsComponent, DatePipe],
   template: `
     <div class="eqd-shell">
       <!-- ===== Header premium ===== -->
@@ -122,7 +124,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
               <span class="eqd-chip eqd-chip-blue"><i class="fa-solid fa-microchip"></i></span>
               <span class="eqd-card-label">Courant</span>
             </div>
-            @if (batteryDiagnostic && batteryDiagnostic.current_a !== null && batteryDiagnostic.current_a !== undefined) {
+            @if (batteryDiagnostic()?.current_a !== null && batteryDiagnostic()?.current_a !== undefined) {
               <div class="eqd-card-value">{{ batteryCurrentDisplay }}</div>
               <div class="eqd-card-meta">Mesure du diagnostic batterie</div>
             } @else {
@@ -196,7 +198,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
               <p class="eqd-bdiag-sub">Analyse à la demande de l'état de la batterie</p>
             </div>
             <div class="eqd-bdiag-head-actions">
-              @if (batteryDiagnostic) {
+              @if (batteryDiagnostic()) {
                 <span [class]="'eqd-badge eqd-badge-lg ' + batteryStateBadgeClass">
                   {{ batteryEtatDisplay }}
                 </span>
@@ -204,11 +206,11 @@ import { BatteryExportService } from '../../services/battery-export.service';
               <button
                 type="button"
                 class="eqd-btn eqd-bdiag-launch"
-                [class.eqd-btn-primary]="!batteryLoading"
-                [class.eqd-btn-danger]="batteryLoading"
+                [class.eqd-btn-primary]="!batteryLoading()"
+                [class.eqd-btn-danger]="batteryLoading()"
                 (click)="basculerDiagnostic()"
               >
-                @if (batteryLoading) {
+                @if (batteryLoading()) {
                   <i class="fa-solid fa-stop"></i>
                   <span>Arrêter</span>
                 } @else {
@@ -219,7 +221,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
             </div>
           </header>
 
-          @if (batteryLoading) {
+          @if (batteryLoading()) {
             <!-- ===== Chargement ===== -->
             <div class="eqd-bdiag-unavailable">
               <span class="eqd-bdiag-unavail-icon"><i class="fa-solid fa-spinner fa-spin"></i></span>
@@ -228,7 +230,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
                 Analyse de la batterie en cours. Vous pouvez arrêter le diagnostic à tout moment.
               </p>
             </div>
-          } @else if (!batteryDiagnostic) {
+          } @else if (!batteryDiagnostic()) {
             <!-- ===== Diagnostic indisponible / backend indisponible ===== -->
             <div class="eqd-bdiag-unavailable">
               <span class="eqd-bdiag-unavail-icon"><i class="fa-solid fa-circle-info"></i></span>
@@ -254,8 +256,8 @@ import { BatteryExportService } from '../../services/battery-export.service';
                   <span [class]="'eqd-bdiag-state-icon ' + batteryStateIconClass">
                     <i class="fa-solid fa-heart-pulse"></i>
                   </span>
-                  @if (batteryDiagnostic.soh_pourcent !== null && batteryDiagnostic.soh_pourcent !== undefined) {
-                    <span>{{ batteryDiagnostic.soh_pourcent }} %</span>
+                  @if (batteryDiagnostic()?.soh_pourcent !== null && batteryDiagnostic()?.soh_pourcent !== undefined) {
+                    <span>{{ batteryDiagnostic()?.soh_pourcent }} %</span>
                   } @else {
                     <span>—</span>
                   }
@@ -328,7 +330,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
               <h3 class="eqd-bdiag-title">Historique de la batterie</h3>
               <p class="eqd-bdiag-sub">Évolution du SOH, de la capacité et de la température.</p>
             </div>
-            @if (batteryHistory.length > 0) {
+            @if (batteryHistory().length > 0) {
               <div class="eqd-history-actions">
                 <button type="button" class="eqd-btn eqd-btn-ghost" (click)="exportCsv()" title="Télécharger l'historique (CSV)">
                   <i class="fa-solid fa-file-csv"></i><span>Télécharger CSV</span>
@@ -340,13 +342,13 @@ import { BatteryExportService } from '../../services/battery-export.service';
             }
           </header>
 
-          @if (batteryHistoryLoading) {
+          @if (batteryHistoryLoading()) {
             <div class="eqd-bdiag-unavailable">
               <span class="eqd-bdiag-unavail-icon"><i class="fa-solid fa-spinner fa-spin"></i></span>
               <h4 class="eqd-bdiag-unavail-title">Chargement de l'historique…</h4>
               <p class="eqd-bdiag-unavail-text">Récupération des données d'historique en cours.</p>
             </div>
-          } @else if (batteryHistory.length === 0) {
+          } @else if (batteryHistory().length === 0) {
             <div class="eqd-bdiag-unavailable">
               <span class="eqd-bdiag-unavail-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
               <h4 class="eqd-bdiag-unavail-title">Historique indisponible</h4>
@@ -355,11 +357,122 @@ import { BatteryExportService } from '../../services/battery-export.service';
               </p>
             </div>
           } @else {
-            <app-battery-history-charts [history]="batteryHistory" />
-            @if (exportError) {
+            <app-battery-history-charts [history]="batteryHistory()" />
+            @if (exportError()) {
               <div class="eqd-export-error">
                 <i class="fa-solid fa-triangle-exclamation"></i>
-                {{ exportError }}
+                {{ exportError() }}
+              </div>
+            }
+          }
+        </section>
+
+        <!-- ===== Historique de localisation ===== -->
+        <section class="eqd-loc-history">
+          <header class="eqd-bdiag-head">
+            <span class="eqd-chip eqd-chip-cyan eqd-chip-lg"><i class="fa-solid fa-route"></i></span>
+            <div class="eqd-bdiag-head-text">
+              <h3 class="eqd-bdiag-title">Historique de localisation</h3>
+              <p class="eqd-bdiag-sub">Déplacements du kit : où il se trouvait, et où il se trouve maintenant.</p>
+            </div>
+          </header>
+
+          @if (locationHistoryLoading()) {
+            <div class="eqd-bdiag-unavailable">
+              <span class="eqd-bdiag-unavail-icon"><i class="fa-solid fa-spinner fa-spin"></i></span>
+              <h4 class="eqd-bdiag-unavail-title">Chargement de l'historique…</h4>
+              <p class="eqd-bdiag-unavail-text">Récupération des positions en cours.</p>
+            </div>
+          } @else {
+            @if (locationHistoryError()) {
+              <div class="eqd-export-error" role="alert">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>{{ locationHistoryError() }}</span>
+              </div>
+            }
+
+            <ol class="eqd-loc-timeline">
+              @for (entry of locationHistory(); track $index) {
+                <li class="eqd-loc-item">
+                  <span class="eqd-loc-dot" [class.eqd-loc-dot--current]="!entry.date_fin">
+                    <i
+                      class="fa-solid"
+                      [class.fa-location-dot]="!entry.date_fin"
+                      [class.fa-map-pin]="!!entry.date_fin"
+                    ></i>
+                  </span>
+                  <div class="eqd-loc-card" [class.eqd-loc-card--current]="!entry.date_fin">
+                    <div class="eqd-loc-card-head">
+                      @if (!entry.date_fin) {
+                        <span class="eqd-badge eqd-badge-success">
+                          <span class="eqd-badge-dot"></span>
+                          Position actuelle
+                        </span>
+                      } @else {
+                        <span class="eqd-badge eqd-badge-neutral">
+                          <span class="eqd-badge-dot"></span>
+                          Ancienne position
+                        </span>
+                      }
+                      <a
+                        class="eqd-maps-btn"
+                        [href]="'https://www.google.com/maps?q=' + entry.lien_localisation"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span>Voir sur Google Maps</span>
+                      </a>
+                    </div>
+                    <p class="eqd-loc-place">{{ entry.localisation }}</p>
+                    <p class="eqd-loc-period">
+                      @if (entry.date_fin) {
+                        Présence du {{ entry.date_debut | date:'dd/MM/yyyy HH:mm' }} au
+                        {{ entry.date_fin | date:'dd/MM/yyyy HH:mm' }}
+                      } @else {
+                        À cette position depuis le {{ entry.date_debut | date:'dd/MM/yyyy HH:mm' }}
+                      }
+                    </p>
+                  </div>
+                </li>
+              }
+
+              <!-- Position actuelle issue de la fiche équipement (donnée réelle existante) -->
+              @if (equipment && !hasBackendCurrentPosition()) {
+                <li class="eqd-loc-item">
+                  <span class="eqd-loc-dot eqd-loc-dot--current">
+                    <i class="fa-solid fa-location-dot"></i>
+                  </span>
+                  <div class="eqd-loc-card eqd-loc-card--current">
+                    <div class="eqd-loc-card-head">
+                      <span class="eqd-badge eqd-badge-success">
+                        <span class="eqd-badge-dot"></span>
+                        Position actuelle
+                      </span>
+                      <a
+                        class="eqd-maps-btn"
+                        [href]="'https://www.google.com/maps?q=' + equipment.lienLocalisation"
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span>Voir sur Google Maps</span>
+                      </a>
+                    </div>
+                    <p class="eqd-loc-place">{{ equipment.localisation }}</p>
+                    <p class="eqd-loc-period">Dernier enregistrement : {{ equipment.miseEnLigne }}</p>
+                  </div>
+                </li>
+              }
+            </ol>
+
+            @if (locationHistory().length === 0) {
+              <div class="eqd-loc-note">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>
+                  Aucun historique de déplacement n'est fourni par le backend pour cet équipement.
+                  Seule la position actuelle est affichée.
+                </span>
               </div>
             }
           }
@@ -1310,6 +1423,141 @@ import { BatteryExportService } from '../../services/battery-export.service';
 
     .eqd-export-error i { color: #E5484D; }
 
+    /* ===== Historique de localisation ===== */
+    .eqd-loc-history {
+      background: #FFFFFF;
+      border: 1px solid rgba(23, 32, 51, 0.06);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 12px 40px rgba(65, 78, 120, 0.10);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .eqd-loc-timeline {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .eqd-loc-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .eqd-loc-dot {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      background: rgba(14, 165, 233, 0.10);
+      color: #0EA5E9;
+      border: 1px solid rgba(14, 165, 233, 0.22);
+      z-index: 1;
+    }
+
+    /* Trait vertical reliant chaque point au suivant */
+    .eqd-loc-item:not(:last-child) .eqd-loc-dot::after {
+      content: '';
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 12px;
+      background: rgba(14, 165, 233, 0.25);
+    }
+
+    .eqd-loc-dot--current {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10B981;
+      border-color: rgba(16, 185, 129, 0.30);
+      animation: eqdLocPulse 2s ease-out infinite;
+    }
+
+    @keyframes eqdLocPulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35); }
+      70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .eqd-loc-card {
+      flex: 1 1 auto;
+      min-width: 0;
+      background: #F8FAFF;
+      border: 1px solid rgba(23, 32, 51, 0.06);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .eqd-loc-card--current {
+      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.20);
+    }
+
+    .eqd-loc-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .eqd-loc-place {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: #172033;
+      overflow-wrap: anywhere;
+    }
+
+    .eqd-loc-period {
+      margin: 0;
+      font-size: 12.5px;
+      color: #7A8499;
+    }
+
+    .eqd-loc-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(79, 124, 255, 0.06);
+      border: 1px solid rgba(79, 124, 255, 0.14);
+      color: #5A6B8C;
+      font-size: 13px;
+    }
+
+    .eqd-loc-note i { color: #4F7CFF; flex-shrink: 0; margin-top: 1px; }
+
+    @media (max-width: 768px) {
+      .eqd-loc-history { padding: 22px; }
+      .eqd-loc-card-head .eqd-maps-btn { width: 100%; justify-content: center; }
+    }
+
+    @media (max-width: 560px) {
+      .eqd-loc-history { padding: 20px; }
+      .eqd-loc-item { gap: 10px; }
+      .eqd-loc-card { padding: 12px 14px; }
+    }
+
     /* ===== Mesures capteurs ===== */
     .eqd-bdiag-measures {
       display: grid;
@@ -1507,18 +1755,29 @@ import { BatteryExportService } from '../../services/battery-export.service';
 export class EquipmentDetailPageComponent implements OnInit {
   equipment: Equipment | null = null;
   diagnostic: EquipmentDiagnostic = { etat: 'État normal', gravite: '—', anomalie: null };
-  batteryDiagnostic: BatteryCurrentDiagnostic | null = null;
-  batteryHistory: BatteryHistoryEntry[] = [];
-  batteryLoading = false;
-  batteryHistoryLoading = false;
-  batteryError: string | null = null;
+
+  /* ===== États asynchrones en signals — app zoneless (Angular sans zone.js) :
+     une mutation de propriété simple ne déclenche PAS la détection de
+     changements ; seuls les signals garantissent la mise à jour de la vue
+     après les callbacks HTTP. ===== */
+  /** Résultat du dernier diagnostic courant — GET /api/batterie/{device_id}/actuel. */
+  readonly batteryDiagnostic = signal<BatteryCurrentDiagnostic | null>(null);
+  readonly batteryHistory = signal<BatteryHistoryEntry[]>([]);
+  readonly batteryLoading = signal(false);
+  readonly batteryHistoryLoading = signal(false);
+  readonly batteryError = signal<string | null>(null);
+  /** Historique de localisation (GET /api/equipements/{imei}/localisations). */
+  readonly locationHistory = signal<LocationHistoryEntry[]>([]);
+  readonly locationHistoryLoading = signal(false);
+  readonly locationHistoryError = signal<string | null>(null);
   /** true dès que l'utilisateur a lancé un diagnostic via le bouton. */
-  batteryDiagnosticLaunched = false;
+  readonly batteryDiagnosticLaunched = signal(false);
   /** true si le dernier diagnostic a été arrêté manuellement par l'utilisateur. */
-  batteryDiagnosticArrete = false;
+  readonly batteryDiagnosticArrete = signal(false);
+  /** Erreur du dernier export CSV/PDF. */
+  readonly exportError = signal<string | null>(null);
   /** Abonnement HTTP du diagnostic en cours (permet l'arrêt via le bouton « Arrêter »). */
   private batteryDiagnosticSubscription: Subscription | null = null;
-  exportError: string | null = null;
   source: 'equipment' | 'alerts' | 'maintenance' = 'equipment';
   isAlertTaken = false;
 
@@ -1562,28 +1821,57 @@ export class EquipmentDetailPageComponent implements OnInit {
       // Le diagnostic courant n'est PAS lancé automatiquement : il démarre
       // uniquement quand l'utilisateur clique sur « Lancer un diagnostic ».
       this.loadBatteryHistory(imei);
+      this.loadLocationHistory(imei);
     }
+  }
+
+  /** Historique de localisation — GET /api/equipements/{imei}/localisations. */
+  private loadLocationHistory(imei: string): void {
+    this.locationHistoryLoading.set(true);
+    this.equipmentService.getEquipmentLocationHistory(imei).subscribe({
+      next: entries => {
+        this.locationHistory.set(entries);
+        this.locationHistoryLoading.set(false);
+        this.locationHistoryError.set(this.equipmentService.locationHistoryError());
+      },
+      error: () => {
+        this.locationHistoryLoading.set(false);
+        this.locationHistoryError.set(
+          this.equipmentService.locationHistoryError() ??
+          "Erreur lors de la récupération de l'historique de localisation."
+        );
+      }
+    });
+  }
+
+  /**
+   * true si le backend fournit déjà la position actuelle dans l'historique
+   * (entrée sans date de fin) — évite alors le doublon avec la fiche équipement.
+   */
+  hasBackendCurrentPosition(): boolean {
+    return this.locationHistory().some(entry => !entry.date_fin);
   }
 
   /** Récupère le diagnostic courant — GET /api/batterie/{device_id}/actuel. */
   private loadBatteryDiagnostic(imei: string): void {
-    this.batteryLoading = true;
-    this.batteryError = null;
+    this.batteryLoading.set(true);
+    this.batteryError.set(null);
     this.batteryDiagnosticSubscription = this.equipmentService
       .getBatteryCurrentDiagnostic(imei)
       .subscribe({
         next: result => {
           this.batteryDiagnosticSubscription = null;
-          this.batteryLoading = false;
-          this.batteryDiagnostic = result;
-          this.batteryError = this.equipmentService.batteryApiError();
+          this.batteryLoading.set(false);
+          this.batteryDiagnostic.set(result);
+          this.batteryError.set(this.equipmentService.batteryApiError());
         },
         error: () => {
           this.batteryDiagnosticSubscription = null;
-          this.batteryLoading = false;
-          this.batteryError =
+          this.batteryLoading.set(false);
+          this.batteryError.set(
             this.equipmentService.batteryApiError() ??
-            'Erreur lors de la récupération du diagnostic batterie.';
+            'Erreur lors de la récupération du diagnostic batterie.'
+          );
         }
       });
   }
@@ -1595,9 +1883,9 @@ export class EquipmentDetailPageComponent implements OnInit {
    */
   lancerDiagnostic(): void {
     const imei = this.route.snapshot.paramMap.get('imei');
-    if (!imei || this.batteryLoading) return;
-    this.batteryDiagnosticLaunched = true;
-    this.batteryDiagnosticArrete = false;
+    if (!imei || this.batteryLoading()) return;
+    this.batteryDiagnosticLaunched.set(true);
+    this.batteryDiagnosticArrete.set(false);
     this.loadBatteryDiagnostic(imei);
   }
 
@@ -1607,13 +1895,13 @@ export class EquipmentDetailPageComponent implements OnInit {
       this.batteryDiagnosticSubscription.unsubscribe();
       this.batteryDiagnosticSubscription = null;
     }
-    this.batteryLoading = false;
-    this.batteryDiagnosticArrete = true;
+    this.batteryLoading.set(false);
+    this.batteryDiagnosticArrete.set(true);
   }
 
   /** Action du bouton : lance le diagnostic, ou l'arrête s'il est en cours. */
   basculerDiagnostic(): void {
-    if (this.batteryLoading) {
+    if (this.batteryLoading()) {
       this.arreterDiagnostic();
     } else {
       this.lancerDiagnostic();
@@ -1622,35 +1910,36 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Récupère l'historique — GET /api/batterie/{device_id}/historique. */
   private loadBatteryHistory(imei: string): void {
-    this.batteryHistoryLoading = true;
+    this.batteryHistoryLoading.set(true);
     this.equipmentService.getBatteryHistory(imei).subscribe({
       next: list => {
-        this.batteryHistoryLoading = false;
-        this.batteryHistory = list;
+        this.batteryHistoryLoading.set(false);
+        this.batteryHistory.set(list);
       },
       error: () => {
-        this.batteryHistoryLoading = false;
-        this.batteryHistory = [];
+        this.batteryHistoryLoading.set(false);
+        this.batteryHistory.set([]);
       }
     });
   }
 
   /** Titre de l'état « diagnostic indisponible » (non lancé, arrêté, erreur ou absence de données). */
   get batteryUnavailableTitle(): string {
-    if (this.batteryDiagnosticArrete) return 'Diagnostic arrêté';
-    if (!this.batteryDiagnosticLaunched) return 'Aucun diagnostic lancé';
-    if (this.batteryError) return 'Diagnostic momentanément indisponible';
+    if (this.batteryDiagnosticArrete()) return 'Diagnostic arrêté';
+    if (!this.batteryDiagnosticLaunched()) return 'Aucun diagnostic lancé';
+    if (this.batteryError()) return 'Diagnostic momentanément indisponible';
     return 'Diagnostic indisponible';
   }
 
   get batteryUnavailableMessage(): string {
-    if (this.batteryDiagnosticArrete) {
+    if (this.batteryDiagnosticArrete()) {
       return 'Le diagnostic a été arrêté. Relancez-le quand vous le souhaitez.';
     }
-    if (!this.batteryDiagnosticLaunched) {
+    if (!this.batteryDiagnosticLaunched()) {
       return 'Cliquez sur « Lancer un diagnostic » pour analyser la batterie de cet équipement.';
     }
-    if (this.batteryError) return this.batteryError;
+    const erreur = this.batteryError();
+    if (erreur) return erreur;
     return "Aucune donnée de diagnostic n'est disponible pour cet équipement.";
   }
 
@@ -1799,9 +2088,9 @@ export class EquipmentDetailPageComponent implements OnInit {
    * (SOH ≥ 80 → Bon, 70 ≤ SOH < 80 → Surveiller, SOH < 70 → À remplacer).
    */
   private get effectiveEtat(): string {
-    const etatApi = this.batteryDiagnostic?.etat;
+    const etatApi = this.batteryDiagnostic()?.etat;
     if (etatApi) return this.normalizeEtat(etatApi);
-    const soh = this.batteryDiagnostic?.soh_pourcent;
+    const soh = this.batteryDiagnostic()?.soh_pourcent;
     if (soh === null || soh === undefined) return 'Indéterminé';
     if (soh >= 80) return 'Bon';
     if (soh >= 70) return 'Surveiller';
@@ -1815,13 +2104,13 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Affichage de l'état de la batterie (A_remplacer → À remplacer). */
   get batteryEtatDisplay(): string {
-    if (!this.batteryDiagnostic) return '';
+    if (!this.batteryDiagnostic()) return '';
     return this.effectiveEtat;
   }
 
   /** Classe de badge de l'état de la batterie. */
   get batteryStateBadgeClass(): string {
-    if (!this.batteryDiagnostic) return 'eqd-badge-neutral';
+    if (!this.batteryDiagnostic()) return 'eqd-badge-neutral';
     switch (this.effectiveEtat) {
       case 'Bon': return 'eqd-badge-success';
       case 'Surveiller': return 'eqd-badge-warning';
@@ -1832,7 +2121,7 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Classe du conteneur d'icône d'état. */
   get batteryStateIconClass(): string {
-    if (!this.batteryDiagnostic) return 'eqd-bdiag-state-icon--neutral';
+    if (!this.batteryDiagnostic()) return 'eqd-bdiag-state-icon--neutral';
     switch (this.effectiveEtat) {
       case 'Bon': return 'eqd-bdiag-state-icon--success';
       case 'Surveiller': return 'eqd-bdiag-state-icon--warning';
@@ -1843,7 +2132,7 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Icône FontAwesome selon l'état de la batterie. */
   get batteryStateIcon(): string {
-    if (!this.batteryDiagnostic) return 'fa-solid fa-battery';
+    if (!this.batteryDiagnostic()) return 'fa-solid fa-battery';
     switch (this.effectiveEtat) {
       case 'Bon': return 'fa-solid fa-battery-full';
       case 'Surveiller': return 'fa-solid fa-battery-quarter';
@@ -1854,7 +2143,7 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Message d'information sous l'état de la batterie. */
   get batteryStateHint(): string {
-    if (!this.batteryDiagnostic) return '';
+    if (!this.batteryDiagnostic()) return '';
     switch (this.effectiveEtat) {
       case 'Bon': return 'Aucune action particulière nécessaire.';
       case 'Surveiller': return 'Surveillance régulière recommandée.';
@@ -1865,7 +2154,7 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Rappel visuel des seuils SOH utilisés en l'absence de valeur `etat`. */
   get batterySohHint(): string {
-    const soh = this.batteryDiagnostic?.soh_pourcent;
+    const soh = this.batteryDiagnostic()?.soh_pourcent;
     if (soh === null || soh === undefined) return '';
     if (soh >= 80) return 'Seuil ≥ 80 % : Bon';
     if (soh >= 70) return 'Seuil 70–79 % : Surveiller';
@@ -1874,7 +2163,7 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Classe du conteneur de message. */
   get batteryMessageClass(): string {
-    if (!this.batteryDiagnostic) return '';
+    if (!this.batteryDiagnostic()) return '';
     switch (this.effectiveEtat) {
       case 'Bon': return 'eqd-bdiag-msg--success';
       case 'Surveiller': return 'eqd-bdiag-msg--warning';
@@ -1885,7 +2174,7 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   /** Icône du message de maintenance. */
   get batteryMessageIcon(): string {
-    if (!this.batteryDiagnostic) return 'fa-solid fa-circle-info';
+    if (!this.batteryDiagnostic()) return 'fa-solid fa-circle-info';
     switch (this.effectiveEtat) {
       case 'Bon': return 'fa-solid fa-check-circle';
       case 'Surveiller': return 'fa-solid fa-exclamation-triangle';
@@ -1896,43 +2185,43 @@ export class EquipmentDetailPageComponent implements OnInit {
 
   get batteryMessageDisplay(): string {
     return (
-      this.batteryDiagnostic?.message ||
+      this.batteryDiagnostic()?.message ||
       'Aucun message de maintenance fourni par le backend.'
     );
   }
 
   get batteryVoltageDisplay(): string {
-    const v = this.batteryDiagnostic?.voltage_v;
+    const v = this.batteryDiagnostic()?.voltage_v;
     return v !== null && v !== undefined ? `${Number(v).toFixed(2)} V` : '—';
   }
 
   get batteryCurrentDisplay(): string {
-    const v = this.batteryDiagnostic?.current_a;
+    const v = this.batteryDiagnostic()?.current_a;
     return v !== null && v !== undefined ? `${Number(v).toFixed(2)} A` : '—';
   }
 
   get batteryTemperatureDisplay(): string {
-    const v = this.batteryDiagnostic?.temperature_c;
+    const v = this.batteryDiagnostic()?.temperature_c;
     return v !== null && v !== undefined ? `${Number(v).toFixed(1)} °C` : '—';
   }
 
   get batteryDodDisplay(): string {
-    const v = this.batteryDiagnostic?.dod_percent;
+    const v = this.batteryDiagnostic()?.dod_percent;
     return v !== null && v !== undefined ? `${Number(v).toFixed(1)} %` : '—';
   }
 
   get batteryCapacityDisplay(): string {
-    const v = this.batteryDiagnostic?.capacite_restante_ah;
+    const v = this.batteryDiagnostic()?.capacite_restante_ah;
     return v !== null && v !== undefined ? `${Number(v).toFixed(1)} Ah` : '—';
   }
 
   get batteryDurationDisplay(): string {
-    const v = this.batteryDiagnostic?.duree_estimee_jours;
+    const v = this.batteryDiagnostic()?.duree_estimee_jours;
     return v !== null && v !== undefined ? `~${v} jours` : '—';
   }
 
   get batteryDateDisplay(): string {
-    const raw = this.batteryDiagnostic?.date_heure;
+    const raw = this.batteryDiagnostic()?.date_heure;
     if (!raw) return '—';
     const d = new Date(raw);
     if (isNaN(d.getTime())) return raw;
@@ -1946,26 +2235,26 @@ export class EquipmentDetailPageComponent implements OnInit {
   /* ===== Exports (CSV + PDF) ===== */
 
   exportCsv(): void {
-    if (!this.equipment || this.batteryHistory.length === 0) return;
-    this.exportError = null;
-    this.batteryExportService.exportCsv(this.equipment.imei, this.batteryHistory);
+    if (!this.equipment || this.batteryHistory().length === 0) return;
+    this.exportError.set(null);
+    this.batteryExportService.exportCsv(this.equipment.imei, this.batteryHistory());
   }
 
   async exportPdf(): Promise<void> {
-    if (!this.equipment || this.batteryHistory.length === 0) return;
-    this.exportError = null;
+    if (!this.equipment || this.batteryHistory().length === 0) return;
+    this.exportError.set(null);
     try {
       const sohImageDataUrl = this.historyCharts?.getSohChartImageDataUrl() ?? null;
       await this.batteryExportService.exportPdf({
         deviceId: this.equipment.imei,
         rapportDate: new Date().toISOString(),
-        diagnostic: this.batteryDiagnostic,
-        history: this.batteryHistory,
+        diagnostic: this.batteryDiagnostic(),
+        history: this.batteryHistory(),
         sohImageDataUrl
       });
     } catch (err) {
       console.error('Export PDF batterie', err);
-      this.exportError = 'Le rapport PDF n\'a pas pu être généré. Réessayez plus tard.';
+      this.exportError.set('Le rapport PDF n\'a pas pu être généré. Réessayez plus tard.');
     }
   }
 

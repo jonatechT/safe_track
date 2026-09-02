@@ -82,6 +82,24 @@ export interface BatteryHistoryEntry {
   temperature: number | null;
 }
 
+/**
+ * Point d'historique de localisation fourni par le backend :
+ *   GET /api/equipements/{imei}/localisations
+ *
+ * Permet de reconstituer la timeline : « de tel heure le kit se trouvait ici,
+ * de tel heure il se trouve là ». Aucune donnée n'est inventée côté frontend.
+ */
+export interface LocationHistoryEntry {
+  /** Début de présence à cette position (ISO 8601). */
+  date_debut: string;
+  /** Fin de présence (ISO 8601) — null si c'est la position actuelle. */
+  date_fin: string | null;
+  /** Libellé ou coordonnées de la position. */
+  localisation: string;
+  /** Coordonnées « lat,long » utilisées pour le lien Google Maps. */
+  lien_localisation: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EquipmentService {
   /**
@@ -90,6 +108,12 @@ export class EquipmentService {
    * simple absence de données.
    */
   readonly batteryApiError = signal<string | null>(null);
+
+  /**
+   * Message d'erreur du dernier appel historique de localisation
+   * (null si aucun incident ou simple absence de données 404).
+   */
+  readonly locationHistoryError = signal<string | null>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -218,6 +242,32 @@ export class EquipmentService {
         map(list => (Array.isArray(list) ? list : [])),
         catchError((error: HttpErrorResponse) => {
           this.handleBatteryError(error);
+          return of([]);
+        })
+      );
+  }
+
+  /**
+   * Historique de localisation — GET /api/equipements/{imei}/localisations.
+   *
+   * Endpoint attendu côté backend (convention projet, cf. blocage équipement) :
+   * renvoie [] si aucune donnée (404 / endpoint absent) ; les erreurs réelles
+   * (backend indisponible, HTTP != 404) sont exposées via `locationHistoryError`.
+   */
+  getEquipmentLocationHistory(imei: string): Observable<LocationHistoryEntry[]> {
+    this.locationHistoryError.set(null);
+    return this.http
+      .get<LocationHistoryEntry[]>(`/api/equipements/${encodeURIComponent(imei)}/localisations`)
+      .pipe(
+        map(list => (Array.isArray(list) ? list : [])),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 0) {
+            this.locationHistoryError.set(
+              "Backend indisponible : impossible de récupérer l'historique de localisation."
+            );
+          } else if (error.status !== 404) {
+            this.locationHistoryError.set(`Erreur API localisation (HTTP ${error.status}).`);
+          }
           return of([]);
         })
       );
