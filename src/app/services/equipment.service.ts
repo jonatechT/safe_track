@@ -23,6 +23,12 @@ export interface Equipment {
   temperature: number | null;
   /** Non fourni par le backend actuellement — nécessite une source capteur */
   tension: number | null;
+  /**
+   * État de blocage de l'équipement.
+   * Champ attendu du backend (liste des équipements) — absent = équipement actif.
+   * Aucune valeur fictive n'est introduite côté frontend.
+   */
+  bloque?: boolean;
 }
 
 export interface EquipmentDiagnostic {
@@ -101,6 +107,64 @@ export class EquipmentService {
 
   getByImei(imei: string): Equipment | undefined {
     return this.equipments.find(e => e.imei === imei);
+  }
+
+  /**
+   * Message d'erreur du dernier changement d'état (bloquer/débloquer).
+   * Null si la dernière opération a réussi.
+   */
+  readonly equipmentStatusError = signal<string | null>(null);
+
+  /**
+   * Bloque ou débloque un équipement.
+   *
+   * Endpoint backend attendu — convention projet (cf. BACKEND_API_CONTRACT.md :
+   * PATCH /api/users/:id/status et PATCH /api/structures/:id/status) :
+   *
+   *   PATCH /api/equipements/{imei}/status
+   *   Body : { "statut": "BLOQUE" | "ACTIF" }
+   *   Rôle : ADMIN_STRUCTURE (équipements de sa structure) / SUPERADMIN
+   *
+   * Tant que l'endpoint n'existe pas côté backend, l'appel échoue et
+   * `equipmentStatusError` expose un message clair ; l'état local n'est
+   * PAS modifié (aucun faux succès).
+   */
+  setEquipmentStatus(imei: string, bloque: boolean): Observable<Equipment | null> {
+    this.equipmentStatusError.set(null);
+    const body = { statut: bloque ? 'BLOQUE' : 'ACTIF' };
+    return this.http
+      .patch<Equipment>(`/api/equipements/${encodeURIComponent(imei)}/status`, body)
+      .pipe(
+        map(() => {
+          this.applyLocalStatus(imei, bloque);
+          return this.getByImei(imei) ?? null;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          this.equipmentStatusError.set(this.buildStatusErrorMessage(error));
+          return of(null);
+        })
+      );
+  }
+
+  /** Met à jour l'état local (source actuelle du parc) sans recharger la page. */
+  private applyLocalStatus(imei: string, bloque: boolean): void {
+    const equipment = this.equipments.find(e => e.imei === imei);
+    if (equipment) {
+      equipment.bloque = bloque;
+    }
+  }
+
+  private buildStatusErrorMessage(error: HttpErrorResponse): string {
+    if (error.status === 0) {
+      return "Backend indisponible : impossible de changer l'état de l'équipement.";
+    }
+    if (error.status === 404) {
+      return 'Endpoint de blocage non disponible côté backend (PATCH /api/equipements/{imei}/status).';
+    }
+    if (error.status === 401 || error.status === 403) {
+      return "Vous n'avez pas les droits nécessaires pour bloquer/débloquer cet équipement.";
+    }
+    return `Erreur ${error.status} lors du changement d'état de l'équipement.`;
   }
 
   /**

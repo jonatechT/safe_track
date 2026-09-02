@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   EquipmentService,
@@ -36,12 +36,41 @@ import { BatteryExportService } from '../../services/battery-export.service';
               <span>Inspecter</span>
             </button>
           }
+          @if (equipment && canManageEquipment()) {
+            <button
+              type="button"
+              class="eqd-btn"
+              [class.eqd-btn-danger]="!isBloque()"
+              [class.eqd-btn-success]="isBloque()"
+              (click)="demanderChangementStatut()"
+              [disabled]="statusActionBusy()"
+            >
+              <i class="fa-solid" [class.fa-lock]="!isBloque()" [class.fa-lock-open]="isBloque()"></i>
+              <span>{{ isBloque() ? "Débloquer l'équipement" : "Bloquer l'équipement" }}</span>
+            </button>
+          }
           <button type="button" class="eqd-btn eqd-btn-ghost" (click)="retour()">
             <i class="fa-solid fa-arrow-left"></i>
             <span>{{ backButtonText }}</span>
           </button>
         </div>
       </header>
+
+      @if (statusMessage()) {
+        <div
+          class="eqd-alert"
+          [class.eqd-alert--success]="statusMessageType() === 'success'"
+          [class.eqd-alert--error]="statusMessageType() === 'error'"
+          role="status"
+        >
+          <i
+            class="fa-solid"
+            [class.fa-circle-check]="statusMessageType() === 'success'"
+            [class.fa-circle-xmark]="statusMessageType() === 'error'"
+          ></i>
+          <span>{{ statusMessage() }}</span>
+        </div>
+      }
 
       @if (!equipment) {
         <!-- ===== État vide ===== -->
@@ -69,6 +98,13 @@ import { BatteryExportService } from '../../services/battery-export.service';
             <span [class]="'eqd-badge eqd-badge-lg ' + statusClass">
               <span class="eqd-badge-dot"></span>
               {{ equipment.statut }}
+            </span>
+            <span
+              class="eqd-state-chip"
+              [class.eqd-state-chip--ok]="!isBloque()"
+              [class.eqd-state-chip--blocked]="isBloque()"
+            >
+              {{ isBloque() ? "🔴 Équipement bloqué" : "🟢 Équipement actif" }}
             </span>
             <span class="eqd-summary-sync">
               <i class="fa-regular fa-clock"></i>
@@ -302,6 +338,55 @@ import { BatteryExportService } from '../../services/battery-export.service';
         </section>
       }
     </div>
+
+    @if (showStatusModal()) {
+      <div class="eqd-modal-overlay" (click)="annulerChangementStatut()">
+        <div class="eqd-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+          <div class="eqd-modal-head">
+            <span
+              class="eqd-modal-icon"
+              [class.eqd-modal-icon--danger]="!isBloque()"
+              [class.eqd-modal-icon--success]="isBloque()"
+            >
+              <i class="fa-solid" [class.fa-lock]="!isBloque()" [class.fa-lock-open]="isBloque()"></i>
+            </span>
+            <h3 class="eqd-modal-title">
+              {{ isBloque() ? "Débloquer l'équipement" : "Bloquer l'équipement" }}
+            </h3>
+          </div>
+          <div class="eqd-modal-body">
+            @if (isBloque()) {
+              Voulez-vous vraiment <strong>débloquer</strong> cet équipement ?
+            } @else {
+              Voulez-vous vraiment <strong>bloquer</strong> cet équipement ?
+            }
+          </div>
+          <div class="eqd-modal-actions">
+            <button
+              type="button"
+              class="eqd-btn eqd-btn-ghost"
+              (click)="annulerChangementStatut()"
+              [disabled]="statusActionBusy()"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              class="eqd-btn"
+              [class.eqd-btn-danger]="!isBloque()"
+              [class.eqd-btn-success]="isBloque()"
+              (click)="confirmerChangementStatut()"
+              [disabled]="statusActionBusy()"
+            >
+              @if (statusActionBusy()) {
+                <i class="fa-solid fa-spinner fa-spin"></i>
+              }
+              <span>{{ isBloque() ? "Oui, débloquer" : "Oui, bloquer" }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
   `,
   styles: [`
     /* ==========================================================
@@ -412,6 +497,154 @@ import { BatteryExportService } from '../../services/battery-export.service';
       transform: translateY(-1px);
       box-shadow: 0 12px 26px rgba(79, 124, 255, 0.38);
       filter: brightness(1.05);
+    }
+
+    .eqd-btn-danger {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: #FFFFFF;
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.28);
+    }
+
+    .eqd-btn-danger:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(239, 68, 68, 0.36);
+      filter: brightness(1.05);
+    }
+
+    .eqd-btn-success {
+      background: linear-gradient(135deg, #20C997 0%, #0FA97E 100%);
+      color: #FFFFFF;
+      box-shadow: 0 8px 20px rgba(32, 201, 151, 0.28);
+    }
+
+    .eqd-btn-success:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(32, 201, 151, 0.36);
+      filter: brightness(1.05);
+    }
+
+    .eqd-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ===== Bandeau de notification ===== */
+    .eqd-alert {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .eqd-alert--success {
+      background: #E9FBF4;
+      color: #0FA97E;
+      border: 1px solid rgba(32, 201, 151, 0.25);
+    }
+
+    .eqd-alert--error {
+      background: #FEF1F1;
+      color: #E5484D;
+      border: 1px solid rgba(239, 68, 68, 0.20);
+    }
+
+    /* ===== Chip d'état blocage (résumé) ===== */
+    .eqd-state-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .eqd-state-chip--ok {
+      background: #E9FBF4;
+      color: #0FA97E;
+      border: 1px solid rgba(32, 201, 151, 0.25);
+    }
+
+    .eqd-state-chip--blocked {
+      background: #FEF1F1;
+      color: #E5484D;
+      border: 1px solid rgba(239, 68, 68, 0.20);
+    }
+
+    /* ===== Modale de confirmation ===== */
+    .eqd-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(23, 32, 51, 0.45);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .eqd-modal {
+      width: 100%;
+      max-width: 420px;
+      background: #FFFFFF;
+      border: 1px solid rgba(79, 124, 255, 0.12);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(23, 32, 51, 0.25);
+      padding: 24px;
+    }
+
+    .eqd-modal-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .eqd-modal-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .eqd-modal-icon--danger {
+      background: rgba(239, 68, 68, 0.10);
+      color: #EF4444;
+    }
+
+    .eqd-modal-icon--success {
+      background: rgba(32, 201, 151, 0.12);
+      color: #0FA97E;
+    }
+
+    .eqd-modal-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: #172033;
+    }
+
+    .eqd-modal-body {
+      margin: 16px 0 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #3D4A63;
+    }
+
+    .eqd-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 22px;
     }
 
     /* ===== Carte résumé ===== */
@@ -1188,6 +1421,9 @@ import { BatteryExportService } from '../../services/battery-export.service';
       }
 
       .eqd-battery-diag { padding: 22px; }
+
+      .eqd-modal-actions { flex-direction: column; }
+      .eqd-modal-actions .eqd-btn { width: 100%; }
     }
 
     @media (max-width: 560px) {
@@ -1238,6 +1474,13 @@ export class EquipmentDetailPageComponent implements OnInit {
   exportError: string | null = null;
   source: 'equipment' | 'alerts' | 'maintenance' = 'equipment';
   isAlertTaken = false;
+
+  /* ===== Bloquer / Débloquer ===== */
+  protected readonly showStatusModal = signal(false);
+  protected readonly statusActionBusy = signal(false);
+  protected readonly statusMessage = signal('');
+  protected readonly statusMessageType = signal<'success' | 'error'>('success');
+  private statusMessageTimeout: ReturnType<typeof setTimeout> | null = null;
 
   @ViewChild(BatteryHistoryChartsComponent)
   historyCharts?: BatteryHistoryChartsComponent;
@@ -1324,6 +1567,86 @@ export class EquipmentDetailPageComponent implements OnInit {
     const maintenanceItems = this.maintenanceService.getItems();
     const item = maintenanceItems.find(i => i.equipment === this.equipment!.nom);
     this.isAlertTaken = item?.prisPar != null;
+  }
+
+  /* ============================================================
+     Bloquer / Débloquer l'équipement
+     ============================================================ */
+
+  /** L'équipement est-il actuellement bloqué ? (champ backend `bloque`, absent = actif) */
+  protected isBloque(): boolean {
+    return this.equipment?.bloque === true;
+  }
+
+  /**
+   * Droit de bloquer/débloquer : réservé à SUPERADMIN et ADMIN_STRUCTURE,
+   * conformément aux règles existantes (un technicien USER n'a pas cette action).
+   */
+  protected canManageEquipment(): boolean {
+    return this.authService.isSuperAdmin() || this.authService.isStructureAdmin();
+  }
+
+  /** Ouvre la modale de confirmation. */
+  protected demanderChangementStatut(): void {
+    if (this.statusActionBusy() || !this.equipment) return;
+    this.showStatusModal.set(true);
+  }
+
+  /** Ferme la modale sans rien modifier. */
+  protected annulerChangementStatut(): void {
+    if (this.statusActionBusy()) return;
+    this.showStatusModal.set(false);
+  }
+
+  /**
+   * Applique le changement d'état : PATCH /api/equipements/{imei}/status
+   * (voir EquipmentService.setEquipmentStatus). Met à jour l'état affiché
+   * immédiatement via le modèle local — sans recharger la page.
+   */
+  protected confirmerChangementStatut(): void {
+    if (this.statusActionBusy() || !this.equipment) return;
+    const imei = this.equipment.imei;
+    const willBlock = !this.isBloque();
+    this.statusActionBusy.set(true);
+
+    this.equipmentService.setEquipmentStatus(imei, willBlock).subscribe({
+      next: result => {
+        this.statusActionBusy.set(false);
+        this.showStatusModal.set(false);
+        if (result) {
+          this.setStatusMessage(
+            willBlock
+              ? "L'équipement a été bloqué avec succès."
+              : "L'équipement a été débloqué avec succès.",
+            'success'
+          );
+        } else {
+          this.setStatusMessage(
+            this.equipmentService.equipmentStatusError() ??
+              "Impossible de changer l'état de l'équipement.",
+            'error'
+          );
+        }
+      },
+      error: () => {
+        this.statusActionBusy.set(false);
+        this.showStatusModal.set(false);
+        this.setStatusMessage(
+          this.equipmentService.equipmentStatusError() ??
+            "Impossible de changer l'état de l'équipement.",
+          'error'
+        );
+      }
+    });
+  }
+
+  private setStatusMessage(message: string, type: 'success' | 'error'): void {
+    if (this.statusMessageTimeout) {
+      clearTimeout(this.statusMessageTimeout);
+    }
+    this.statusMessage.set(message);
+    this.statusMessageType.set(type);
+    this.statusMessageTimeout = setTimeout(() => this.statusMessage.set(''), 5000);
   }
 
   get backButtonText(): string {
