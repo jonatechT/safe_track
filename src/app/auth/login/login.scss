@@ -1,6 +1,7 @@
 /* ==========================================================================
-   Page de connexion — Fond blanc + glassmorphisme clair
-   Carte en verre translucide, logo Safe Track en en-tête de carte
+   Page de connexion — Fond bleu nuit + glassmorphisme sombre
+   Carte en verre translucide, lumière animée parcourant son contour,
+   logo Safe Track en en-tête de carte
    Polices : Poppins (titres) / Inter (sous-titre) — déjà utilisées dans le projet
    ========================================================================== */
 
@@ -15,16 +16,24 @@
   font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #FFFFFF;
+  background-color: #060C22;
   background-image:
-    radial-gradient(700px 420px at 12% 8%, rgba(79, 124, 255, 0.10), transparent 62%),
-    radial-gradient(640px 420px at 88% 92%, rgba(109, 74, 255, 0.08), transparent 62%),
-    linear-gradient(rgba(79, 124, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79, 124, 255, 0.035) 1px, transparent 1px);
-  background-size: auto, auto, 44px 44px, 44px 44px;
+    radial-gradient(760px 460px at 12% 8%, rgba(79, 124, 255, 0.18), transparent 62%),
+    radial-gradient(680px 440px at 88% 92%, rgba(109, 74, 255, 0.14), transparent 62%),
+    radial-gradient(900px 620px at 50% 120%, rgba(30, 64, 175, 0.22), transparent 65%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: auto, auto, auto, 44px 44px, 44px 44px;
 }
 
-/* --- Carte en verre translucide clair (glassmorphisme) -------------------- */
+/* --- Carte en verre sombre (glassmorphisme) + lumière animée --------------- */
+
+/* Angle animé du dégradé conique (support navigateurs modernes) */
+@property --borderAngle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
 
 .auth-card {
   position: relative;
@@ -33,14 +42,73 @@
   max-width: 320px;
   padding: 28px 24px 24px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.07);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
-    0 24px 60px rgba(65, 78, 120, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+    0 24px 60px rgba(2, 6, 23, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
   animation: authCardIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+/* Lumière qui parcourt progressivement le contour de la carte.
+   Masque en anneau (xor) : le dégradé n'est visible QUE sur le liseré,
+   le centre de la carte n'est jamais coloré. */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 21px;
+  padding: 2.5px; /* épaisseur du liseré lumineux */
+  background: conic-gradient(
+    from var(--borderAngle),
+    rgba(79, 124, 255, 0) 0deg,
+    rgba(79, 124, 255, 0.85) 40deg,
+    #9DB8FF 72deg,
+    rgba(255, 255, 255, 0.95) 85deg,
+    #6D4AFF 105deg,
+    rgba(109, 74, 255, 0) 150deg,
+    rgba(109, 74, 255, 0) 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: -1;
+  pointer-events: none;
+  animation: borderLightRun 4.5s linear infinite;
+}
+
+/* Halo lumineux : anneau strictement extérieur à la carte (jamais sur le centre) */
+.auth-card::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 27px;
+  padding: 7px;
+  background: conic-gradient(
+    from var(--borderAngle),
+    rgba(79, 124, 255, 0) 0deg,
+    rgba(79, 124, 255, 0.35) 50deg,
+    rgba(255, 255, 255, 0.30) 80deg,
+    rgba(109, 74, 255, 0.35) 110deg,
+    rgba(109, 74, 255, 0) 150deg,
+    rgba(109, 74, 255, 0) 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: -2;
+  pointer-events: none;
+  animation: borderLightRun 4.5s linear infinite;
+}
+
+@keyframes borderLightRun {
+  to {
+    --borderAngle: 360deg;
+  }
 }
 
 /* --- En-tête : logo + titres ----------------------------------------------- */
@@ -53,9 +121,9 @@
   height: 64px;
   margin-bottom: 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.90);
-  border: 1px solid rgba(79, 124, 255, 0.18);
-  box-shadow: 0 10px 24px rgba(65, 78, 120, 0.14);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(79, 124, 255, 0.25);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.45);
   overflow: hidden;
 
   img {
@@ -73,7 +141,7 @@
 }
 
 .auth-title {
-  color: #172033;
+  color: #F4F6FB;
   font-size: 26px;
   font-weight: 700;
   line-height: 1.15;
@@ -82,7 +150,7 @@
 
 .auth-subtitle {
   margin-top: 10px;
-  color: #7A8499;
+  color: rgba(255, 255, 255, 0.72);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13.5px;
   font-weight: 400;
@@ -99,9 +167,9 @@
   padding: 13px 16px;
   margin-bottom: 20px;
   border-radius: 14px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #B42318;
+  background: rgba(239, 68, 68, 0.16);
+  border: 1px solid rgba(239, 68, 68, 0.38);
+  color: #FFC9C9;
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -125,9 +193,9 @@
   height: 46px;
   padding: 0 44px 0 18px;
   border-radius: 15px;
-  border: 1px solid rgba(23, 32, 51, 0.10);
-  background: rgba(255, 255, 255, 0.78);
-  color: #172033;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: #F4F6FB;
   font-family: inherit;
   font-size: 14px;
   outline: none;
@@ -137,28 +205,28 @@
     box-shadow 0.25s ease;
 
   &::placeholder {
-    color: #9AA3B5;
+    color: rgba(255, 255, 255, 0.45);
     font-weight: 300;
   }
 
   &:hover {
-    border-color: rgba(79, 124, 255, 0.35);
+    border-color: rgba(157, 184, 255, 0.45);
   }
 
   &:focus {
     border-color: #4F7CFF;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.14);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.22);
   }
 
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
-    -webkit-text-fill-color: #172033 !important;
-    caret-color: #172033;
-    border-color: rgba(23, 32, 51, 0.10);
+    -webkit-box-shadow: 0 0 0 1000px #101832 inset !important;
+    -webkit-text-fill-color: #F4F6FB !important;
+    caret-color: #F4F6FB;
+    border-color: rgba(255, 255, 255, 0.16);
     transition: background-color 5000s ease-in-out 0s;
   }
 }
@@ -169,7 +237,7 @@
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(23, 32, 51, 0.45);
+  color: rgba(255, 255, 255, 0.55);
   font-size: 17px;
   pointer-events: none;
   z-index: 1;
@@ -189,7 +257,7 @@
   background: transparent;
   border: none;
   border-radius: 50%;
-  color: rgba(23, 32, 51, 0.6);
+  color: rgba(255, 255, 255, 0.65);
   font-size: 16px;
   cursor: pointer;
   transition:
@@ -198,7 +266,7 @@
   z-index: 1;
 
   &:hover {
-    background: rgba(79, 124, 255, 0.10);
+    background: rgba(255, 255, 255, 0.10);
   }
 
   &:focus-visible {
@@ -234,8 +302,8 @@
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  border: 1.5px solid rgba(23, 32, 51, 0.22);
-  background: rgba(255, 255, 255, 0.75);
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.10);
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -253,13 +321,13 @@
 }
 
 .remember-me:hover .checkbox-box {
-  border-color: rgba(79, 124, 255, 0.50);
+  border-color: rgba(157, 184, 255, 0.60);
 }
 
 .remember-checkbox:checked + .checkbox-box {
-  background: linear-gradient(135deg, #4F7CFF 0%, #6D4AFF 100%);
+  background: #2563EB;
   border-color: transparent;
-  box-shadow: 0 4px 12px rgba(79, 124, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
 
   i {
     opacity: 1;
@@ -273,7 +341,7 @@
 }
 
 .remember-label {
-  color: #3D4A63;
+  color: rgba(255, 255, 255, 0.82);
   font-size: 13.5px;
   font-weight: 400;
 }
@@ -286,7 +354,7 @@
   margin-top: 6px;
   border: none;
   border-radius: 15px;
-  background: linear-gradient(135deg, #4F7CFF 0%, #6D4AFF 100%);
+  background: #2563EB;
   color: #fff;
   font-family: inherit;
   font-size: 15px;
@@ -296,7 +364,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 24px rgba(79, 124, 255, 0.30);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.30);
   transition: 
     filter 0.25s ease,
     transform 0.25s ease,
@@ -305,7 +373,7 @@
   &:hover:not(:disabled) {
     filter: brightness(1.12);
     transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(79, 124, 255, 0.38);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.38);
   }
 
   &:active:not(:disabled) {
@@ -378,6 +446,8 @@
 /* Accessibilité : désactiver les animations si l'utilisateur préfère */
 @media (prefers-reduced-motion: reduce) {
   .auth-card,
+  .auth-card::before,
+  .auth-card::after,
   .auth-header,
   .error-message,
   .auth-form > * {
@@ -407,6 +477,10 @@
     padding: 24px 18px 20px;
     border-radius: 16px;
   }
+
+  /* Rayons des anneaux lumineux alignés sur le rayon mobile de la carte */
+  .auth-card::before { border-radius: 17px; }
+  .auth-card::after { border-radius: 23px; }
 
   .auth-title {
     font-size: 28px;

@@ -516,14 +516,14 @@ import { BatteryExportService } from '../../services/battery-export.service';
     }
 
     .eqd-btn-primary {
-      background: linear-gradient(135deg, #4F7CFF 0%, #6D4AFF 100%);
+      background: #2563EB;
       color: #FFFFFF;
-      box-shadow: 0 8px 20px rgba(79, 124, 255, 0.30);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.30);
     }
 
     .eqd-btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 26px rgba(79, 124, 255, 0.38);
+      box-shadow: 0 12px 26px rgba(37, 99, 235, 0.38);
       filter: brightness(1.05);
     }
 
@@ -540,14 +540,14 @@ import { BatteryExportService } from '../../services/battery-export.service';
     }
 
     .eqd-btn-success {
-      background: linear-gradient(135deg, #20C997 0%, #0FA97E 100%);
+      background: #2563EB;
       color: #FFFFFF;
-      box-shadow: 0 8px 20px rgba(32, 201, 151, 0.28);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
     }
 
     .eqd-btn-success:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 12px 26px rgba(32, 201, 151, 0.36);
+      box-shadow: 0 12px 26px rgba(37, 99, 235, 0.36);
       filter: brightness(1.05);
     }
 
@@ -700,13 +700,13 @@ import { BatteryExportService } from '../../services/battery-export.service';
       width: 54px;
       height: 54px;
       border-radius: 16px;
-      background: linear-gradient(135deg, #4F7CFF 0%, #6D4AFF 100%);
+      background: #2563EB;
       color: #FFFFFF;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 22px;
-      box-shadow: 0 10px 24px rgba(79, 124, 255, 0.35);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
       flex-shrink: 0;
     }
 
@@ -934,18 +934,18 @@ import { BatteryExportService } from '../../services/battery-export.service';
       gap: 7px;
       padding: 8px 14px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #4F7CFF 0%, #6D4AFF 100%);
+      background: #2563EB;
       color: #FFFFFF;
       font-size: 12.5px;
       font-weight: 600;
       text-decoration: none;
-      box-shadow: 0 6px 16px rgba(79, 124, 255, 0.28);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
       transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
     }
 
     .eqd-maps-btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 22px rgba(79, 124, 255, 0.36);
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.36);
       filter: brightness(1.05);
     }
 
