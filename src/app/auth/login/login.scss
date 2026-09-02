@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Page de connexion — Design Glassmorphism
-   Arrière-plan : champ de panneaux solaires au coucher du soleil (pannaux.jpg)
+   Page de connexion — Fond blanc + glassmorphisme clair
+   Carte en verre translucide, logo Safe Track en en-tête de carte
    Polices : Poppins (titres) / Inter (sous-titre) — déjà utilisées dans le projet
    ========================================================================== */
 
@@ -15,75 +15,77 @@
   font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   overflow-y: auto;
+  background-color: #FFFFFF;
+  background-image:
+    radial-gradient(700px 420px at 12% 8%, rgba(79, 124, 255, 0.10), transparent 62%),
+    radial-gradient(640px 420px at 88% 92%, rgba(109, 74, 255, 0.08), transparent 62%),
+    linear-gradient(rgba(79, 124, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 124, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, auto, 44px 44px, 44px 44px;
 }
 
-/* --- Image d'arrière-plan plein écran (avec zoom d'entrée) ---------------- */
-
-/* Conteneur : masque le débordement créé par le zoom de l'image */
-.auth-bg-wrap {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.auth-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  animation: authBgZoom 2.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: transform, filter;
-}
-
-/* Voile sombre bleu nuit dense pour améliorer la lisibilité.
-   L'image reste visible à travers le voile (statique). */
-.auth-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, rgba(10, 18, 45, 0.75) 0%, rgba(4, 10, 32, 0.90) 100%);
-  z-index: 1;
-}
-
-/* --- Carte en verre translucide ------------------------------------------ */
+/* --- Carte en verre translucide clair (glassmorphisme) -------------------- */
 
 .auth-card {
   position: relative;
-  z-index: 2;
+  z-index: 1;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
   padding: 28px 24px 24px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.15);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 24px 60px rgba(4, 32, 18, 0.28);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.90);
+  box-shadow:
+    0 24px 60px rgba(65, 78, 120, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
   animation: authCardIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
-/* --- En-tête -------------------------------------------------------------- */
+/* --- En-tête : logo + titres ----------------------------------------------- */
+
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(79, 124, 255, 0.18);
+  box-shadow: 0 10px 24px rgba(65, 78, 120, 0.14);
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+}
 
 .auth-header {
   margin-bottom: 22px;
+  text-align: center;
   animation: authFadeIn 0.9s ease 0.45s both;
 }
 
 .auth-title {
-  color: #fff;
-  font-size: 28px;
+  color: #172033;
+  font-size: 26px;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.5px;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
 }
 
 .auth-subtitle {
   margin-top: 10px;
-  color: rgba(255, 255, 255, 0.85);
+  color: #7A8499;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13.5px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -97,9 +99,9 @@
   padding: 13px 16px;
   margin-bottom: 20px;
   border-radius: 14px;
-  background: rgba(239, 68, 68, 0.18);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #ffd9d9;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #B42318;
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -123,9 +125,9 @@
   height: 46px;
   padding: 0 44px 0 18px;
   border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  border: 1px solid rgba(23, 32, 51, 0.10);
+  background: rgba(255, 255, 255, 0.78);
+  color: #172033;
   font-family: inherit;
   font-size: 14px;
   outline: none;
@@ -135,28 +137,28 @@
     box-shadow 0.25s ease;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+    color: #9AA3B5;
     font-weight: 300;
   }
 
   &:hover {
-    border-color: rgba(255, 255, 255, 0.65);
+    border-color: rgba(79, 124, 255, 0.35);
   }
 
   &:focus {
-    border-color: rgba(255, 255, 255, 0.85);
-    background: rgba(255, 255, 255, 0.14);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+    border-color: #4F7CFF;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.14);
   }
 
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px rgba(30, 41, 59, 0.95) inset !important;
-    -webkit-text-fill-color: #fff !important;
-    caret-color: #fff;
-    border-color: rgba(255, 255, 255, 0.45);
+    -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+    -webkit-text-fill-color: #172033 !important;
+    caret-color: #172033;
+    border-color: rgba(23, 32, 51, 0.10);
     transition: background-color 5000s ease-in-out 0s;
   }
 }
@@ -167,7 +169,7 @@
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(23, 32, 51, 0.45);
   font-size: 17px;
   pointer-events: none;
   z-index: 1;
@@ -187,7 +189,7 @@
   background: transparent;
   border: none;
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(23, 32, 51, 0.6);
   font-size: 16px;
   cursor: pointer;
   transition:
@@ -196,11 +198,11 @@
   z-index: 1;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(79, 124, 255, 0.10);
   }
 
   &:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.7);
+    outline: 2px solid rgba(79, 124, 255, 0.6);
     outline-offset: 2px;
   }
 }
@@ -232,8 +234,8 @@
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  border: 1.5px solid rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(23, 32, 51, 0.22);
+  background: rgba(255, 255, 255, 0.75);
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -251,13 +253,13 @@
 }
 
 .remember-me:hover .checkbox-box {
-  border-color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(79, 124, 255, 0.50);
 }
 
 .remember-checkbox:checked + .checkbox-box {
-  background: linear-gradient(135deg, #33477a 0%, #1d2e5c 100%);
+  background: linear-gradient(135deg, #4F7CFF 0%, #6D4AFF 100%);
   border-color: transparent;
-  box-shadow: 0 4px 12px rgba(29, 46, 92, 0.35);
+  box-shadow: 0 4px 12px rgba(79, 124, 255, 0.35);
 
   i {
     opacity: 1;
@@ -266,12 +268,12 @@
 }
 
 .remember-checkbox:focus-visible + .checkbox-box {
-  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline: 2px solid rgba(79, 124, 255, 0.60);
   outline-offset: 2px;
 }
 
 .remember-label {
-  color: #fff;
+  color: #3D4A63;
   font-size: 13.5px;
   font-weight: 400;
 }
@@ -284,7 +286,7 @@
   margin-top: 6px;
   border: none;
   border-radius: 15px;
-  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  background: linear-gradient(135deg, #4F7CFF 0%, #6D4AFF 100%);
   color: #fff;
   font-family: inherit;
   font-size: 15px;
@@ -294,7 +296,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 10px 24px rgba(79, 124, 255, 0.30);
   transition: 
     filter 0.25s ease,
     transform 0.25s ease,
@@ -303,7 +305,7 @@
   &:hover:not(:disabled) {
     filter: brightness(1.12);
     transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 14px 30px rgba(79, 124, 255, 0.38);
   }
 
   &:active:not(:disabled) {
@@ -335,17 +337,7 @@
    Animations d'entrée de la page
    ========================================================================== */
 
-/* L'image démarre très sombre (ombre) puis s'éclaircit progressivement (lumière) */
-@keyframes authBgZoom {
-  from {
-    transform: scale(1.14);
-    filter: brightness(0.22) saturate(0.8);
-  }
-  to {
-    transform: scale(1);
-    filter: brightness(1) saturate(1);
-  }
-}
+/* (Animation authBgZoom supprimée : plus d'image d'arrière-plan) */
 
 @keyframes authCardIn {
   from {
@@ -385,7 +377,6 @@
 
 /* Accessibilité : désactiver les animations si l'utilisateur préfère */
 @media (prefers-reduced-motion: reduce) {
-  .auth-bg,
   .auth-card,
   .auth-header,
   .error-message,

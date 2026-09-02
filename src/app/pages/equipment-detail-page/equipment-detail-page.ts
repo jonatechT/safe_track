@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import {
   EquipmentService,
   Equipment,
@@ -115,14 +116,22 @@ import { BatteryExportService } from '../../services/battery-export.service';
 
         <!-- ===== Grille des indicateurs ===== -->
         <section class="eqd-grid">
-          <!-- État -->
+          <!-- Courant -->
           <article class="eqd-card">
             <div class="eqd-card-head">
-              <span class="eqd-chip eqd-chip-blue"><i class="fa-solid fa-signal"></i></span>
-              <span class="eqd-card-label">État</span>
+              <span class="eqd-chip eqd-chip-blue"><i class="fa-solid fa-microchip"></i></span>
+              <span class="eqd-card-label">Courant</span>
             </div>
-            <div class="eqd-card-value">{{ equipment.statut }}</div>
-            <div class="eqd-card-meta">Dernière synchro : {{ equipment.miseEnLigne }}</div>
+            @if (batteryDiagnostic && batteryDiagnostic.current_a !== null && batteryDiagnostic.current_a !== undefined) {
+              <div class="eqd-card-value">{{ batteryCurrentDisplay }}</div>
+              <div class="eqd-card-meta">Mesure du diagnostic batterie</div>
+            } @else {
+              <div class="eqd-card-value eqd-value-empty">—</div>
+              <div class="eqd-card-foot">
+                <span class="eqd-badge eqd-badge-neutral">Donnée non disponible</span>
+                <span class="eqd-card-meta">Lancer un diagnostic pour mesurer</span>
+              </div>
+            }
           </article>
 
           <!-- Localisation -->
@@ -184,21 +193,40 @@ import { BatteryExportService } from '../../services/battery-export.service';
             <span class="eqd-chip eqd-chip-purple eqd-chip-lg"><i class="fa-solid fa-battery-full"></i></span>
             <div class="eqd-bdiag-head-text">
               <h3 class="eqd-bdiag-title">Diagnostic batterie</h3>
-              <p class="eqd-bdiag-sub">Analyse automatique de l'état de la batterie</p>
+              <p class="eqd-bdiag-sub">Analyse à la demande de l'état de la batterie</p>
             </div>
-            @if (batteryDiagnostic) {
-              <span [class]="'eqd-badge eqd-badge-lg ' + batteryStateBadgeClass">
-                {{ batteryEtatDisplay }}
-              </span>
-            }
+            <div class="eqd-bdiag-head-actions">
+              @if (batteryDiagnostic) {
+                <span [class]="'eqd-badge eqd-badge-lg ' + batteryStateBadgeClass">
+                  {{ batteryEtatDisplay }}
+                </span>
+              }
+              <button
+                type="button"
+                class="eqd-btn eqd-bdiag-launch"
+                [class.eqd-btn-primary]="!batteryLoading"
+                [class.eqd-btn-danger]="batteryLoading"
+                (click)="basculerDiagnostic()"
+              >
+                @if (batteryLoading) {
+                  <i class="fa-solid fa-stop"></i>
+                  <span>Arrêter</span>
+                } @else {
+                  <i class="fa-solid fa-stethoscope"></i>
+                  <span>Lancer un diagnostic</span>
+                }
+              </button>
+            </div>
           </header>
 
           @if (batteryLoading) {
             <!-- ===== Chargement ===== -->
             <div class="eqd-bdiag-unavailable">
               <span class="eqd-bdiag-unavail-icon"><i class="fa-solid fa-spinner fa-spin"></i></span>
-              <h4 class="eqd-bdiag-unavail-title">Chargement du diagnostic…</h4>
-              <p class="eqd-bdiag-unavail-text">Récupération des données batterie en cours.</p>
+              <h4 class="eqd-bdiag-unavail-title">Diagnostic en cours…</h4>
+              <p class="eqd-bdiag-unavail-text">
+                Analyse de la batterie en cours. Vous pouvez arrêter le diagnostic à tout moment.
+              </p>
             </div>
           } @else if (!batteryDiagnostic) {
             <!-- ===== Diagnostic indisponible / backend indisponible ===== -->
@@ -1005,6 +1033,19 @@ import { BatteryExportService } from '../../services/battery-export.service';
 
     .eqd-bdiag-head-text { min-width: 0; }
 
+    .eqd-bdiag-head-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    .eqd-bdiag-launch {
+      padding: 9px 16px;
+      font-size: 13px;
+    }
+
     .eqd-bdiag-title {
       margin: 0;
       font-size: 18px;
@@ -1471,6 +1512,12 @@ export class EquipmentDetailPageComponent implements OnInit {
   batteryLoading = false;
   batteryHistoryLoading = false;
   batteryError: string | null = null;
+  /** true dès que l'utilisateur a lancé un diagnostic via le bouton. */
+  batteryDiagnosticLaunched = false;
+  /** true si le dernier diagnostic a été arrêté manuellement par l'utilisateur. */
+  batteryDiagnosticArrete = false;
+  /** Abonnement HTTP du diagnostic en cours (permet l'arrêt via le bouton « Arrêter »). */
+  private batteryDiagnosticSubscription: Subscription | null = null;
   exportError: string | null = null;
   source: 'equipment' | 'alerts' | 'maintenance' = 'equipment';
   isAlertTaken = false;
@@ -1510,9 +1557,10 @@ export class EquipmentDetailPageComponent implements OnInit {
         this.diagnostic = this.equipmentService.getDiagnostic(eq);
         this.checkAlertStatus();
       }
-      // Diagnostic + historique batterie : consommation des endpoints backend.
+      // Historique batterie : consommation des endpoints backend.
       // (Le frontend n'exécute aucune prédiction IA.)
-      this.loadBatteryDiagnostic(imei);
+      // Le diagnostic courant n'est PAS lancé automatiquement : il démarre
+      // uniquement quand l'utilisateur clique sur « Lancer un diagnostic ».
       this.loadBatteryHistory(imei);
     }
   }
@@ -1521,19 +1569,55 @@ export class EquipmentDetailPageComponent implements OnInit {
   private loadBatteryDiagnostic(imei: string): void {
     this.batteryLoading = true;
     this.batteryError = null;
-    this.equipmentService.getBatteryCurrentDiagnostic(imei).subscribe({
-      next: result => {
-        this.batteryLoading = false;
-        this.batteryDiagnostic = result;
-        this.batteryError = this.equipmentService.batteryApiError();
-      },
-      error: () => {
-        this.batteryLoading = false;
-        this.batteryError =
-          this.equipmentService.batteryApiError() ??
-          'Erreur lors de la récupération du diagnostic batterie.';
-      }
-    });
+    this.batteryDiagnosticSubscription = this.equipmentService
+      .getBatteryCurrentDiagnostic(imei)
+      .subscribe({
+        next: result => {
+          this.batteryDiagnosticSubscription = null;
+          this.batteryLoading = false;
+          this.batteryDiagnostic = result;
+          this.batteryError = this.equipmentService.batteryApiError();
+        },
+        error: () => {
+          this.batteryDiagnosticSubscription = null;
+          this.batteryLoading = false;
+          this.batteryError =
+            this.equipmentService.batteryApiError() ??
+            'Erreur lors de la récupération du diagnostic batterie.';
+        }
+      });
+  }
+
+  /**
+   * Lance le diagnostic batterie à la demande (bouton « Lancer un diagnostic »).
+   * Appelle GET /api/batterie/{device_id}/actuel — aucune prédiction côté frontend,
+   * le backend reste l'unique source des résultats.
+   */
+  lancerDiagnostic(): void {
+    const imei = this.route.snapshot.paramMap.get('imei');
+    if (!imei || this.batteryLoading) return;
+    this.batteryDiagnosticLaunched = true;
+    this.batteryDiagnosticArrete = false;
+    this.loadBatteryDiagnostic(imei);
+  }
+
+  /** Arrête le diagnostic en cours (bouton « Arrêter ») : annule la requête HTTP. */
+  arreterDiagnostic(): void {
+    if (this.batteryDiagnosticSubscription) {
+      this.batteryDiagnosticSubscription.unsubscribe();
+      this.batteryDiagnosticSubscription = null;
+    }
+    this.batteryLoading = false;
+    this.batteryDiagnosticArrete = true;
+  }
+
+  /** Action du bouton : lance le diagnostic, ou l'arrête s'il est en cours. */
+  basculerDiagnostic(): void {
+    if (this.batteryLoading) {
+      this.arreterDiagnostic();
+    } else {
+      this.lancerDiagnostic();
+    }
   }
 
   /** Récupère l'historique — GET /api/batterie/{device_id}/historique. */
@@ -1551,13 +1635,21 @@ export class EquipmentDetailPageComponent implements OnInit {
     });
   }
 
-  /** Titre de l'état « diagnostic indisponible » (backend indisponible vs absence de données). */
+  /** Titre de l'état « diagnostic indisponible » (non lancé, arrêté, erreur ou absence de données). */
   get batteryUnavailableTitle(): string {
+    if (this.batteryDiagnosticArrete) return 'Diagnostic arrêté';
+    if (!this.batteryDiagnosticLaunched) return 'Aucun diagnostic lancé';
     if (this.batteryError) return 'Diagnostic momentanément indisponible';
     return 'Diagnostic indisponible';
   }
 
   get batteryUnavailableMessage(): string {
+    if (this.batteryDiagnosticArrete) {
+      return 'Le diagnostic a été arrêté. Relancez-le quand vous le souhaitez.';
+    }
+    if (!this.batteryDiagnosticLaunched) {
+      return 'Cliquez sur « Lancer un diagnostic » pour analyser la batterie de cet équipement.';
+    }
     if (this.batteryError) return this.batteryError;
     return "Aucune donnée de diagnostic n'est disponible pour cet équipement.";
   }
