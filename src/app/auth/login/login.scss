@@ -1,5 +1,5 @@
-/* ==========================================================================
-   Page de connexion — Fond bleu nuit + glassmorphisme sombre
+﻿/* ==========================================================================
+   Page de connexion — Fond bleu ciel + glassmorphisme clair
    Carte en verre translucide, lumière animée parcourant son contour,
    logo Safe Track en en-tête de carte
    Polices : Poppins (titres) / Inter (sous-titre) — déjà utilisées dans le projet
@@ -16,13 +16,13 @@
   font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #2D4070;
+  background-color: #5ab6e4;
   background-image:
-    radial-gradient(760px 460px at 12% 8%, rgba(79, 124, 255, 0.13), transparent 62%),
+    radial-gradient(760px 460px at 12% 8%, rgba(255, 255, 255, 0.25), transparent 62%),
     radial-gradient(680px 440px at 88% 92%, rgba(109, 74, 255, 0.10), transparent 62%),
     radial-gradient(900px 620px at 50% 120%, rgba(37, 99, 235, 0.16), transparent 65%),
-    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: auto, auto, auto, 44px 44px, 44px 44px;
 }
 
@@ -42,13 +42,13 @@
   max-width: 320px;
   padding: 28px 24px 24px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.85);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.50);
   box-shadow:
-    0 24px 60px rgba(2, 6, 23, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 24px 60px rgba(2, 6, 23, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.60);
   animation: authCardIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
