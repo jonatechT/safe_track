@@ -1,5 +1,5 @@
 ﻿/* ==========================================================================
-   Page de connexion — Fond bleu ciel + glassmorphisme clair
+   Page de connexion — Fond blanc + glassmorphisme clair
    Carte en verre translucide, lumière animée parcourant son contour,
    logo Safe Track en en-tête de carte
    Polices : Poppins (titres) / Inter (sous-titre) — déjà utilisées dans le projet
@@ -16,13 +16,13 @@
   font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #5ab6e4;
+  background-color: #FFFFFF;
   background-image:
-    radial-gradient(760px 460px at 12% 8%, rgba(255, 255, 255, 0.25), transparent 62%),
-    radial-gradient(680px 440px at 88% 92%, rgba(109, 74, 255, 0.10), transparent 62%),
-    radial-gradient(900px 620px at 50% 120%, rgba(37, 99, 235, 0.16), transparent 65%),
-    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    radial-gradient(760px 460px at 12% 8%, rgba(79, 124, 255, 0.08), transparent 62%),
+    radial-gradient(680px 440px at 88% 92%, rgba(109, 74, 255, 0.06), transparent 62%),
+    radial-gradient(900px 620px at 50% 120%, rgba(37, 99, 235, 0.05), transparent 65%),
+    linear-gradient(rgba(23, 32, 51, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 32, 51, 0.03) 1px, transparent 1px);
   background-size: auto, auto, auto, 44px 44px, 44px 44px;
 }
 
@@ -42,13 +42,13 @@
   max-width: 320px;
   padding: 28px 24px 24px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.88);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.50);
+  border: 1px solid rgba(23, 32, 51, 0.06);
   box-shadow:
-    0 24px 60px rgba(2, 6, 23, 0.20),
-    inset 0 1px 0 rgba(255, 255, 255, 0.60);
+    0 24px 60px rgba(23, 32, 51, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.90);
   animation: authCardIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
@@ -66,7 +66,7 @@
     rgba(79, 124, 255, 0) 0deg,
     rgba(79, 124, 255, 0.85) 40deg,
     #9DB8FF 72deg,
-    rgba(255, 255, 255, 0.95) 85deg,
+    #C7DAFF 85deg,
     #6D4AFF 105deg,
     rgba(109, 74, 255, 0) 150deg,
     rgba(109, 74, 255, 0) 360deg
@@ -91,7 +91,7 @@
     from var(--borderAngle),
     rgba(79, 124, 255, 0) 0deg,
     rgba(79, 124, 255, 0.35) 50deg,
-    rgba(255, 255, 255, 0.30) 80deg,
+    rgba(157, 184, 255, 0.30) 80deg,
     rgba(109, 74, 255, 0.35) 110deg,
     rgba(109, 74, 255, 0) 150deg,
     rgba(109, 74, 255, 0) 360deg
@@ -123,7 +123,7 @@
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(79, 124, 255, 0.25);
-  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.45);
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.12);
   overflow: hidden;
 
   img {
@@ -141,7 +141,7 @@
 }
 
 .auth-title {
-  color: #F4F6FB;
+  color: #172033;
   font-size: 26px;
   font-weight: 700;
   line-height: 1.15;
@@ -150,7 +150,7 @@
 
 .auth-subtitle {
   margin-top: 10px;
-  color: rgba(255, 255, 255, 0.72);
+  color: #7A8499;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13.5px;
   font-weight: 400;
@@ -167,9 +167,9 @@
   padding: 13px 16px;
   margin-bottom: 20px;
   border-radius: 14px;
-  background: rgba(239, 68, 68, 0.16);
-  border: 1px solid rgba(239, 68, 68, 0.38);
-  color: #FFC9C9;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.30);
+  color: #B42318;
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -193,9 +193,9 @@
   height: 46px;
   padding: 0 44px 0 18px;
   border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.08);
-  color: #F4F6FB;
+  border: 1px solid rgba(23, 32, 51, 0.12);
+  background: rgba(255, 255, 255, 0.90);
+  color: #172033;
   font-family: inherit;
   font-size: 14px;
   outline: none;
@@ -205,28 +205,28 @@
     box-shadow 0.25s ease;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.45);
+    color: #A3ADC2;
     font-weight: 300;
   }
 
   &:hover {
-    border-color: rgba(157, 184, 255, 0.45);
+    border-color: rgba(79, 124, 255, 0.45);
   }
 
   &:focus {
     border-color: #4F7CFF;
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.22);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.18);
   }
 
   &:-webkit-autofill,
   &:-webkit-autofill:hover,
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px #101832 inset !important;
-    -webkit-text-fill-color: #F4F6FB !important;
-    caret-color: #F4F6FB;
-    border-color: rgba(255, 255, 255, 0.16);
+    -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
+    -webkit-text-fill-color: #172033 !important;
+    caret-color: #172033;
+    border-color: rgba(23, 32, 51, 0.12);
     transition: background-color 5000s ease-in-out 0s;
   }
 }
@@ -237,7 +237,7 @@
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.55);
+  color: #9AA6BC;
   font-size: 17px;
   pointer-events: none;
   z-index: 1;
@@ -257,7 +257,7 @@
   background: transparent;
   border: none;
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.65);
+  color: #9AA6BC;
   font-size: 16px;
   cursor: pointer;
   transition:
@@ -266,7 +266,8 @@
   z-index: 1;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.10);
+    background: rgba(79, 124, 255, 0.10);
+    color: #4F7CFF;
   }
 
   &:focus-visible {
@@ -302,8 +303,8 @@
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  border: 1.5px solid rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.10);
+  border: 1.5px solid rgba(23, 32, 51, 0.22);
+  background: rgba(239, 246, 255, 0.60);
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -341,7 +342,7 @@
 }
 
 .remember-label {
-  color: rgba(255, 255, 255, 0.82);
+  color: #3D4A63;
   font-size: 13.5px;
   font-weight: 400;
 }
