@@ -75,32 +75,7 @@
   -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude;
-  z-index: -1;
-  pointer-events: none;
-  animation: borderLightRun 4.5s linear infinite;
-}
-
-/* Halo lumineux : anneau strictement extérieur à la carte (jamais sur le centre) */
-.auth-card::after {
-  content: '';
-  position: absolute;
-  inset: -7px;
-  border-radius: 27px;
-  padding: 7px;
-  background: conic-gradient(
-    from var(--borderAngle),
-    rgba(79, 124, 255, 0) 0deg,
-    rgba(79, 124, 255, 0.35) 50deg,
-    rgba(157, 184, 255, 0.30) 80deg,
-    rgba(109, 74, 255, 0.35) 110deg,
-    rgba(109, 74, 255, 0) 150deg,
-    rgba(109, 74, 255, 0) 360deg
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  z-index: -2;
+  z-index: 1;
   pointer-events: none;
   animation: borderLightRun 4.5s linear infinite;
 }
@@ -448,7 +423,6 @@
 @media (prefers-reduced-motion: reduce) {
   .auth-card,
   .auth-card::before,
-  .auth-card::after,
   .auth-header,
   .error-message,
   .auth-form > * {
@@ -479,9 +453,8 @@
     border-radius: 16px;
   }
 
-  /* Rayons des anneaux lumineux alignés sur le rayon mobile de la carte */
+  /* Rayon du liseré lumineux aligné sur le rayon mobile de la carte */
   .auth-card::before { border-radius: 17px; }
-  .auth-card::after { border-radius: 23px; }
 
   .auth-title {
     font-size: 28px;
