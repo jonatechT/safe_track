@@ -19,6 +19,11 @@ export interface Equipment {
   lienLocalisation: string;
   miseEnLigne: string;
   type: string;
+  /**
+   * Description libre saisie par le technicien à la déclaration.
+   * Facultative — transmise au backend via POST /api/equipements.
+   */
+  description?: string;
   /** Non fourni par le backend actuellement — nécessite une source capteur */
   temperature: number | null;
   /** Non fourni par le backend actuellement — nécessite une source capteur */
@@ -138,6 +143,77 @@ export class EquipmentService {
    * Null si la dernière opération a réussi.
    */
   readonly equipmentStatusError = signal<string | null>(null);
+
+  /**
+   * Message d'erreur du dernier ajout d'équipement.
+   * Null si le dernier ajout a réussi.
+   */
+  readonly equipmentCreateError = signal<string | null>(null);
+
+  /**
+   * Enregistre un nouvel équipement.
+   *
+   * Endpoint backend attendu — convention REST (cf. PATCH /api/equipements/{imei}/status
+   * et le contrat API) :
+   *
+   *   POST /api/equipements
+   *   Body : l'objet équipement { imei, nom, type, statut, localisation, lienLocalisation, miseEnLigne, ... }
+   *   Rôle : ADMIN_STRUCTURE (équipements de sa structure) / SUPERADMIN
+   *   Réponses : 201 (créé) / 409 (IMEI déjà existant)
+   *
+   * En mode développeur (BATTERY_API_CONFIG.useMock), l'ajout est enregistré
+   * localement pour pouvoir tester le parc sans backend.
+   *
+   * En mode réel, l'équipement n'est ajouté à la liste locale QUE si le backend
+   * confirme la création (aucun faux succès). Les erreurs sont exposées via
+   * `equipmentCreateError`.
+   */
+  createEquipment(data: Equipment): Observable<Equipment | null> {
+    if (BATTERY_API_CONFIG.useMock) {
+      this.equipmentCreateError.set(null);
+      const created: Equipment = {
+        ...data,
+        temperature: null,
+        tension: null,
+        bloque: false
+      };
+      this.equipments.push(created);
+      return of(created);
+    }
+
+    this.equipmentCreateError.set(null);
+    return this.http.post<Equipment>('/api/equipements', data).pipe(
+      map(created => {
+        this.equipments.push({
+          ...created,
+          temperature: created.temperature ?? null,
+          tension: created.tension ?? null,
+          bloque: created.bloque ?? false
+        });
+        return created;
+      }),
+      catchError((error: HttpErrorResponse) => {
+        this.equipmentCreateError.set(this.buildCreateErrorMessage(error));
+        return of(null);
+      })
+    );
+  }
+
+  private buildCreateErrorMessage(error: HttpErrorResponse): string {
+    if (error.status === 0) {
+      return "Backend indisponible : impossible d'enregistrer l'équipement.";
+    }
+    if (error.status === 409) {
+      return 'Un équipement avec cet IMEI existe déjà.';
+    }
+    if (error.status === 401 || error.status === 403) {
+      return "Vous n'avez pas les droits nécessaires pour ajouter un équipement.";
+    }
+    if (error.status === 404) {
+      return "Endpoint d'ajout non disponible côté backend (POST /api/equipements).";
+    }
+    return `Erreur ${error.status} lors de l'ajout de l'équipement.`;
+  }
 
   /**
    * Bloque ou débloque un équipement.

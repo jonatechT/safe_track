@@ -83,6 +83,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  /** Navigation depuis une carte KPI du tableau de bord */
+  goToPage(route: string): void {
+    this.router.navigate([route]);
+  }
+
   private loadKpiData(): void {
     // Données mock rechargées à chaque ouverture du dashboard (à remplacer par un appel API)
     this.totalEquipements = 100;

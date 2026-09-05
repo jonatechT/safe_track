@@ -1,0 +1,6 @@
+{
+  "/batterie/:device_id/actuel": "/batteries/:device_id",
+  "/batterie/:device_id/historique": "/batterie_historique/:device_id",
+  "/equipements/:imei/localisations": "/localisations/:imei",
+  "/equipements/:imei/status": "/equipements/:imei"
+}

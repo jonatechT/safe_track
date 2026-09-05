@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BasePageComponent } from '../base-page/base-page';
 import { EquipmentService, Equipment } from '../../services/equipment.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-equipment-list-page',
@@ -9,31 +10,39 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
   imports: [BasePageComponent],
   template: `
     <app-base-page
-      title="Parc d'équipement"
-      subtitle="Suivi en temps réel de vos équipements sur la carte."
+      [title]="pageTitle"
+      [subtitle]="pageSubtitle"
       icon="fa-solid fa-location-dot"
     >
+      <div page-actions>
+        @if (canAddEquipment()) {
+          <button type="button" class="equip-add-btn" (click)="ajouterEquipement()">
+            <i class="fa-solid fa-plus"></i>
+            <span>Ajouter un équipement</span>
+          </button>
+        }
+      </div>
       <div class="equip-content">
-        <!-- KPI Cards (identiques à l'existant) -->
+        <!-- KPI Cards -->
         <div class="stat-grid">
           <div class="stat-card" style="background: #DBEAFE; border-color: rgba(59, 130, 246, 0.24);">
             <div class="stat-main">
-              <span class="stat-label">Équipements localisés</span>
-              <span class="stat-value"><strong>100</strong></span>
+              <span class="stat-label">{{ enLigneMode ? 'Équipements non bloqués' : 'Équipements localisés' }}</span>
+              <span class="stat-value"><strong>{{ kpiLocalises }}</strong></span>
             </div>
             <i class="fa-solid fa-cube stat-icon" style="color: #3B82F6;"></i>
           </div>
           <div class="stat-card" style="background: #FEE2E2; border-color: rgba(239, 68, 68, 0.24);">
             <div class="stat-main">
-              <span class="stat-label">Hors ligne</span>
-              <span class="stat-value"><strong>18</strong></span>
+              <span class="stat-label">Bloqués</span>
+              <span class="stat-value"><strong>{{ kpiBloques }}</strong></span>
             </div>
-            <i class="fa-solid fa-wifi stat-icon" style="color: #EF4444;"></i>
+            <i class="fa-solid fa-lock stat-icon" style="color: #EF4444;"></i>
           </div>
           <div class="stat-card" style="background: #D1FAE5; border-color: rgba(16, 185, 129, 0.24);">
             <div class="stat-main">
               <span class="stat-label">En ligne</span>
-              <span class="stat-value"><strong>82</strong></span>
+              <span class="stat-value"><strong>{{ enLigneMode ? kpiLocalises : kpiEnLigne }}</strong></span>
             </div>
             <i class="fa-solid fa-wifi stat-icon" style="color: #10B981;"></i>
           </div>
@@ -52,8 +61,8 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
                 </tr>
               </thead>
               <tbody>
-                @for (eq of equipments; track eq.imei) {
-                  <tr class="row-clickable" (click)="ouvrirDetail(eq.imei)">
+                @for (eq of equipments; track eq.imei; let i = $index) {
+                  <tr class="row-clickable equip-row-animate" [style.animation-delay.ms]="70 * i" (click)="ouvrirDetail(eq.imei)">
                     <td>
                       <div class="equipment-cell">
                         <span class="equipment-name">{{ eq.nom }}</span>
@@ -161,6 +170,52 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
     }
     .btn-detail:hover { background-color: #2563EB; color: #FFFFFF; }
 
+    /* ===== Apparition en cascade des lignes (comme les autres listes Safe Track) ===== */
+    .equip-row-animate {
+      animation: equipRowIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes equipRowIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .equip-row-animate {
+        animation: none !important;
+      }
+    }
+
+    /* Bouton d'ajout d'équipement (en-tête de page) */
+    .equip-add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #2563EB;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      white-space: nowrap;
+    }
+    .equip-add-btn:hover {
+      background: #1D4ED8;
+      transform: translateY(-1px);
+    }
+    .equip-add-btn i { font-size: 13px; }
+
     @media (max-width: 1024px) {
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -170,16 +225,51 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
   `]
 })
 export class EquipmentListPageComponent {
+  /** Liste affichée (filtrée en mode « en ligne » : seuls les équipements non bloqués). */
   equipments: Equipment[] = [];
+  /** Vrai quand la page est affichée via la route /location/en-ligne. */
+  enLigneMode = false;
+
+  /** Titre / sous-titre adaptés au mode. */
+  pageTitle = "Parc d'équipement";
+  pageSubtitle = 'Suivi en temps réel de vos équipements sur la carte.';
+
+  /** Valeurs KPI — en mode normal, conservées telles qu'elles étaient affichées. */
+  kpiLocalises = 100;
+  kpiBloques = 0;
+  kpiEnLigne = 82;
 
   constructor(
     private equipmentService: EquipmentService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) {
-    this.equipments = this.equipmentService.getAll();
+    this.enLigneMode = this.route.snapshot.data['enLigne'] === true;
+
+    const all = this.equipmentService.getAll();
+    if (this.enLigneMode) {
+      // Seuls les équipements non bloqués apparaissent sur cette page.
+      this.equipments = all.filter(e => !e.bloque);
+      this.pageTitle = 'Équipements en ligne';
+      this.pageSubtitle = 'Équipements du parc actuellement non bloqués.';
+      this.kpiLocalises = all.length;
+      this.kpiBloques = all.filter(e => e.bloque).length;
+    } else {
+      this.equipments = all;
+    }
   }
 
   ouvrirDetail(imei: string): void {
     this.router.navigate(['/equipements', imei]);
+  }
+
+  /** Seuls SUPERADMIN et ADMIN_STRUCTURE peuvent ajouter un équipement. */
+  canAddEquipment(): boolean {
+    return this.authService.isSuperAdmin() || this.authService.isStructureAdmin();
+  }
+
+  ajouterEquipement(): void {
+    this.router.navigate(['/equipements/nouveau']);
   }
 }

@@ -54,6 +54,17 @@
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
+/* ===== Cartes KPI cliquables (navigation) ===== */
+.stat-card--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.stat-card--clickable:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
 .stat-card-content {
   display: flex;
   flex-direction: column;

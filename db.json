@@ -1,0 +1,128 @@
+{
+  "equipements": [
+    {
+      "id": 1,
+      "imei": "ESP32-001",
+      "nom": "Kit solaire",
+      "type": "Boîtier",
+      "statut": "En ligne",
+      "localisation": "Ouagadougou, Burkina Faso",
+      "lienLocalisation": "12.3714,-1.5197",
+      "miseEnLigne": "04/09/2026",
+      "description": "Kit solaire principal",
+      "temperature": 36.9,
+      "tension": 228,
+      "bloque": false
+    },
+    {
+      "id": 2,
+      "imei": "ESP32-002",
+      "nom": "Kit solaire",
+      "type": "Boîtier",
+      "statut": "En ligne",
+      "localisation": "Bobo-Dioulasso, Burkina Faso",
+      "lienLocalisation": "11.1771,-4.2979",
+      "miseEnLigne": "15/08/2026",
+      "description": "Kit secondaire",
+      "temperature": 38.2,
+      "tension": 225,
+      "bloque": false
+    },
+    {
+      "id": 3,
+      "imei": "ESP32-003",
+      "nom": "Kit solaire",
+      "type": "Boîtier",
+      "statut": "Hors ligne",
+      "localisation": "Koudougou, Burkina Faso",
+      "lienLocalisation": "12.2526,-2.3657",
+      "miseEnLigne": "20/07/2026",
+      "description": "Kit en maintenance",
+      "temperature": null,
+      "tension": null,
+      "bloque": true
+    }
+  ],
+  "batteries": [
+    {
+      "id": "ESP32-001",
+      "device_id": "ESP32-001",
+      "date_heure": "2026-09-04T10:30:00.000Z",
+      "voltage_v": 12.46,
+      "current_a": 2.8,
+      "temperature_c": 36.9,
+      "dod_percent": 38,
+      "soh_pourcent": 84,
+      "capacite_restante_ah": 102.4,
+      "duree_estimee_jours": 190,
+      "etat": "Bon",
+      "message": "Batterie en bon etat"
+    },
+    {
+      "id": "ESP32-002",
+      "device_id": "ESP32-002",
+      "date_heure": "2026-09-04T10:30:00.000Z",
+      "voltage_v": 11.8,
+      "current_a": 3.5,
+      "temperature_c": 41.2,
+      "dod_percent": 62,
+      "soh_pourcent": 72,
+      "capacite_restante_ah": 78.1,
+      "duree_estimee_jours": 95,
+      "etat": "Surveiller",
+      "message": "Batterie a surveiller"
+    }
+  ],
+  "batterie_historique": [
+    {
+      "id": "hist-001",
+      "device_id": "ESP32-001",
+      "points": [
+        { "date_heure": "2026-08-05T00:00:00Z", "soh": 92, "capacite": 112, "rul_jours": 280, "temperature": 32 },
+        { "date_heure": "2026-08-12T00:00:00Z", "soh": 90, "capacite": 110, "rul_jours": 265, "temperature": 33 },
+        { "date_heure": "2026-08-19T00:00:00Z", "soh": 88, "capacite": 108, "rul_jours": 250, "temperature": 34 },
+        { "date_heure": "2026-08-26T00:00:00Z", "soh": 86, "capacite": 105, "rul_jours": 220, "temperature": 35 },
+        { "date_heure": "2026-09-02T00:00:00Z", "soh": 84, "capacite": 102, "rul_jours": 190, "temperature": 37 }
+      ]
+    },
+    {
+      "id": "hist-002",
+      "device_id": "ESP32-002",
+      "points": [
+        { "date_heure": "2026-08-05T00:00:00Z", "soh": 85, "capacite": 100, "rul_jours": 210, "temperature": 35 },
+        { "date_heure": "2026-08-15T00:00:00Z", "soh": 80, "capacite": 94, "rul_jours": 170, "temperature": 37 },
+        { "date_heure": "2026-08-25T00:00:00Z", "soh": 76, "capacite": 86, "rul_jours": 130, "temperature": 39 },
+        { "date_heure": "2026-09-04T00:00:00Z", "soh": 72, "capacite": 78, "rul_jours": 95, "temperature": 41 }
+      ]
+    }
+  ],
+  "localisations": [
+    {
+      "id": "loc-001",
+      "device_id": "ESP32-001",
+      "history": [
+        { "date_debut": "2026-09-01T08:00:00Z", "date_fin": "2026-09-03T18:00:00Z", "localisation": "Ouagadougou, Zone A", "lien_localisation": "12.3714,-1.5197" },
+        { "date_debut": "2026-09-03T18:00:00Z", "date_fin": null, "localisation": "Ouagadougou, Zone B", "lien_localisation": "12.368,-1.525" }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "nom": "OUEDRAOGO Ali",
+      "email": "ali@shango.com",
+      "telephone": "+226 70 00 00 00",
+      "role": "SUPERADMIN",
+      "structureId": 1,
+      "statut": "ACTIF",
+      "dateCreation": "2024-01-15"
+    }
+  ],
+  "structures": [
+    {
+      "id": 1,
+      "nom": "Orange Energie",
+      "statut": "ACTIF"
+    }
+  ]
+}
