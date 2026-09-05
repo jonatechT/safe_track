@@ -102,6 +102,13 @@ export const routes: Route[] = [
   { path: 'pending', loadComponent: () => import('./auth/pending/pending').then(m => m.PendingComponent) },
   { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard').then(m => m.DashboardComponent), canActivate: [authGuard] },
   { path: 'location', loadComponent: () => import('./pages/equipment-list-page/equipment-list-page').then(m => m.EquipmentListPageComponent), canActivate: [authGuard] },
+  {
+    path: 'location/en-ligne',
+    loadComponent: () => import('./pages/equipment-list-page/equipment-list-page').then(m => m.EquipmentListPageComponent),
+    data: { enLigne: true },
+    canActivate: [authGuard]
+  },
+  { path: 'equipements/nouveau', loadComponent: () => import('./pages/equipment-form-page/equipment-form-page').then(m => m.EquipmentFormPageComponent), canActivate: [authGuard] },
   { path: 'equipements/:imei', loadComponent: () => import('./pages/equipment-detail-page/equipment-detail-page').then(m => m.EquipmentDetailPageComponent), canActivate: [authGuard] },
   { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
   { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },

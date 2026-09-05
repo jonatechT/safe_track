@@ -5,7 +5,15 @@
   </div>
 
   <div class="kpi-row">
-    <div class="stat-card stat-card--blue">
+    <div
+      class="stat-card stat-card--blue stat-card--clickable"
+      role="button"
+      tabindex="0"
+      (click)="goToPage('/location')"
+      (keydown.enter)="goToPage('/location')"
+      (keydown.space)="goToPage('/location')"
+      [attr.aria-label]="'Voir le parc d\'équipement (Total équipements)'"
+    >
       <div class="stat-card-content">
         <span class="stat-label">Total équipements</span>
         <h3 class="stat-value">{{ totalEquipements }}</h3>
@@ -13,7 +21,15 @@
       <i class="fa-solid fa-boxes-stacked stat-icon stat-icon--blue"></i>
     </div>
 
-    <div class="stat-card stat-card--green">
+    <div
+      class="stat-card stat-card--green stat-card--clickable"
+      role="button"
+      tabindex="0"
+      (click)="goToPage('/location/en-ligne')"
+      (keydown.enter)="goToPage('/location/en-ligne')"
+      (keydown.space)="goToPage('/location/en-ligne')"
+      [attr.aria-label]="'Voir les équipements en ligne (non bloqués)'"
+    >
       <div class="stat-card-content">
         <span class="stat-label">Équipements en ligne</span>
         <h3 class="stat-value">{{ enLigne }}</h3>
@@ -21,7 +37,15 @@
       <i class="fa-solid fa-circle-check stat-icon stat-icon--green"></i>
     </div>
 
-    <div class="stat-card stat-card--pink">
+    <div
+      class="stat-card stat-card--pink stat-card--clickable"
+      role="button"
+      tabindex="0"
+      (click)="goToPage('/alerts')"
+      (keydown.enter)="goToPage('/alerts')"
+      (keydown.space)="goToPage('/alerts')"
+      [attr.aria-label]="'Voir la page Alertes (Alerte active)'"
+    >
       <div class="stat-card-content">
         <span class="stat-label">Alerte active</span>
         <h3 class="stat-value">{{ alerteActive }}</h3>
@@ -29,7 +53,15 @@
       <i class="fa-solid fa-bell stat-icon stat-icon--pink"></i>
     </div>
 
-    <div class="stat-card stat-card--orange">
+    <div
+      class="stat-card stat-card--orange stat-card--clickable"
+      role="button"
+      tabindex="0"
+      (click)="goToPage('/maintenance')"
+      (keydown.enter)="goToPage('/maintenance')"
+      (keydown.space)="goToPage('/maintenance')"
+      [attr.aria-label]="'Voir la page Maintenance (Anomalie détectée)'"
+    >
       <div class="stat-card-content">
         <span class="stat-label">Anomalie détecté</span>
         <h3 class="stat-value">{{ anomalieDetectee }}</h3>
@@ -42,7 +74,7 @@
     <div class="card">
       <h2 class="card-title">Équipements par catégorie</h2>
       <div class="category-list">
-        <div class="category-item"><div class="category-header"><span class="category-name">Kits</span><span class="category-count">{{ kits }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="kitsPourcent" style="background: #2563EB;"></div></div></div>
+        <div class="category-item"><div class="category-header"><span class="category-name">Kit solaire</span><span class="category-count">{{ kits }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="kitsPourcent" style="background: #2563EB;"></div></div></div>
         <div class="category-item"><div class="category-header"><span class="category-name">Automobiles</span><span class="category-count">{{ automobiles }}</span></div><div class="progress-track"><div class="progress-fill" [style.width.%]="automobilesPourcent" style="background: #2563EB;"></div></div></div>
       </div>
     </div>
