@@ -1,7 +1,7 @@
-﻿/* ==========================================================================
-   Page de connexion — Fond blanc + glassmorphisme clair
-   Carte en verre translucide, lumière animée parcourant son contour,
-   logo Safe Track en en-tête de carte
+/* ==========================================================================
+   Page de connexion — Fond image pannaux + glassmorphisme transparent
+   Carte en verre translucide laissant apparaître l'image, lumière animée
+   parcourant son contour, logo Safe Track en en-tête de carte
    Polices : Poppins (titres) / Inter (sous-titre) — déjà utilisées dans le projet
    ========================================================================== */
 
@@ -16,17 +16,21 @@
   font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #FFFFFF;
-  background-image:
-    radial-gradient(760px 460px at 12% 8%, rgba(79, 124, 255, 0.08), transparent 62%),
-    radial-gradient(680px 440px at 88% 92%, rgba(109, 74, 255, 0.06), transparent 62%),
-    radial-gradient(900px 620px at 50% 120%, rgba(37, 99, 235, 0.05), transparent 65%),
-    linear-gradient(rgba(23, 32, 51, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 32, 51, 0.03) 1px, transparent 1px);
-  background-size: auto, auto, auto, 44px 44px, 44px 44px;
+  background: url('/pannaux.jpg') center center / cover no-repeat;
+  position: relative;
+
+  /* Overlay léger pour lisibilité + profondeur */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(23, 32, 51, 0.45) 0%, rgba(23, 32, 51, 0.25) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
 }
 
-/* --- Carte en verre sombre (glassmorphisme) + lumière animée --------------- */
+/* --- Carte en verre transparent (glassmorphisme) + lumière animée --------------- */
 
 /* Angle animé du dégradé conique (support navigateurs modernes) */
 @property --borderAngle {
@@ -42,13 +46,13 @@
   max-width: 320px;
   padding: 28px 24px 24px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.12);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(23, 32, 51, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow:
-    0 24px 60px rgba(23, 32, 51, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+    0 24px 60px rgba(23, 32, 51, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.30);
   animation: authCardIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
@@ -96,9 +100,9 @@
   height: 64px;
   margin-bottom: 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(79, 124, 255, 0.25);
-  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.12);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.60);
+  box-shadow: 0 10px 24px rgba(23, 32, 51, 0.18);
   overflow: hidden;
 
   img {
@@ -116,8 +120,7 @@
 }
 
 .auth-title {
-  color: #172033;
-  font-size: 26px;
+  color: #FFFFFF;\r\n  font-size: 26px;\r\n  text-shadow: 0 2px 8px rgba(23, 32, 51, 0.40);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.5px;
@@ -125,8 +128,7 @@
 
 .auth-subtitle {
   margin-top: 10px;
-  color: #7A8499;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: rgba(255, 255, 255, 0.85);\r\n  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 13.5px;
   font-weight: 400;
   line-height: 1.5;
@@ -142,9 +144,7 @@
   padding: 13px 16px;
   margin-bottom: 20px;
   border-radius: 14px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.30);
-  color: #B42318;
+  background: rgba(255, 255, 255, 0.15);\r\n  border: 1px solid rgba(255, 255, 255, 0.25);\r\n  color: #FFD2D2;
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -168,9 +168,7 @@
   height: 46px;
   padding: 0 44px 0 18px;
   border-radius: 15px;
-  border: 1px solid rgba(23, 32, 51, 0.12);
-  background: rgba(255, 255, 255, 0.90);
-  color: #172033;
+  border: 1px solid rgba(255, 255, 255, 0.30);\r\n  background: rgba(255, 255, 255, 0.15);\r\n  color: #FFFFFF;
   font-family: inherit;
   font-size: 14px;
   outline: none;
@@ -180,12 +178,11 @@
     box-shadow 0.25s ease;
 
   &::placeholder {
-    color: #A3ADC2;
-    font-weight: 300;
+    color: rgba(255, 255, 255, 0.60);\r\n    font-weight: 300;
   }
 
   &:hover {
-    border-color: rgba(79, 124, 255, 0.45);
+    border-color: rgba(79, 124, 255, 0.60);
   }
 
   &:focus {
@@ -199,8 +196,8 @@
   &:-webkit-autofill:focus,
   &:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
-    -webkit-text-fill-color: #172033 !important;
-    caret-color: #172033;
+    -webkit-text-fill-color: #FFFFFF !important;
+    caret-color: #FFFFFF;
     border-color: rgba(23, 32, 51, 0.12);
     transition: background-color 5000s ease-in-out 0s;
   }
@@ -212,8 +209,7 @@
   right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  color: #9AA6BC;
-  font-size: 17px;
+  color: rgba(255, 255, 255, 0.70);\r\n  font-size: 17px;
   pointer-events: none;
   z-index: 1;
 }
@@ -232,8 +228,7 @@
   background: transparent;
   border: none;
   border-radius: 50%;
-  color: #9AA6BC;
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.70);\r\n  font-size: 16px;
   cursor: pointer;
   transition:
     color 0.2s ease,
@@ -241,12 +236,11 @@
   z-index: 1;
 
   &:hover {
-    background: rgba(79, 124, 255, 0.10);
-    color: #4F7CFF;
+    background: rgba(255, 255, 255, 0.15);\r\n    color: #FFFFFF;
   }
 
   &:focus-visible {
-    outline: 2px solid rgba(79, 124, 255, 0.6);
+    outline: 2px solid rgba(255, 255, 255, 0.6);
     outline-offset: 2px;
   }
 }
@@ -317,8 +311,7 @@
 }
 
 .remember-label {
-  color: #3D4A63;
-  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.90);\r\n  font-size: 13.5px;
   font-weight: 400;
 }
 
@@ -381,7 +374,7 @@
    Animations d'entrée de la page
    ========================================================================== */
 
-/* (Animation authBgZoom supprimée : plus d'image d'arrière-plan) */
+/* (Animation authBgZoom supprimée) */
 
 @keyframes authCardIn {
   from {
