@@ -59,21 +59,81 @@ import { AuthService } from '../../auth/auth.service';
                 <label class="eqf-label" for="eq-type">
                   Type / catégorie <span class="eqf-required">*</span>
                 </label>
-                <select
-                  id="eq-type"
-                  name="type"
-                  class="eqf-input eqf-select"
-                  [(ngModel)]="type"
-                  required
+                <div
+                  class="eqf-select-wrap"
+                  [class.eqf-select-open]="typeOpen()"
+                  (focusout)="onTypeFocusOut($event)"
                 >
-                  <option value="" disabled>Sélectionnez un type…</option>
-                  <option value="Kit solaire">Kit solaire</option>
-                  <option value="Véhicule">Véhicule</option>
-                  <option value="Engin minier">Engin minier</option>
-                  <option value="Autre">Autre</option>
-                </select>
+                  <button
+                    type="button"
+                    id="eq-type"
+                    name="type"
+                    class="eqf-input eqf-select"
+                    (click)="toggleTypeOpen()"
+                    aria-haspopup="listbox"
+                    [attr.aria-expanded]="typeOpen()"
+                  >
+                    <span [class.eqf-select-placeholder]="!type">
+                      {{ type || 'Sélectionnez un type…' }}
+                    </span>
+                    <i class="fa-solid fa-chevron-down eqf-select-arrow"></i>
+                  </button>
+
+                  @if (typeOpen()) {
+                    <ul class="eqf-select-menu" role="listbox">
+                      <li
+                        class="eqf-select-option"
+                        role="option"
+                        [class.eqf-select-option--selected]="type === 'Kit solaire'"
+                        (mousedown)="$event.preventDefault(); selectType('Kit solaire')"
+                      >
+                        <span>Kit solaire</span>
+                        @if (type === 'Kit solaire') {
+                          <i class="fa-solid fa-check"></i>
+                        }
+                      </li>
+                      <li
+                        class="eqf-select-option"
+                        role="option"
+                        [class.eqf-select-option--selected]="type === 'Véhicule'"
+                        (mousedown)="$event.preventDefault(); selectType('Véhicule')"
+                      >
+                        <span>Véhicule</span>
+                        @if (type === 'Véhicule') {
+                          <i class="fa-solid fa-check"></i>
+                        }
+                      </li>
+                      <li
+                        class="eqf-select-option"
+                        role="option"
+                        [class.eqf-select-option--selected]="type === 'Autre'"
+                        (mousedown)="$event.preventDefault(); selectType('Autre')"
+                      >
+                        <span>Autre</span>
+                        @if (type === 'Autre') {
+                          <i class="fa-solid fa-check"></i>
+                        }
+                      </li>
+                    </ul>
+                  }
+                </div>
                 @if (submitted() && !type) {
                   <span class="eqf-error">Le type est obligatoire.</span>
+                }
+                @if (type === 'Autre') {
+                  <div class="eqf-type-custom">
+                    <input
+                      id="eq-type-autre"
+                      name="typeAutre"
+                      type="text"
+                      class="eqf-input"
+                      placeholder="Précisez le type (ex : Pompe, Convertisseur…)"
+                      [(ngModel)]="typeAutre"
+                    />
+                    @if (submitted() && !typeAutre.trim()) {
+                      <span class="eqf-error">Veuillez préciser le type.</span>
+                    }
+                  </div>
                 }
               </div>
 
@@ -214,9 +274,78 @@ import { AuthService } from '../../auth/auth.service';
       width: 100%;
       box-sizing: border-box;
     }
-    .eqf-input:hover { border-color: #BFDBFE; }
-    .eqf-input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
-    .eqf-select { cursor: pointer; }
+    .eqf-input:hover { border-color: #CBD5E1; }
+    .eqf-input:focus { border-color: #94A3B8; box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.10); }
+
+    /* ===== Menu déroulant type / catégorie (personnalisé) ===== */
+    .eqf-select-wrap { position: relative; display: block; }
+    .eqf-select {
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background-color: #F8FAFC;
+      font-weight: 500;
+    }
+    .eqf-select-placeholder { color: #94A3B8; font-weight: 400; }
+    .eqf-select-arrow {
+      font-size: 12px;
+      color: #64748B;
+      pointer-events: none;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+    .eqf-select-wrap:hover .eqf-select-arrow { color: #475569; }
+    .eqf-select-open .eqf-select-arrow { transform: rotate(180deg); color: #2563EB; }
+
+    .eqf-select-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 6px;
+      list-style: none;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+      z-index: 30;
+      animation: eqfDropIn 0.18s ease both;
+      box-sizing: border-box;
+    }
+    @keyframes eqfDropIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .eqf-select-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      color: #334155;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .eqf-select-option:hover { background: #EFF6FF; color: #1D4ED8; }
+    .eqf-select-option--selected { background: #EFF6FF; color: #1D4ED8; font-weight: 600; }
+    .eqf-select-option i { font-size: 12px; }
+
+    /* ===== Type personnalisé (option « Autre ») ===== */
+    .eqf-type-custom {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      animation: eqfSlideIn 0.25s ease both;
+    }
+    @keyframes eqfSlideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     .eqf-error { color: #DC2626; font-size: 12px; font-weight: 500; }
 
@@ -284,6 +413,8 @@ import { AuthService } from '../../auth/auth.service';
 export class EquipmentFormPageComponent {
   nom = '';
   type = '';
+  typeAutre = '';
+  protected typeOpen = signal(false);
   imei = '';
   miseEnLigne = '';
   description = '';
@@ -309,6 +440,22 @@ export class EquipmentFormPageComponent {
     return this.authService.isSuperAdmin() || this.authService.isStructureAdmin();
   }
 
+  toggleTypeOpen(): void {
+    this.typeOpen.update(v => !v);
+  }
+
+  onTypeFocusOut(event: FocusEvent): void {
+    const next = event.relatedTarget as Node | null;
+    if (!(event.currentTarget as HTMLElement).contains(next)) {
+      this.typeOpen.set(false);
+    }
+  }
+
+  selectType(value: string): void {
+    this.type = value;
+    this.typeOpen.set(false);
+  }
+
   onSubmit(): void {
     this.submitted.set(true);
     this.message.set('');
@@ -316,7 +463,9 @@ export class EquipmentFormPageComponent {
     // Vérifications locales (chaque champ obligatoire est validé individuellement).
     const imei = this.imei.trim();
     const nom = this.nom.trim();
-    if (!imei || !nom || !this.type) {
+    const typeFinal = this.type === 'Autre' ? this.typeAutre.trim() : this.type;
+
+    if (!imei || !nom || !this.type || (this.type === 'Autre' && !typeFinal)) {
       this.showMessage('Veuillez remplir tous les champs obligatoires.', 'error');
       return;
     }
@@ -353,7 +502,7 @@ export class EquipmentFormPageComponent {
       localisation: 'En attente du GPS (IoT)',
       lienLocalisation: 'En attente du GPS (IoT)',
       miseEnLigne,
-      type: this.type,
+      type: typeFinal,
       description: this.description.trim(),
       temperature: null,
       tension: null,
