@@ -28,18 +28,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
           <p class="eqd-subtitle">Informations techniques et diagnostic en temps réel.</p>
         </div>
         <div class="eqd-header-actions">
-          @if (source === 'alerts' && !isAlertTaken) {
-            <button type="button" class="eqd-btn eqd-btn-primary" (click)="prendreAlerte()">
-              <i class="fa-solid fa-bell"></i>
-              <span>Prendre l'alerte</span>
-            </button>
-          } @else if (source === 'maintenance') {
-            <button type="button" class="eqd-btn eqd-btn-primary" (click)="inspecter()">
-              <i class="fa-solid fa-screwdriver-wrench"></i>
-              <span>Inspecter</span>
-            </button>
-          }
-          @if (equipment && canManageEquipment()) {
+          @if (equipment) {
             <button
               type="button"
               class="eqd-btn"
@@ -2266,7 +2255,7 @@ export class EquipmentDetailPageComponent implements OnInit {
         this.router.navigate(['/maintenance']);
         break;
       default:
-        this.router.navigate(['/location']);
+        this.router.navigate(['/equipements']);
     }
   }
 

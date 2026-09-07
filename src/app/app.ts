@@ -1,8 +1,9 @@
 // Deployed to GitHub Pages at https://jonatecht.github.io/safe_track/
 import { Component, signal } from '@angular/core';
 import { NgIf, DatePipe } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, NavigationEnd } from '@angular/router';
 import { Router } from '@angular/router';
+import { filter } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { User } from './auth/auth.service';
 import { StructureService } from './superadmin/services/structure.service';
@@ -17,7 +18,7 @@ interface MenuItem {
 
 @Component({
   selector: 'app-root',
-  imports: [NgIf, DatePipe, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [NgIf, DatePipe, RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -34,12 +35,19 @@ export class App {
 
   protected readonly menuItems: MenuItem[] = [
     { label: 'Tableau de bord', icon: 'fa-solid fa-chart-pie', route: '/dashboard', active: true },
-    { label: "Parc d'équipement", icon: 'fa-solid fa-cube', route: '/location' },
+    { label: "Parc d'équipement", icon: 'fa-solid fa-cube', route: '/equipements' },
     { label: 'Maintenance', icon: 'fa-solid fa-wrench', route: '/maintenance' },
     { label: 'Rapports', icon: 'fa-solid fa-file-lines', route: '/rapports' },
     { label: 'Alertes', icon: 'fa-solid fa-bell', route: '/alerts' },
     { label: 'Techniciens', icon: 'fa-solid fa-users', route: '/users' }
   ];
+
+  /** URL actuellement affichée (sert d'état actif du menu en temps réel) */
+  protected readonly activeUrl = signal(this.initialActiveUrl());
+
+  private initialActiveUrl(): string {
+    return typeof window !== 'undefined' ? window.location.pathname.replace(/\/$/, '') : '';
+  }
 
   constructor(
     private authService: AuthService,
@@ -48,6 +56,19 @@ export class App {
     private maintenanceService: MaintenanceService
   ) {
     this.isSidebarCollapsed = this.loadSidebarState();
+    // Suivre la navigation pour l'état actif du menu (y compris au clic et au retour navigateur)
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(e => {
+      this.activeUrl.set(e.urlAfterRedirects.split('?')[0].replace(/\/$/, ''));
+    });
+  }
+
+  /** Navigation impérative robuste (contourne les ratés de routerLink en zoneless + event replay) */
+  protected navigateTo(route: string): void {
+    this.closeMobileMenu();
+    this.activeUrl.set(route);
+    this.router.navigate([route]).catch(() => {
+      this.activeUrl.set(this.router.url.split('?')[0].replace(/\/$/, ''));
+    });
   }
 
   protected isAuthPage(): boolean {

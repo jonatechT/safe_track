@@ -246,6 +246,16 @@
   }
 }
 
+/* Masquer la révélation native du navigateur (évite le double œil sur le champ mot de passe) */
+.form-input::-ms-reveal,
+.form-input::-ms-clear {
+  display: none;
+}
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
+  display: none;
+}
+
 /* --- Remember me ------------------------------------------------------------ */
 
 .remember-me {

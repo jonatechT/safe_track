@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BasePageComponent } from '../base-page/base-page';
 import { EquipmentService, Equipment } from '../../services/equipment.service';
-import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-equipment-list-page',
@@ -15,12 +14,10 @@ import { AuthService } from '../../auth/auth.service';
       icon="fa-solid fa-location-dot"
     >
       <div page-actions>
-        @if (canAddEquipment()) {
-          <button type="button" class="equip-add-btn" (click)="ajouterEquipement()">
-            <i class="fa-solid fa-plus"></i>
-            <span>Ajouter un équipement</span>
-          </button>
-        }
+        <button type="button" class="equip-add-btn" (click)="ajouterEquipement()">
+          <i class="fa-solid fa-plus"></i>
+          <span>Ajouter un équipement</span>
+        </button>
       </div>
       <div class="equip-content">
         <!-- KPI Cards -->
@@ -242,8 +239,7 @@ export class EquipmentListPageComponent {
   constructor(
     private equipmentService: EquipmentService,
     private router: Router,
-    private route: ActivatedRoute,
-    private authService: AuthService
+    private route: ActivatedRoute
   ) {
     this.enLigneMode = this.route.snapshot.data['enLigne'] === true;
 
@@ -262,11 +258,6 @@ export class EquipmentListPageComponent {
 
   ouvrirDetail(imei: string): void {
     this.router.navigate(['/equipements', imei]);
-  }
-
-  /** Seuls SUPERADMIN et ADMIN_STRUCTURE peuvent ajouter un équipement. */
-  canAddEquipment(): boolean {
-    return this.authService.isSuperAdmin() || this.authService.isStructureAdmin();
   }
 
   ajouterEquipement(): void {

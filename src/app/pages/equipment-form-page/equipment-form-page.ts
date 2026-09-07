@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BasePageComponent } from '../base-page/base-page';
 import { EquipmentService, Equipment } from '../../services/equipment.service';
-import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-equipment-form-page',
@@ -426,18 +425,12 @@ export class EquipmentFormPageComponent {
 
   constructor(
     private equipmentService: EquipmentService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
   private showMessage(text: string, type: 'success' | 'error'): void {
     this.message.set(text);
     this.messageType.set(type);
-  }
-
-  /** Seuls SUPERADMIN et ADMIN_STRUCTURE peuvent ajouter un équipement. */
-  canAddEquipment(): boolean {
-    return this.authService.isSuperAdmin() || this.authService.isStructureAdmin();
   }
 
   toggleTypeOpen(): void {
@@ -513,7 +506,7 @@ export class EquipmentFormPageComponent {
       this.isSubmitting.set(false);
       if (created) {
         this.showMessage(`L'équipement « ${created.nom} » a été ajouté avec succès.`, 'success');
-        setTimeout(() => this.router.navigate(['/location']), 1200);
+        setTimeout(() => this.router.navigate(['/equipements']), 1200);
       } else {
         this.showMessage(
           this.equipmentService.equipmentCreateError() ?? "Impossible d'ajouter l'équipement.",
@@ -524,6 +517,6 @@ export class EquipmentFormPageComponent {
   }
 
   annuler(): void {
-    this.router.navigate(['/location']);
+    this.router.navigate(['/equipements']);
   }
 }

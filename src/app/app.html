@@ -17,11 +17,8 @@
       @for (item of visibleMenuItems; track item.label) {
         <a
           class="nav-item"
-          [class.active]="item.active"
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="closeMobileMenu()"
+          [class.active]="activeUrl() === item.route"
+          (click)="navigateTo(item.route)"
           [attr.title]="isSidebarCollapsed ? item.label : null"
         >
           <i class="nav-icon" [class]="item.icon"></i>
@@ -57,11 +54,8 @@
       @for (item of visibleMenuItems; track item.label) {
         <a
           class="nav-item"
-          [class.active]="item.active"
-          [routerLink]="item.route"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          (click)="closeMobileMenu()"
+          [class.active]="activeUrl() === item.route"
+          (click)="navigateTo(item.route)"
         >
           <i class="nav-icon" [class]="item.icon"></i>
           <span class="nav-label">{{ item.label }}</span>
