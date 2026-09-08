@@ -6,13 +6,13 @@ interface Activity {
   time: string;
   status?: string;
   statusClass?: string;
-  imei: string;
+  id: string;
 }
 
 interface Alert {
   title: string;
   time: string;
-  imei: string;
+  id: string;
 }
 
 @Component({
@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit {
       time: 'Il y a 10 min',
       status: 'En cours',
       statusClass: 'status-progress',
-      imei: '354123456789012'
+      id: '354123456789012'
     }
   ];
 
@@ -39,18 +39,20 @@ export class DashboardComponent implements OnInit {
     {
       title: 'Violation de box — Kit solaire #SK-045',
       time: 'Il y a 5 min',
-      imei: '354123456789012'
+      id: '354123456789012'
     },
     {
       title: 'Déplacement non autorisé — Kit solaire #SK-067',
       time: 'Il y a 28 min',
-      imei: '354123456789014'
+      id: '354123456789014'
     }
   ];
 
   // Valeurs par défaut (mock) - à remplacer par un appel API
   totalEquipements: number = 100;
   enLigne: number = 90;
+  horsLigne: number = 5;
+  enMaintenance: number = 0;
   alerteActive: number = 7;
   anomalieDetectee: number = 3;
 
@@ -77,9 +79,9 @@ export class DashboardComponent implements OnInit {
   }
 
   /** Navigation vers la page détail d'un équipement */
-  goToEquipment(imei: string | undefined): void {
-    if (imei) {
-      this.router.navigate(['/equipements', imei]);
+  goToEquipment(id: string | undefined): void {
+    if (id) {
+      this.router.navigate(['/equipements', id]);
     }
   }
 
@@ -92,6 +94,8 @@ export class DashboardComponent implements OnInit {
     // Données mock rechargées à chaque ouverture du dashboard (à remplacer par un appel API)
     this.totalEquipements = 100;
     this.enLigne = 90;
+    this.horsLigne = 5;
+    this.enMaintenance = 0;
     this.alerteActive = 7;
     this.anomalieDetectee = 3;
 

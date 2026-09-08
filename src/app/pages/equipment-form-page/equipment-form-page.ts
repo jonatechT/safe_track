@@ -136,21 +136,21 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
                 }
               </div>
 
-              <!-- IMEI / identifiant IoT -->
+              <!-- ID / identifiant IoT -->
               <div class="eqf-field">
-                <label class="eqf-label" for="eq-imei">
-                  IMEI / identifiant IoT <span class="eqf-required">*</span>
+                <label class="eqf-label" for="eq-id">
+                  ID / identifiant IoT <span class="eqf-required">*</span>
                 </label>
                 <input
-                  id="eq-imei"
-                  name="imei"
+                  id="eq-id"
+                  name="id"
                   type="text"
                   class="eqf-input"
                   placeholder="Ex : ESP32-001"
-                  [(ngModel)]="imei"
+                  [(ngModel)]="id"
                   required
                 />
-                @if (submitted() && !imei.trim()) {
+                @if (submitted() && !id.trim()) {
                   <span class="eqf-error">L'identifiant IoT est obligatoire.</span>
                 }
               </div>
@@ -414,7 +414,7 @@ export class EquipmentFormPageComponent {
   type = '';
   typeAutre = '';
   protected typeOpen = signal(false);
-  imei = '';
+  id = '';
   miseEnLigne = '';
   description = '';
 
@@ -454,18 +454,18 @@ export class EquipmentFormPageComponent {
     this.message.set('');
 
     // Vérifications locales (chaque champ obligatoire est validé individuellement).
-    const imei = this.imei.trim();
+    const id = this.id.trim();
     const nom = this.nom.trim();
     const typeFinal = this.type === 'Autre' ? this.typeAutre.trim() : this.type;
 
-    if (!imei || !nom || !this.type || (this.type === 'Autre' && !typeFinal)) {
+    if (!id || !nom || !this.type || (this.type === 'Autre' && !typeFinal)) {
       this.showMessage('Veuillez remplir tous les champs obligatoires.', 'error');
       return;
     }
 
-    // L'IMEI doit être unique dans le parc.
-    if (this.equipmentService.getByImei(imei)) {
-      this.showMessage('Un équipement avec cet IMEI existe déjà dans le parc.', 'error');
+    // L'ID doit être unique dans le parc.
+    if (this.equipmentService.getById(id)) {
+      this.showMessage('Un équipement avec cet ID existe déjà dans le parc.', 'error');
       return;
     }
 
@@ -489,7 +489,7 @@ export class EquipmentFormPageComponent {
     // L'organisation est déterminée par le backend à partir de l'utilisateur
     // authentifié (aucun champ organisation côté frontend).
     const equipment: Equipment = {
-      imei,
+      id,
       nom,
       statut: 'En ligne', // état initial déclaré — mis à jour ensuite par l'IoT/backend
       localisation: 'En attente du GPS (IoT)',

@@ -12,7 +12,7 @@ import { mockBatteryCurrentDiagnostic, mockBatteryHistory } from './batterie-moc
  * Ces champs sont prévus (null par défaut) pour accueillir les futures données capteurs.
  */
 export interface Equipment {
-  imei: string;
+  id: string;
   nom: string;
   statut: string;
   localisation: string;
@@ -89,7 +89,7 @@ export interface BatteryHistoryEntry {
 
 /**
  * Point d'historique de localisation fourni par le backend :
- *   GET /api/equipements/{imei}/localisations
+ *   GET /api/equipements/{id}/localisations
  *
  * Permet de reconstituer la timeline : « de tel heure le kit se trouvait ici,
  * de tel heure il se trouve là ». Aucune donnée n'est inventée côté frontend.
@@ -124,18 +124,18 @@ export class EquipmentService {
 
   /** Données identiques à celles affichées jusqu'ici dans le tableau du parc */
   private equipments: Equipment[] = [
-     { imei: '354123456789012', nom: 'Kit solaire #SK-045', statut: 'En alerte', localisation: '12.3685°N, -1.5250°E', lienLocalisation: '12.3685,-1.5250', miseEnLigne: '14 mars 2024', type: 'Kit solaire', temperature: null, tension: null },
-     { imei: '354123456789014', nom: 'Kit solaire #SK-067', statut: 'En alerte', localisation: '11.1784°N, -4.2979°E', lienLocalisation: '11.1784,-4.2979', miseEnLigne: '22 janvier 2024', type: 'Kit solaire', temperature: null, tension: null },
-     { imei: '354123456789015', nom: 'Kit solaire #SK-089', statut: 'Inspection', localisation: '12.2513°N, -2.3510°E', lienLocalisation: '12.2513,-2.3510', miseEnLigne: '5 juin 2024', type: 'Kit solaire', temperature: null, tension: null },
-     { imei: '354123456789016', nom: 'Kit solaire #SK-102', statut: 'Inspection', localisation: '12.3714°N, -1.5197°E', lienLocalisation: '12.3714,-1.5197', miseEnLigne: '18 septembre 2023', type: 'Kit solaire', temperature: null, tension: null },
+     { id: '354123456789012', nom: 'Kit solaire #SK-045', statut: 'En alerte', localisation: '12.3685°N, -1.5250°E', lienLocalisation: '12.3685,-1.5250', miseEnLigne: '14 mars 2024', type: 'Kit solaire', temperature: null, tension: null },
+     { id: '354123456789014', nom: 'Kit solaire #SK-067', statut: 'En alerte', localisation: '11.1784°N, -4.2979°E', lienLocalisation: '11.1784,-4.2979', miseEnLigne: '22 janvier 2024', type: 'Kit solaire', temperature: null, tension: null },
+     { id: '354123456789015', nom: 'Kit solaire #SK-089', statut: 'Inspection', localisation: '12.2513°N, -2.3510°E', lienLocalisation: '12.2513,-2.3510', miseEnLigne: '5 juin 2024', type: 'Kit solaire', temperature: null, tension: null },
+     { id: '354123456789016', nom: 'Kit solaire #SK-102', statut: 'Inspection', localisation: '12.3714°N, -1.5197°E', lienLocalisation: '12.3714,-1.5197', miseEnLigne: '18 septembre 2023', type: 'Kit solaire', temperature: null, tension: null },
   ];
 
   getAll(): Equipment[] {
     return this.equipments;
   }
 
-  getByImei(imei: string): Equipment | undefined {
-    return this.equipments.find(e => e.imei === imei);
+  getById(id: string): Equipment | undefined {
+    return this.equipments.find(e => e.id === id);
   }
 
   /**
@@ -153,13 +153,13 @@ export class EquipmentService {
   /**
    * Enregistre un nouvel équipement.
    *
-   * Endpoint backend attendu — convention REST (cf. PATCH /api/equipements/{imei}/status
+   * Endpoint backend attendu — convention REST (cf. PATCH /api/equipements/{id}/status
    * et le contrat API) :
    *
    *   POST /api/equipements
-   *   Body : l'objet équipement { imei, nom, type, statut, localisation, lienLocalisation, miseEnLigne, ... }
+   *   Body : l'objet équipement { id, nom, type, statut, localisation, lienLocalisation, miseEnLigne, ... }
    *   Rôle : ADMIN_STRUCTURE (équipements de sa structure) / SUPERADMIN
-   *   Réponses : 201 (créé) / 409 (IMEI déjà existant)
+   *   Réponses : 201 (créé) / 409 (ID déjà existant)
    *
    * En mode développeur (BATTERY_API_CONFIG.useMock), l'ajout est enregistré
    * localement pour pouvoir tester le parc sans backend.
@@ -204,7 +204,7 @@ export class EquipmentService {
       return "Backend indisponible : impossible d'enregistrer l'équipement.";
     }
     if (error.status === 409) {
-      return 'Un équipement avec cet IMEI existe déjà.';
+      return 'Un équipement avec cet ID existe déjà.';
     }
     if (error.status === 401 || error.status === 403) {
       return "Vous n'avez pas les droits nécessaires pour ajouter un équipement.";
@@ -221,7 +221,7 @@ export class EquipmentService {
    * Endpoint backend attendu — convention projet (cf. BACKEND_API_CONTRACT.md :
    * PATCH /api/users/:id/status et PATCH /api/structures/:id/status) :
    *
-   *   PATCH /api/equipements/{imei}/status
+   *   PATCH /api/equipements/{id}/status
    *   Body : { "statut": "BLOQUE" | "ACTIF" }
    *   Rôle : ADMIN_STRUCTURE (équipements de sa structure) / SUPERADMIN
    *
@@ -229,15 +229,15 @@ export class EquipmentService {
    * `equipmentStatusError` expose un message clair ; l'état local n'est
    * PAS modifié (aucun faux succès).
    */
-  setEquipmentStatus(imei: string, bloque: boolean): Observable<Equipment | null> {
+  setEquipmentStatus(id: string, bloque: boolean): Observable<Equipment | null> {
     this.equipmentStatusError.set(null);
     const body = { statut: bloque ? 'BLOQUE' : 'ACTIF' };
     return this.http
-      .patch<Equipment>(`/api/equipements/${encodeURIComponent(imei)}/status`, body)
+      .patch<Equipment>(`/api/equipements/${encodeURIComponent(id)}/status`, body)
       .pipe(
         map(() => {
-          this.applyLocalStatus(imei, bloque);
-          return this.getByImei(imei) ?? null;
+          this.applyLocalStatus(id, bloque);
+          return this.getById(id) ?? null;
         }),
         catchError((error: HttpErrorResponse) => {
           this.equipmentStatusError.set(this.buildStatusErrorMessage(error));
@@ -247,8 +247,8 @@ export class EquipmentService {
   }
 
   /** Met à jour l'état local (source actuelle du parc) sans recharger la page. */
-  private applyLocalStatus(imei: string, bloque: boolean): void {
-    const equipment = this.equipments.find(e => e.imei === imei);
+  private applyLocalStatus(id: string, bloque: boolean): void {
+    const equipment = this.equipments.find(e => e.id === id);
     if (equipment) {
       equipment.bloque = bloque;
     }
@@ -259,7 +259,7 @@ export class EquipmentService {
       return "Backend indisponible : impossible de changer l'état de l'équipement.";
     }
     if (error.status === 404) {
-      return 'Endpoint de blocage non disponible côté backend (PATCH /api/equipements/{imei}/status).';
+      return 'Endpoint de blocage non disponible côté backend (PATCH /api/equipements/{id}/status).';
     }
     if (error.status === 401 || error.status === 403) {
       return "Vous n'avez pas les droits nécessaires pour bloquer/débloquer cet équipement.";
@@ -324,16 +324,16 @@ export class EquipmentService {
   }
 
   /**
-   * Historique de localisation — GET /api/equipements/{imei}/localisations.
+   * Historique de localisation — GET /api/equipements/{id}/localisations.
    *
    * Endpoint attendu côté backend (convention projet, cf. blocage équipement) :
    * renvoie [] si aucune donnée (404 / endpoint absent) ; les erreurs réelles
    * (backend indisponible, HTTP != 404) sont exposées via `locationHistoryError`.
    */
-  getEquipmentLocationHistory(imei: string): Observable<LocationHistoryEntry[]> {
+  getEquipmentLocationHistory(id: string): Observable<LocationHistoryEntry[]> {
     this.locationHistoryError.set(null);
     return this.http
-      .get<LocationHistoryEntry[]>(`/api/equipements/${encodeURIComponent(imei)}/localisations`)
+      .get<LocationHistoryEntry[]>(`/api/equipements/${encodeURIComponent(id)}/localisations`)
       .pipe(
         map(list => (Array.isArray(list) ? list : [])),
         catchError((error: HttpErrorResponse) => {

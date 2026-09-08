@@ -85,20 +85,34 @@
         </div>
       </div>
       <div class="topbar-actions">
-        @if (isAdmin()) {
-          <div class="notification-wrapper">
-            <button class="notification-btn" (click)="toggleNotifications()" [attr.aria-label]="showNotifications ? 'Fermer les notifications' : 'Afficher les notifications'" [attr.title]="showNotifications ? 'Fermer les notifications' : 'Notifications'">
-              <i class="fa-solid fa-bell"></i>
-              @if (unreadNotificationsCount > 0) {
-                <span class="notification-badge">{{ unreadNotificationsCount }}</span>
-              }
-            </button>
-          </div>
-        }
-        <div class="profile-chip" (click)="openProfile()" role="button" tabindex="0" (keydown.enter)="openProfile()" aria-label="Ouvrir le profil">
+        <button
+          class="theme-toggle-btn"
+          type="button"
+          [class.active]="isDarkMode"
+          (click)="toggleTheme()"
+          [attr.aria-label]="isDarkMode ? 'Passer en mode clair' : 'Passer en mode nuit'"
+          [attr.title]="isDarkMode ? 'Mode clair' : 'Mode nuit'"
+        >
+          <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+        </button>
+        <div class="notification-wrapper">
+          <button
+            class="notification-btn"
+            [class.active]="showNotifications"
+            (click)="toggleNotifications()"
+            [attr.aria-label]="showNotifications ? 'Fermer les notifications' : 'Afficher les notifications'"
+            [attr.title]="showNotifications ? 'Fermer les notifications' : 'Notifications'"
+          >
+            <i class="fa-solid fa-bell"></i>
+            @if (unreadNotificationsCount > 0) {
+              <span class="notification-badge">{{ unreadNotificationsCount }}</span>
+            }
+          </button>
+        </div>
+        <a class="profile-chip" routerLink="/profile" aria-label="Ouvrir le profil" title="Profil">
           <div class="profile-avatar">{{ currentUserName.charAt(0).toUpperCase() || 'U' }}</div>
           <span class="profile-name">{{ currentUserName }}</span>
-        </div>
+        </a>
       </div>
     </header>
 
@@ -201,16 +215,35 @@
   <div class="notifications-overlay" (click)="closeNotifications()"></div>
   <div class="notifications-panel" role="dialog" aria-label="Notifications">
     <div class="notifications-panel-header">
-      <h3 class="notifications-panel-title">Notifications</h3>
-      <button class="notifications-panel-close" (click)="closeNotifications()" aria-label="Fermer les notifications">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+      <div class="notifications-panel-title-block">
+        <h3 class="notifications-panel-title">
+          <i class="fa-solid fa-bell"></i> Notifications
+        </h3>
+        <span class="notifications-panel-subtitle">
+          @if (unreadNotificationsCount > 0) {
+            {{ unreadNotificationsCount }} nouvelle(s) alerte(s) non lue(s)
+          } @else {
+            Aucune nouvelle alerte
+          }
+        </span>
+      </div>
+      <div class="notifications-panel-header-actions">
+        @if (notifications.length > 0 && unreadNotificationsCount > 0) {
+          <button class="notifications-mark-read-btn" (click)="markAllNotificationsRead()" title="Tout marquer comme lu" aria-label="Tout marquer comme lu">
+            <i class="fa-solid fa-check-double"></i>
+          </button>
+        }
+        <button class="notifications-panel-close" (click)="closeNotifications()" aria-label="Fermer les notifications">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
     </div>
     <div class="notifications-panel-body">
       @if (notifications.length === 0) {
         <div class="notifications-empty">
           <i class="fa-solid fa-bell-slash"></i>
-          <span>Aucune notification</span>
+          <span class="notifications-empty-title">Aucune notification</span>
+          <span class="notifications-empty-subtitle">Les alertes de prise en charge apparaîtront ici.</span>
         </div>
       } @else {
         @for (notif of notifications; track notif.id) {
@@ -220,7 +253,9 @@
             </div>
             <div class="notification-content">
               <span class="notification-message">{{ notif.message }}</span>
-              <span class="notification-time">{{ notif.date }}</span>
+              <span class="notification-time">
+                <i class="fa-solid fa-clock"></i> {{ notif.date }}
+              </span>
             </div>
             @if (isAdmin() && !notif.read) {
               <button class="notification-validate-btn" (click)="validerAlerte(notif)" aria-label="Valider l'alerte">
@@ -230,6 +265,12 @@
           </div>
         }
       }
+    </div>
+    <div class="notifications-panel-footer">
+      <button class="notifications-all-btn" (click)="goToAlerts()" aria-label="Voir toutes les alertes">
+        <i class="fa-solid fa-bell"></i> Voir toutes les alertes
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
     </div>
   </div>
 }

@@ -56,3 +56,780 @@ body {
   font-size: 9px;
   background: rgba(255,255,255,0.8) !important;
 }
+.leaflet-control-attribution {
+  font-size: 9px;
+  background: rgba(255,255,255,0.8) !important;
+}
+
+/* ============================================================
+   MODE NUIT — activé via la classe .dark-mode posée sur <body>
+   (sélecteurs globaux : s'appliquent aux styles composants)
+   ============================================================ */
+
+/* --- Base --- */
+body.dark-mode {
+  background-color: #0B1220;
+  color: #E2E8F0;
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* --- Topbar / shell --- */
+body.dark-mode .topbar {
+  background: #111827;
+  border-bottom-color: #1F2937;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .page-content {
+  background: #0B1220;
+}
+
+body.dark-mode .mobile-menu-toggle {
+  background: #1E293B;
+  color: #94A3B8;
+}
+body.dark-mode .mobile-menu-toggle:hover {
+  background: #334155;
+  color: #E2E8F0;
+}
+
+/* --- Recherche --- */
+body.dark-mode .search-container {
+  background: #1E293B;
+  border-color: #334155;
+}
+body.dark-mode .search-container:focus-within {
+  background: #1E293B;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+body.dark-mode .search-input {
+  color: #E2E8F0;
+}
+body.dark-mode .search-input::placeholder {
+  color: #64748B;
+}
+body.dark-mode .search-shortcut {
+  background: #0F172A;
+  border-color: #334155;
+  color: #94A3B8;
+}
+
+/* --- Boutons d'action du header --- */
+body.dark-mode .notification-btn:hover,
+body.dark-mode .theme-toggle-btn:hover {
+  background: #1E293B;
+}
+body.dark-mode .notification-btn.active {
+  background: #1E3A5F;
+}
+body.dark-mode .profile-chip:hover {
+  background: #1E293B;
+}
+body.dark-mode .profile-name {
+  color: #E2E8F0;
+}
+
+/* --- Panneau de notifications --- */
+body.dark-mode .notifications-panel {
+  background: #111827;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+}
+body.dark-mode .notification-item {
+  background: #1E293B;
+  border-color: #334155;
+  box-shadow: none;
+}
+body.dark-mode .notification-item:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+body.dark-mode .notification-item.unread {
+  background: #16243D;
+  border-color: #2563EB;
+  border-left: 3px solid #2563EB;
+}
+body.dark-mode .notification-message {
+  color: #CBD5E1;
+}
+body.dark-mode .notification-time {
+  color: #64748B;
+}
+body.dark-mode .notifications-empty-title {
+  color: #94A3B8;
+}
+
+/* --- Modales génériques --- */
+body.dark-mode .logout-modal {
+  background: #111827;
+}
+body.dark-mode .logout-modal-title {
+  color: #F1F5F9;
+}
+body.dark-mode .logout-modal-body {
+  color: #94A3B8;
+}
+
+/* --- Cartes / KPI --- */
+body.dark-mode .card {
+  background: #111827;
+  border-color: #1F2937;
+}
+body.dark-mode .card-title {
+  color: #F1F5F9;
+}
+body.dark-mode .stat-card,
+body.dark-mode .stat-card--blue,
+body.dark-mode .stat-card--green,
+body.dark-mode .stat-card--red,
+body.dark-mode .stat-card--purple,
+body.dark-mode .stat-card--pink,
+body.dark-mode .stat-card--orange {
+  /* !important : écrase les styles inline / bindings [style.background] (page générique Alertes) */
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+}
+body.dark-mode .stat-label {
+  color: #94A3B8;
+}
+body.dark-mode .stat-value {
+  color: #F1F5F9;
+}
+body.dark-mode .progress-circle::before {
+  background: #111827;
+}
+body.dark-mode .progress-text {
+  color: #E2E8F0;
+}
+
+/* --- Tableaux --- */
+/* NB : !important requis pour battre les styles scopés des composants (_ngcontent),
+   qui posent background-color: #FFFFFF sur tr/td avec une spécificité supérieure. */
+body.dark-mode .data-table thead th {
+  color: #CBD5E1 !important;
+  background: #1E293B !important;
+}
+body.dark-mode .data-table tbody tr {
+  background-color: #111827 !important;
+}
+body.dark-mode .data-table tbody td {
+  background-color: #111827 !important;
+  border-color: #1F2937 !important;
+  color: #CBD5E1 !important;
+}
+body.dark-mode .data-table tbody td:first-child,
+body.dark-mode .data-table tbody td:last-child {
+  border-color: #1F2937 !important;
+  color: #F1F5F9 !important;
+}
+body.dark-mode .data-table tbody tr:hover td {
+  background-color: #16243D !important;
+  border-color: #1D4ED8 !important;
+}
+body.dark-mode .data-table tbody td:nth-child(2),
+body.dark-mode .data-table tbody td:nth-child(3),
+body.dark-mode .data-table tbody td:nth-child(4),
+body.dark-mode .data-table tbody td:nth-child(5) {
+  color: #94A3B8 !important;
+}
+/* Lignes sélectionnées (.active) : restent bleues en mode nuit */
+body.dark-mode .data-table tbody tr.active {
+  background-color: #2563EB !important;
+}
+body.dark-mode .data-table tbody tr.active td {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  border-color: #2563EB !important;
+}
+body.dark-mode .data-table tbody tr.active:hover td {
+  background-color: #2563EB !important;
+  border-color: #2563EB !important;
+}
+/* Nom d'équipement dans les cellules (sinon texte sombre illisible sur fond sombre) */
+body.dark-mode .equipment-name {
+  color: #F1F5F9 !important;
+}
+body.dark-mode .equipment-sub {
+  color: #94A3B8 !important;
+}
+
+/* --- Tableau Techniciens (.users-table) --- */
+body.dark-mode .users-table thead th {
+  color: #CBD5E1 !important;
+  background: #1E293B !important;
+}
+body.dark-mode .users-table tbody tr {
+  background-color: #111827 !important;
+}
+body.dark-mode .users-table td {
+  background-color: #111827 !important;
+  border-color: #1F2937 !important;
+  color: #CBD5E1 !important;
+}
+body.dark-mode .users-table tbody td:first-child,
+body.dark-mode .users-table tbody td:last-child {
+  border-color: #1F2937 !important;
+  color: #F1F5F9 !important;
+}
+body.dark-mode .users-table tbody td:nth-child(2),
+body.dark-mode .users-table tbody td:nth-child(3) {
+  color: #94A3B8 !important;
+}
+body.dark-mode .users-table tbody tr:hover td {
+  background-color: #16243D !important;
+  border-color: #1D4ED8 !important;
+}
+body.dark-mode .users-table tbody tr.active td {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  border-color: #2563EB !important;
+}
+body.dark-mode .users-table tbody tr.active:hover td {
+  background-color: #2563EB !important;
+  border-color: #2563EB !important;
+}
+body.dark-mode .users-cell-name {
+  color: #F1F5F9 !important;
+}
+body.dark-mode .users-cell-sub {
+  color: #94A3B8 !important;
+}
+body.dark-mode .users-cell-avatar {
+  background: rgba(37, 99, 235, 0.25) !important;
+  color: #93C5FD !important;
+}
+
+/* --- Formulaires --- */
+body.dark-mode input:not([type='checkbox']):not([type='radio']),
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #1E293B;
+  border-color: #334155;
+  color: #E2E8F0;
+}
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #64748B;
+}
+
+/* --- Page Dashboard (racine .dashboard blanche par défaut + textes dédiés) --- */
+body.dark-mode .dashboard {
+  background: #0B1220;
+}
+
+body.dark-mode .dashboard-title {
+  color: #F1F5F9;
+}
+
+/* Liste catégories */
+body.dark-mode .category-name {
+  color: #CBD5E1;
+}
+
+body.dark-mode .category-count {
+  color: #F1F5F9;
+}
+
+body.dark-mode .progress-track {
+  background: #1F2937;
+}
+
+body.dark-mode .progress-circle {
+  background: conic-gradient(#1E3A8A 0% 82%, #1F2937 82% 100%);
+}
+
+/* Donut statut */
+body.dark-mode .donut-chart::before {
+  background: #111827;
+}
+
+body.dark-mode .legend-label {
+  color: #CBD5E1;
+}
+
+body.dark-mode .legend-value {
+  color: #F1F5F9;
+}
+
+/* Items Activités & Alertes */
+body.dark-mode .activity-item,
+body.dark-mode .alert-item {
+  background: #111827;
+  border-color: #1F2937;
+}
+
+body.dark-mode .activity-item:hover,
+body.dark-mode .alert-item:hover,
+body.dark-mode .activity-item.clickable:hover,
+body.dark-mode .alert-item.clickable:hover {
+  background: #16243D;
+  border-color: #2563EB;
+}
+
+body.dark-mode .activity-title,
+body.dark-mode .alert-title {
+  color: #F1F5F9;
+}
+
+/* Pastilles de statut (fond pastel translucide adapté au sombre) */
+body.dark-mode .status-progress {
+  background: rgba(37, 99, 235, 0.18);
+  color: #93C5FD;
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+body.dark-mode .status-done {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6EE7B7;
+}
+
+body.dark-mode .status-pending {
+  background: rgba(245, 158, 11, 0.18);
+  color: #FCD34D;
+}
+
+/* ===== Grands titres des pages (base-page) ===== */
+body.dark-mode .page-title-main {
+  color: #F1F5F9 !important;
+}
+
+body.dark-mode .page-subtitle-main {
+  color: #94A3B8 !important;
+}
+
+/* ===== Colonnes ID / Date du tableau Parc d'équipement ===== */
+body.dark-mode .id-code {
+  color: #93C5FD !important;
+}
+
+body.dark-mode .sync-time {
+  color: #94A3B8 !important;
+}
+
+/* ===== Page Détail équipement (app-equipment-detail-page) ===== */
+body.dark-mode app-equipment-detail-page {
+  background: #0B1220 !important;
+}
+
+/* Conteneurs principaux : blanc -> sombre */
+body.dark-mode app-equipment-detail-page .eqd-summary,
+body.dark-mode app-equipment-detail-page .eqd-card,
+body.dark-mode app-equipment-detail-page .eqd-diagnostic,
+body.dark-mode app-equipment-detail-page .eqd-battery-diag,
+body.dark-mode app-equipment-detail-page .eqd-loc-history,
+body.dark-mode app-equipment-detail-page .eqd-modal {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Surfaces imbriquées (dégradés clairs) -> sombre */
+body.dark-mode app-equipment-detail-page .eqd-diag-item,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-stat-card,
+body.dark-mode app-equipment-detail-page .eqd-loc-card,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-unavailable {
+  background: #16243D !important;
+  border-color: #1F2937 !important;
+}
+
+/* Titres et valeurs -> clairs */
+body.dark-mode app-equipment-detail-page .eqd-title,
+body.dark-mode app-equipment-detail-page .eqd-summary-name,
+body.dark-mode app-equipment-detail-page .eqd-modal-title,
+body.dark-mode app-equipment-detail-page .eqd-card-value,
+body.dark-mode app-equipment-detail-page .eqd-diag-title,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-title,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-stat-value,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-dur-value,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-unavail-title,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-measure-value,
+body.dark-mode app-equipment-detail-page .eqd-loc-place {
+  color: #F1F5F9 !important;
+}
+
+/* Textes secondaires -> gris clair lisible */
+body.dark-mode app-equipment-detail-page .eqd-subtitle,
+body.dark-mode app-equipment-detail-page .eqd-summary-sync,
+body.dark-mode app-equipment-detail-page .eqd-card-label,
+body.dark-mode app-equipment-detail-page .eqd-card-meta,
+body.dark-mode app-equipment-detail-page .eqd-diag-sub,
+body.dark-mode app-equipment-detail-page .eqd-diag-key,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-sub,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-stat-key,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-state-hint,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-dur-key,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-dur-range,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-unavail-text,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-measure-key,
+body.dark-mode app-equipment-detail-page .eqd-loc-period,
+body.dark-mode app-equipment-detail-page .eqd-value-empty,
+body.dark-mode app-equipment-detail-page .eqd-badge-neutral {
+  color: #94A3B8 !important;
+}
+
+/* Textes intermédiaires */
+body.dark-mode app-equipment-detail-page .eqd-modal-body,
+body.dark-mode app-equipment-detail-page .eqd-coords,
+body.dark-mode app-equipment-detail-page .eqd-bdiag-message,
+body.dark-mode app-equipment-detail-page .eqd-id-value,
+body.dark-mode app-equipment-detail-page .eqd-loc-note {
+  color: #CBD5E1 !important;
+}
+
+/* Bouton fantôme (Retour) : lisible sur fond sombre, y compris au survol */
+body.dark-mode app-equipment-detail-page .eqd-btn-ghost {
+  color: #CBD5E1 !important;
+  background: rgba(148, 163, 184, 0.08) !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-btn-ghost:hover {
+  color: #F1F5F9 !important;
+  background: rgba(148, 163, 184, 0.16) !important;
+}
+
+/* ===== Graphiques historique batterie (app-battery-history-charts) ===== */
+body.dark-mode app-battery-history-charts {
+  background: transparent !important;
+}
+
+body.dark-mode app-battery-history-charts .bhc-card {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-mode app-battery-history-charts .bhc-title {
+  color: #F1F5F9 !important;
+}
+
+body.dark-mode app-battery-history-charts .bhc-sub {
+  color: #94A3B8 !important;
+}
+
+/* ===== Détail équipement — fonds clairs restants ===== */
+/* Carte historique batterie + état vide */
+body.dark-mode app-equipment-detail-page .eqd-battery-history,
+body.dark-mode app-equipment-detail-page .eqd-empty {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-empty-text {
+  color: #94A3B8 !important;
+}
+
+/* Lignes de mesures capteurs */
+body.dark-mode app-equipment-detail-page .eqd-bdiag-measure {
+  background: #16243D !important;
+  border-color: #1F2937 !important;
+}
+
+/* Erreur d'export : rouge translucide lisible */
+body.dark-mode app-equipment-detail-page .eqd-export-error {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  color: #FCA5A5 !important;
+}
+
+/* Badges et alertes opaques -> translucides (lisibles sur sombre) */
+body.dark-mode app-equipment-detail-page .eqd-alert--success {
+  background: rgba(16, 185, 129, 0.12) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-alert--error {
+  background: rgba(239, 68, 68, 0.14) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-state-chip--ok {
+  background: rgba(16, 185, 129, 0.14) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-state-chip--blocked {
+  background: rgba(239, 68, 68, 0.14) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-state-chip--alert {
+  background: rgba(234, 88, 12, 0.14) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-state-chip--inspection {
+  background: rgba(217, 119, 6, 0.14) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-badge-danger {
+  background: rgba(239, 68, 68, 0.16) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-badge-warning {
+  background: rgba(245, 158, 11, 0.16) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-badge-success {
+  background: rgba(32, 201, 151, 0.16) !important;
+}
+
+body.dark-mode app-equipment-detail-page .eqd-badge-neutral {
+  background: rgba(148, 163, 184, 0.16) !important;
+}
+
+/* Carte de localisation « actuelle » : conserve sa teinte verte */
+body.dark-mode app-equipment-detail-page .eqd-loc-card--current {
+  background: rgba(16, 185, 129, 0.10) !important;
+}
+
+/* ===== Tableaux : badges Statut / Technicien / Alerte (Maintenance, Alertes) ===== */
+/* Maintenance — badges de statut */
+body.dark-mode app-maintenance-page .status-planifiee {
+  background: rgba(217, 119, 6, 0.15) !important;
+  color: #FBBF24 !important;
+  border-color: rgba(252, 211, 157, 0.25) !important;
+}
+
+body.dark-mode app-maintenance-page .status-en-cours {
+  background: rgba(37, 99, 235, 0.16) !important;
+  color: #93C5FD !important;
+  border-color: rgba(191, 219, 254, 0.25) !important;
+}
+
+body.dark-mode app-maintenance-page .status-terminee {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(167, 243, 208, 0.25) !important;
+}
+
+body.dark-mode app-maintenance-page .status-non-pris {
+  background: rgba(148, 163, 184, 0.15) !important;
+  color: #CBD5E1 !important;
+  border-color: rgba(203, 213, 225, 0.25) !important;
+}
+
+/* Maintenance — badges d'alerte */
+body.dark-mode app-maintenance-page .alert-active {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(252, 165, 165, 0.25) !important;
+}
+
+body.dark-mode app-maintenance-page .alert-none {
+  background: rgba(107, 114, 128, 0.18) !important;
+  color: #D1D5DB !important;
+  border-color: rgba(209, 213, 219, 0.25) !important;
+}
+
+/* Maintenance — badge technicien ayant pris l'alerte */
+body.dark-mode app-maintenance-page .tech-badge {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(167, 243, 208, 0.25) !important;
+}
+
+body.dark-mode app-maintenance-page .tech-badge.tech-mine {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #93C5FD !important;
+  border-color: rgba(191, 219, 254, 0.28) !important;
+}
+
+/* Alertes — badges de statut */
+body.dark-mode app-generic-page .status-alert {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(252, 165, 165, 0.25) !important;
+}
+
+body.dark-mode app-generic-page .status-inspection {
+  background: rgba(217, 119, 6, 0.15) !important;
+  color: #FBBF24 !important;
+  border-color: rgba(252, 211, 157, 0.25) !important;
+}
+
+body.dark-mode app-generic-page .status-normal {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(167, 243, 208, 0.25) !important;
+}
+
+body.dark-mode app-generic-page .statut-ouverte {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(252, 165, 165, 0.25) !important;
+}
+
+body.dark-mode app-generic-page .statut-en-cours {
+  background: rgba(37, 99, 235, 0.16) !important;
+  color: #93C5FD !important;
+  border-color: rgba(191, 219, 254, 0.25) !important;
+}
+
+body.dark-mode app-generic-page .statut-termine {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(167, 243, 208, 0.25) !important;
+}
+/* ===== Page Profil ===== */
+body.dark-mode app-profile-page .profile-card {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+}
+
+body.dark-mode app-profile-page .profile-card:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+  border-color: rgba(37, 99, 235, 0.35) !important;
+}
+
+body.dark-mode app-profile-page .profile-card-title {
+  color: #F1F5F9 !important;
+}
+
+body.dark-mode app-profile-page .profile-field {
+  border-bottom-color: #1F2937 !important;
+}
+
+body.dark-mode app-profile-page .profile-field-icon {
+  background: #1F2937 !important;
+  color: #94A3B8 !important;
+}
+
+body.dark-mode app-profile-page .profile-field-value {
+  color: #E2E8F0 !important;
+}
+
+body.dark-mode app-profile-page .profile-badge-active {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+
+body.dark-mode app-profile-page .profile-badge-pending {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #FBBF24 !important;
+  border-color: rgba(252, 211, 157, 0.3) !important;
+}
+
+body.dark-mode app-profile-page .profile-badge-inactive {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(252, 165, 165, 0.3) !important;
+}
+
+body.dark-mode app-profile-page .profile-empty-mini {
+  background: #16243D !important;
+  color: #94A3B8 !important;
+}
+
+body.dark-mode app-profile-page .profile-empty {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+}
+
+body.dark-mode app-profile-page .profile-empty-icon {
+  background: #1F2937 !important;
+}
+
+body.dark-mode app-profile-page .profile-logout-btn {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(248, 113, 113, 0.35) !important;
+  color: #FCA5A5 !important;
+}
+
+body.dark-mode app-profile-page .profile-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.22) !important;
+  border-color: rgba(248, 113, 113, 0.5) !important;
+}
+
+/* ===== Fenêtre « Ajouter un équipement » (equipment-form-page) ===== */
+body.dark-mode app-equipment-form-page .eqf-card {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-label {
+  color: #CBD5E1 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-input,
+body.dark-mode app-equipment-form-page .eqf-textarea {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+  color: #E2E8F0 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-input:hover,
+body.dark-mode app-equipment-form-page .eqf-textarea:hover {
+  border-color: #334155 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-input:focus,
+body.dark-mode app-equipment-form-page .eqf-textarea:focus {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-input::placeholder {
+  color: #64748B !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-select {
+  background-color: #0B1220 !important;
+  border-color: #1F2937 !important;
+  color: #E2E8F0 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-select-menu {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-select-option {
+  color: #CBD5E1 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-select-option:hover {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #93C5FD !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-select-option--selected {
+  background: rgba(37, 99, 235, 0.22) !important;
+  color: #93C5FD !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-error {
+  color: #FCA5A5 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-actions {
+  border-top-color: #1F2937 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-btn--ghost {
+  background: #1F2937 !important;
+  color: #CBD5E1 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-btn--ghost:hover {
+  background: #16243D !important;
+  color: #F1F5F9 !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-alert--success {
+  background: rgba(16, 185, 129, 0.14) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+
+body.dark-mode app-equipment-form-page .eqf-alert--error {
+  background: rgba(239, 68, 68, 0.14) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(248, 113, 113, 0.3) !important;
+}

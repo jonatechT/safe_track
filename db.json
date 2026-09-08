@@ -2,9 +2,9 @@
   "equipements": [
     {
       "id": 1,
-      "imei": "ESP32-001",
+      "id": "ESP32-001",
       "nom": "Kit solaire",
-      "type": "Boîtier",
+      "type": "Boï¿½tier",
       "statut": "En ligne",
       "localisation": "Ouagadougou, Burkina Faso",
       "lienLocalisation": "12.3714,-1.5197",
@@ -16,9 +16,9 @@
     },
     {
       "id": 2,
-      "imei": "ESP32-002",
+      "id": "ESP32-002",
       "nom": "Kit solaire",
-      "type": "Boîtier",
+      "type": "Boï¿½tier",
       "statut": "En ligne",
       "localisation": "Bobo-Dioulasso, Burkina Faso",
       "lienLocalisation": "11.1771,-4.2979",
@@ -30,9 +30,9 @@
     },
     {
       "id": 3,
-      "imei": "ESP32-003",
+      "id": "ESP32-003",
       "nom": "Kit solaire",
-      "type": "Boîtier",
+      "type": "Boï¿½tier",
       "statut": "Hors ligne",
       "localisation": "Koudougou, Burkina Faso",
       "lienLocalisation": "12.2526,-2.3657",

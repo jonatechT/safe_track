@@ -60,6 +60,7 @@ import { AuthService } from '../../auth/auth.service';
                   <th>Type</th>
                   <th>Date</th>
                   <th>Technicien</th>
+                  <th>Statut</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -86,7 +87,16 @@ import { AuthService } from '../../auth/auth.service';
                           }
                         </span>
                       } @else {
-                        <span class="tech-none">Non pris</span>
+                        <span class="tech-none">—</span>
+                      }
+                    </td>
+                    <td>
+                      @if (item.statut === 'En cours' && item.prisPar) {
+                        <span class="status-badge status-en-cours"><i class="fa-solid fa-clock"></i> Intervention en cours</span>
+                      } @else if (item.statut === 'Terminée') {
+                        <span class="status-badge status-terminee"><i class="fa-solid fa-check"></i> Terminée</span>
+                      } @else {
+                        <span class="status-badge status-non-pris"><i class="fa-solid fa-hourglass-half"></i> Non pris</span>
                       }
                     </td>
                     <td class="actions-cell">
@@ -95,27 +105,17 @@ import { AuthService } from '../../auth/auth.service';
                           Prendre l'alerte
                         </button>
                       } @else if (item.statut === 'En cours' && item.prisPar) {
-                        <div class="done-actions">
-                          <span class="taken-label">
-                            <i class="fa-solid fa-clock"></i> Intervention en cours
-                          </span>
-                          <button class="btn-terminer" (click)="terminerMaintenance(item); $event.stopPropagation()">
-                            <i class="fa-solid fa-flag-checkered"></i> Terminer
-                          </button>
-                        </div>
+                        <button class="btn-terminer" (click)="terminerMaintenance(item); $event.stopPropagation()">
+                          <i class="fa-solid fa-flag-checkered"></i> Terminer
+                        </button>
                       } @else if (item.statut === 'Planifiée' && item.alertes === 0) {
                         <button class="btn-prendre" (click)="prendreAlerte(item); $event.stopPropagation()">
                           Prendre en charge
                         </button>
                       } @else if (item.statut === 'Terminée') {
-                        <div class="done-actions">
-                          <span class="done-label">
-                            <i class="fa-solid fa-check"></i> Terminée
-                          </span>
-                          <button class="btn-rapport" (click)="allerAuxRapports(); $event.stopPropagation()" title="Voir les rapports">
-                            <i class="fa-solid fa-file-lines"></i> Rapport
-                          </button>
-                        </div>
+                        <button class="btn-rapport" (click)="allerAuxRapports(); $event.stopPropagation()" title="Voir les rapports">
+                          <i class="fa-solid fa-file-lines"></i> Rapport
+                        </button>
                       }
                     </td>
                   </tr>
@@ -243,6 +243,7 @@ import { AuthService } from '../../auth/auth.service';
     .status-planifiee { background: #FFFBEB; color: #D97706; border: 1px solid #FCD39D; }
     .status-en-cours { background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; }
     .status-terminee { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+    .status-non-pris { background: #F1F5F9; color: #64748B; border: 1px solid #CBD5E1; }
 
     .alert-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; }
     .alert-active { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
@@ -405,7 +406,7 @@ export class MaintenancePageComponent {
     if (item) {
       const equipment = this.equipmentService.getAll().find(e => e.nom === item.equipment);
       if (equipment) {
-        this.router.navigate(['/equipements', equipment.imei], { queryParams: { source: 'maintenance' } });
+        this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'maintenance' } });
       }
     }
   }

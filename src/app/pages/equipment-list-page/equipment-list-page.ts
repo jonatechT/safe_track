@@ -22,53 +22,53 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
       <div class="equip-content">
         <!-- KPI Cards -->
         <div class="stat-grid">
-          <div class="stat-card" style="background: #DBEAFE; border-color: rgba(59, 130, 246, 0.24);">
+          <div class="stat-card stat-card--blue">
             <div class="stat-main">
               <span class="stat-label">{{ enLigneMode ? 'Équipements non bloqués' : 'Équipements localisés' }}</span>
-              <span class="stat-value"><strong>{{ kpiLocalises }}</strong></span>
+              <span class="stat-value"><strong>{{ enLigneMode ? kpiEnLigne : kpiLocalises }}</strong></span>
             </div>
-            <i class="fa-solid fa-cube stat-icon" style="color: #3B82F6;"></i>
+            <i class="fa-solid fa-cube stat-icon stat-icon--blue"></i>
           </div>
-          <div class="stat-card" style="background: #FEE2E2; border-color: rgba(239, 68, 68, 0.24);">
+          <div class="stat-card stat-card--red">
             <div class="stat-main">
               <span class="stat-label">Bloqués</span>
               <span class="stat-value"><strong>{{ kpiBloques }}</strong></span>
             </div>
-            <i class="fa-solid fa-lock stat-icon" style="color: #EF4444;"></i>
+            <i class="fa-solid fa-lock stat-icon stat-icon--red"></i>
           </div>
-          <div class="stat-card" style="background: #D1FAE5; border-color: rgba(16, 185, 129, 0.24);">
+          <div class="stat-card stat-card--green">
             <div class="stat-main">
               <span class="stat-label">En ligne</span>
-              <span class="stat-value"><strong>{{ enLigneMode ? kpiLocalises : kpiEnLigne }}</strong></span>
+              <span class="stat-value"><strong>{{ kpiEnLigne }}</strong></span>
             </div>
-            <i class="fa-solid fa-wifi stat-icon" style="color: #10B981;"></i>
+            <i class="fa-solid fa-wifi stat-icon stat-icon--green"></i>
           </div>
         </div>
 
-<!-- Tableau : Équipement | IMEI | Mise en ligne | Détail (bouton "Voir") -->
+<!-- Tableau : Équipement | ID | Mise en ligne | Détail (bouton "Voir") -->
         <div class="table-card">
           <div class="table-wrapper">
             <table class="data-table">
               <thead>
                 <tr>
                   <th>Équipement</th>
-                  <th>IMEI</th>
+                  <th>ID</th>
                   <th>Mise en ligne</th>
                   <th>Détail</th>
                 </tr>
               </thead>
               <tbody>
-                @for (eq of equipments; track eq.imei; let i = $index) {
-                  <tr class="row-clickable equip-row-animate" [style.animation-delay.ms]="70 * i" (click)="ouvrirDetail(eq.imei)">
+                @for (eq of equipments; track eq.id; let i = $index) {
+                  <tr class="row-clickable equip-row-animate" [style.animation-delay.ms]="70 * i" (click)="ouvrirDetail(eq.id)">
                     <td>
                       <div class="equipment-cell">
                         <span class="equipment-name">{{ eq.nom }}</span>
                       </div>
                     </td>
-                    <td><span class="imei-code">{{ eq.imei }}</span></td>
+                    <td><span class="id-code">{{ eq.id }}</span></td>
                     <td><span class="sync-time">{{ eq.miseEnLigne }}</span></td>
                     <td class="detail-cell">
-                      <button class="btn-detail" (click)="ouvrirDetail(eq.imei); $event.stopPropagation()">
+                      <button class="btn-detail" (click)="ouvrirDetail(eq.id); $event.stopPropagation()">
                         Voir
                       </button>
                     </td>
@@ -105,6 +105,14 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
     .stat-value { font-size: 30px; font-weight: 700; line-height: 1.05; color: #0F172A; }
     .stat-value strong { font-size: 1em; }
     .stat-icon { font-size: 20px; flex-shrink: 0; }
+
+    /* Variantes de couleur (même pattern que maintenance/rapports) — le dark mode global les surcharge */
+    .stat-card--blue { background: #DBEAFE; border-color: rgba(59, 130, 246, 0.24); }
+    .stat-icon--blue { color: #3B82F6; }
+    .stat-card--red { background: #FEE2E2; border-color: rgba(239, 68, 68, 0.24); }
+    .stat-icon--red { color: #EF4444; }
+    .stat-card--green { background: #D1FAE5; border-color: rgba(16, 185, 129, 0.24); }
+    .stat-icon--green { color: #10B981; }
 
     /* ===== Tableau (design conservé) ===== */
     .table-card { background: transparent; border: none; border-radius: 0; padding: 0; overflow: visible; box-shadow: none; }
@@ -147,7 +155,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
 
     .equipment-cell { display: flex; align-items: center; gap: 10px; }
     .equipment-name { font-weight: 600; color: #1E293B; font-size: 15px; }
-    .imei-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 14px; font-weight: 500; color: #475569; letter-spacing: 0.3px; }
+    .id-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 14px; font-weight: 500; color: #475569; letter-spacing: 0.3px; }
     .sync-time { color: #64748B; font-size: 14px; }
     /* Bouton Voir (petit badge bleu autour du mot) */
     .btn-detail {
@@ -231,10 +239,16 @@ export class EquipmentListPageComponent {
   pageTitle = "Parc d'équipement";
   pageSubtitle = 'Suivi en temps réel de vos équipements sur la carte.';
 
-  /** Valeurs KPI — en mode normal, conservées telles qu'elles étaient affichées. */
+  /**
+   * Valeurs KPI du parc — cohérentes entre elles :
+   *   Équipements localisés (100) = En ligne (90) + Bloqués (10)
+   * « En ligne » = équipements non bloqués (même sémantique que la page
+   * /equipements/en-ligne). Valeurs alignées sur le tableau de bord
+   * (Total équipements = 100, Équipements en ligne = 90).
+   */
   kpiLocalises = 100;
-  kpiBloques = 0;
-  kpiEnLigne = 82;
+  kpiBloques = 10;
+  kpiEnLigne = 90;
 
   constructor(
     private equipmentService: EquipmentService,
@@ -246,18 +260,17 @@ export class EquipmentListPageComponent {
     const all = this.equipmentService.getAll();
     if (this.enLigneMode) {
       // Seuls les équipements non bloqués apparaissent sur cette page.
+      // Les KPI restent ceux du parc complet (déjà cohérents) — pas d'écrasement.
       this.equipments = all.filter(e => !e.bloque);
       this.pageTitle = 'Équipements en ligne';
       this.pageSubtitle = 'Équipements du parc actuellement non bloqués.';
-      this.kpiLocalises = all.length;
-      this.kpiBloques = all.filter(e => e.bloque).length;
     } else {
       this.equipments = all;
     }
   }
 
-  ouvrirDetail(imei: string): void {
-    this.router.navigate(['/equipements', imei]);
+  ouvrirDetail(id: string): void {
+    this.router.navigate(['/equipements', id]);
   }
 
   ajouterEquipement(): void {

@@ -84,9 +84,9 @@
       <div class="statut-wrapper">
         <div class="donut-chart"></div>
         <div class="donut-legend">
-          <div class="legend-item"><span class="legend-dot" style="background: #10B981;"></span><span class="legend-label">Équipements en ligne</span><span class="legend-value">90%</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background: #ff0000;"></span><span class="legend-label">Équipement hors ligne</span><span class="legend-value">5%</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background: #ffe500;"></span><span class="legend-label">Équipement en maintenance</span><span class="legend-value">0%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #10B981;"></span><span class="legend-label">Équipements en ligne</span><span class="legend-value">{{ enLigne }}</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #ff0000;"></span><span class="legend-label">Équipement hors ligne</span><span class="legend-value">{{ horsLigne }}</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background: #ffe500;"></span><span class="legend-label">Équipement en maintenance</span><span class="legend-value">{{ enMaintenance }}</span></div>
         </div>
       </div>
     </div>
@@ -96,8 +96,8 @@
     <div class="card">
       <h2 class="card-title">Activités récentes</h2>
       <div class="activity-list">
-        @for (activity of activities; track activity.imei) {
-          <div class="activity-item clickable" (click)="goToEquipment(activity.imei)" [attr.aria-label]="'Voir le détail de ' + activity.title" tabindex="0" (keydown.enter)="goToEquipment(activity.imei)">
+        @for (activity of activities; track activity.id) {
+          <div class="activity-item clickable" (click)="goToEquipment(activity.id)" [attr.aria-label]="'Voir le détail de ' + activity.title" tabindex="0" (keydown.enter)="goToEquipment(activity.id)">
             <div class="activity-info">
               <span class="activity-title">{{ activity.title }}</span>
               <span class="activity-time">{{ activity.time }}</span>
@@ -113,8 +113,8 @@
     <div class="card">
       <h2 class="card-title">Alertes récentes</h2>
       <div class="alerts-list">
-        @for (alert of alerts; track alert.imei) {
-          <div class="alert-item clickable" (click)="goToEquipment(alert.imei)" [attr.aria-label]="'Voir le détail de ' + alert.title" tabindex="0" (keydown.enter)="goToEquipment(alert.imei)">
+        @for (alert of alerts; track alert.id) {
+          <div class="alert-item clickable" (click)="goToEquipment(alert.id)" [attr.aria-label]="'Voir le détail de ' + alert.title" tabindex="0" (keydown.enter)="goToEquipment(alert.id)">
             <div class="alert-info">
               <span class="alert-title">{{ alert.title }}</span>
               <span class="alert-time">{{ alert.time }}</span>

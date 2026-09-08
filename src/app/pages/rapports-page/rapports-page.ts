@@ -348,8 +348,8 @@ import { AuthService } from '../../auth/auth.service';
     .rapport-textarea:focus { border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); background: #FFF; }
     .rapport-input { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; transition: all 0.2s ease; background: #F8FAFC; }
     .rapport-input:focus { border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); background: #FFF; }
-    .rapport-btn-submit { background: #1E3A8A; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25); }
-    .rapport-btn-submit:hover { background: #0B1A2E; transform: translateY(-1px); }
+    .rapport-btn-submit { background: #2563EB; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+    .rapport-btn-submit:hover { background: #1D4ED8; transform: translateY(-1px); }
     .rapport-btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .rapport-btn-export { background: #10B981; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; margin-right: auto; }
     .rapport-btn-export:hover { background: #059669; }
@@ -358,11 +358,11 @@ import { AuthService } from '../../auth/auth.service';
     .rapport-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); z-index: 1500; backdrop-filter: blur(2px); }
     .rapport-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; max-width: 92vw; max-height: 90vh; background: #FFF; border-radius: 16px; z-index: 1501; box-shadow: 0 24px 64px rgba(15, 23, 42, 0.25); display: flex; flex-direction: column; overflow: hidden; animation: rapportSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     @keyframes rapportSlideIn { from { opacity: 0; transform: translate(-50%, -48%); } to { opacity: 1; transform: translate(-50%, -50%); } }
-    .rapport-modal-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E2E8F0; background: linear-gradient(135deg, #0B1A2E, #1E3A8A); }
+    .rapport-modal-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E2E8F0; background: #1D4ED8; }
     .rapport-modal-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, 0.15); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .rapport-modal-title-block { flex: 1; display: flex; flex-direction: column; min-width: 0; }
     .rapport-modal-title { font-size: 16px; font-weight: 700; color: #FFF; margin: 0; }
-    .rapport-modal-subtitle { font-size: 11px; color: #94A3B8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rapport-modal-subtitle { font-size: 11px; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .rapport-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255, 255, 255, 0.1); color: #E2E8F0; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
     .rapport-modal-close:hover { background: rgba(255, 255, 255, 0.2); }
     .rapport-modal-body { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }

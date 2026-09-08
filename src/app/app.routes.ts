@@ -37,12 +37,12 @@ export const pageData: Record<string, PageData> = {
       { label: 'En ligne', value: '82', icon: 'fa-solid fa-wifi', color: '#10B981', bgColor: '#D1FAE5', progress: 82 }
     ],
     showMap: false,
-    tableHeaders: ['Équipement', 'IMEI', 'Localisation', 'Mise en ligne'],
+    tableHeaders: ['Équipement', 'ID', 'Localisation', 'Mise en ligne'],
     tableRows: [
-      { 'Statut': 'En alerte', 'Équipement': 'Kit solaire #SK-045', 'IMEI': '354123456789012', 'Localisation': '12.3685°N, -1.5250°E', 'LienLocalisation': '12.3685,-1.5250', 'Mise en ligne': '14 mars 2024' },
-      { 'Statut': 'En alerte', 'Équipement': 'Véhicule #V-007', 'IMEI': '354123456789014', 'Localisation': '11.1784°N, -4.2979°E', 'LienLocalisation': '11.1784,-4.2979', 'Mise en ligne': '22 janvier 2024' },
-      { 'Statut': 'Inspection', 'Équipement': 'Kit solaire #SK-089', 'IMEI': '354123456789015', 'Localisation': '12.2513°N, -2.3510°E', 'LienLocalisation': '12.2513,-2.3510', 'Mise en ligne': '5 juin 2024' },
-      { 'Statut': 'Inspection', 'Équipement': 'Engin minier #EM-034', 'IMEI': '354123456789016', 'Localisation': '12.3714°N, -1.5197°E', 'LienLocalisation': '12.3714,-1.5197', 'Mise en ligne': '18 septembre 2023' }
+      { 'Statut': 'En alerte', 'Équipement': 'Kit solaire #SK-045', 'ID': '354123456789012', 'Localisation': '12.3685°N, -1.5250°E', 'LienLocalisation': '12.3685,-1.5250', 'Mise en ligne': '14 mars 2024' },
+      { 'Statut': 'En alerte', 'Équipement': 'Véhicule #V-007', 'ID': '354123456789014', 'Localisation': '11.1784°N, -4.2979°E', 'LienLocalisation': '11.1784,-4.2979', 'Mise en ligne': '22 janvier 2024' },
+      { 'Statut': 'Inspection', 'Équipement': 'Kit solaire #SK-089', 'ID': '354123456789015', 'Localisation': '12.2513°N, -2.3510°E', 'LienLocalisation': '12.2513,-2.3510', 'Mise en ligne': '5 juin 2024' },
+      { 'Statut': 'Inspection', 'Équipement': 'Engin minier #EM-034', 'ID': '354123456789016', 'Localisation': '12.3714°N, -1.5197°E', 'LienLocalisation': '12.3714,-1.5197', 'Mise en ligne': '18 septembre 2023' }
     ]
   },
   maintenance: {
@@ -112,7 +112,7 @@ export const routes: Route[] = [
   },
   { path: 'location/en-ligne', redirectTo: '/equipements/en-ligne', pathMatch: 'full' },
   { path: 'equipements/nouveau', loadComponent: () => import('./pages/equipment-form-page/equipment-form-page').then(m => m.EquipmentFormPageComponent), canActivate: [authGuard] },
-  { path: 'equipements/:imei', loadComponent: () => import('./pages/equipment-detail-page/equipment-detail-page').then(m => m.EquipmentDetailPageComponent), canActivate: [authGuard] },
+  { path: 'equipements/:id', loadComponent: () => import('./pages/equipment-detail-page/equipment-detail-page').then(m => m.EquipmentDetailPageComponent), canActivate: [authGuard] },
   { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
   { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['alerts'], canActivate: [authGuard] },

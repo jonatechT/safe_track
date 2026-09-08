@@ -26,6 +26,7 @@ export class App {
   protected readonly title = signal('SAFE Track');
 
   private readonly SIDEBAR_STATE_KEY = 'safe_track_sidebar_collapsed';
+  private readonly THEME_STATE_KEY = 'safe_track_theme';
 
   isSidebarCollapsed = false;
   isMobileMenuOpen = false;
@@ -33,12 +34,15 @@ export class App {
   showProfile = false;
   showNotifications = false;
 
+  /** Mode nuit activé ? (persisté dans localStorage) */
+  isDarkMode = false;
+
   protected readonly menuItems: MenuItem[] = [
     { label: 'Tableau de bord', icon: 'fa-solid fa-chart-pie', route: '/dashboard', active: true },
     { label: "Parc d'équipement", icon: 'fa-solid fa-cube', route: '/equipements' },
+    { label: 'Alertes', icon: 'fa-solid fa-bell', route: '/alerts' },
     { label: 'Maintenance', icon: 'fa-solid fa-wrench', route: '/maintenance' },
     { label: 'Rapports', icon: 'fa-solid fa-file-lines', route: '/rapports' },
-    { label: 'Alertes', icon: 'fa-solid fa-bell', route: '/alerts' },
     { label: 'Techniciens', icon: 'fa-solid fa-users', route: '/users' }
   ];
 
@@ -56,6 +60,8 @@ export class App {
     private maintenanceService: MaintenanceService
   ) {
     this.isSidebarCollapsed = this.loadSidebarState();
+    this.isDarkMode = this.loadThemeState();
+    this.applyThemeState();
     // Suivre la navigation pour l'état actif du menu (y compris au clic et au retour navigateur)
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(e => {
       this.activeUrl.set(e.urlAfterRedirects.split('?')[0].replace(/\/$/, ''));
@@ -153,6 +159,33 @@ export class App {
     }
   }
 
+  /** Bascule entre le mode nuit et le mode clair */
+  protected toggleTheme(): void {
+    this.isDarkMode = !this.isDarkMode;
+    this.saveThemeState();
+    this.applyThemeState();
+  }
+
+  private loadThemeState(): boolean {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(this.THEME_STATE_KEY) === 'dark';
+    }
+    return false;
+  }
+
+  private saveThemeState(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.THEME_STATE_KEY, this.isDarkMode ? 'dark' : 'light');
+    }
+  }
+
+  /** Applique/retire la classe dark-mode sur <body> (portée globale : toutes les pages) */
+  private applyThemeState(): void {
+    if (typeof document !== 'undefined') {
+      document.body.classList.toggle('dark-mode', this.isDarkMode);
+    }
+  }
+
   protected toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
@@ -205,6 +238,12 @@ export class App {
 
   protected closeNotifications(): void {
     this.showNotifications = false;
+  }
+
+  /** Redirige vers la page Alertes depuis la cloche de notification */
+  protected goToAlerts(): void {
+    this.closeNotifications();
+    this.router.navigate(['/alerts']);
   }
 
   protected markAllNotificationsRead(): void {

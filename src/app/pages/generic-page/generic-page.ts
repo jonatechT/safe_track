@@ -70,8 +70,8 @@ interface TableRow {
                             <div class="equipment-cell">
                               <span class="equipment-name">{{ row[header] }}</span>
                             </div>
-                          } @else if (header === 'IMEI') {
-                            <span class="imei-code">{{ row[header] }}</span>
+                          } @else if (header === 'ID') {
+                            <span class="id-code">{{ row[header] }}</span>
                           } @else if (header === 'Localisation' && row['LienLocalisation']) {
                             <a
                               class="location-link"
@@ -86,30 +86,26 @@ interface TableRow {
                           } @else if (header === 'Dernière synchro') {
                             <span class="sync-time">{{ row[header] }}</span>
                           } @else if (header === 'Statut') {
-                            <span
-                              class="statut-badge"
-                              [class.statut-ouverte]="row['Statut'] === 'Ouverte'"
-                              [class.statut-en-cours]="row['Statut'] === 'En cours'"
-                              [class.statut-termine]="row['Statut'] === 'Terminée'"
-                            >{{ row['Statut'] }}</span>
+                            @if (row['Statut'] === 'Ouverte') {
+                              <span class="statut-badge statut-ouverte"><i class="fa-solid fa-hourglass-half"></i> Non pris</span>
+                            } @else if (row['Statut'] === 'En cours') {
+                              <span class="statut-badge statut-en-cours"><i class="fa-solid fa-clock"></i> Intervention en cours</span>
+                            } @else if (row['Statut'] === 'Terminée') {
+                              <span class="statut-badge statut-termine"><i class="fa-solid fa-check"></i> Terminée</span>
+                            } @else {
+                              <span class="statut-badge">{{ row['Statut'] }}</span>
+                            }
                           } @else if (header === 'Action') {
                             @if (row['Statut'] === 'Ouverte') {
                               <button class="action-take-btn" (click)="prendreAlerte(row); $event.stopPropagation()">
                                 {{ row[header] }}
                               </button>
                             } @else if (row['Statut'] === 'En cours') {
-                              <div class="done-actions">
-                                <span class="taken-label">
-                                  <i class="fa-solid fa-clock"></i> En cours
-                                </span>
-                                <button class="action-take-btn" (click)="terminerAlerte(row); $event.stopPropagation()">
-                                  <i class="fa-solid fa-flag-checkered"></i> Terminer
-                                </button>
-                              </div>
+                              <button class="action-take-btn" (click)="terminerAlerte(row); $event.stopPropagation()">
+                                <i class="fa-solid fa-flag-checkered"></i> Terminer
+                              </button>
                             } @else {
-                              <span class="done-label">
-                                <i class="fa-solid fa-check"></i> Terminée
-                              </span>
+                              <span class="done-label">—</span>
                             }
                           } @else {
                             {{ row[header] }}
@@ -238,9 +234,9 @@ interface TableRow {
       font-size: 12px;
     }
     .data-table tbody td:last-child { text-align: right; }
-    .imei-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; color: #64748B; letter-spacing: 0.3px; }
+    .id-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; color: #64748B; letter-spacing: 0.3px; }
     .sync-time { color: #64748B; font-size: 12px; }
-    .data-table tbody tr.active .imei-code,
+    .data-table tbody tr.active .id-code,
     .data-table tbody tr.active .sync-time { color: rgba(255, 255, 255, 0.9); }
     .data-table tbody tr.active .location-link { color: #FFFFFF; }
     .data-table tbody tr.active .location-link:hover { color: #FFFFFF; }
@@ -276,7 +272,7 @@ interface TableRow {
     .parc-equipement .data-table tbody td:nth-child(2) { font-size: 13px; }
     .parc-equipement .data-table tbody td:nth-child(3) { font-size: 14px; }
     .parc-equipement .data-table tbody td:nth-child(4) { font-size: 14px; }
-    .parc-equipement .imei-code { font-size: 13px; }
+    .parc-equipement .id-code { font-size: 13px; }
     .parc-equipement .sync-time { font-size: 14px; }
     .parc-equipement .location-link { font-size: 14px; }
     .parc-equipement .location-link i { font-size: 13px; }
@@ -386,7 +382,7 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     if (equipmentName) {
       const equipment = this.equipmentService.getAll().find(e => e.nom === equipmentName);
       if (equipment) {
-        this.router.navigate(['/equipements', equipment.imei], { queryParams: { source: 'alerts' } });
+        this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'alerts' } });
       }
     }
   }

@@ -80,23 +80,15 @@ import { BatteryExportService } from '../../services/battery-export.service';
           <div class="eqd-summary-main">
             <div class="eqd-summary-info">
               <h2 class="eqd-summary-name">{{ equipment.nom }}</h2>
-              <div class="eqd-summary-imei">
-                <span class="eqd-imei-chip">IMEI</span>
-                <span class="eqd-imei-value">{{ equipment.imei }}</span>
+              <div class="eqd-summary-id">
+                <span class="eqd-id-chip">ID</span>
+                <span class="eqd-id-value">{{ equipment.id }}</span>
               </div>
             </div>
           </div>
           <div class="eqd-summary-side">
-            <span [class]="'eqd-badge eqd-badge-lg ' + statusClass">
-              <span class="eqd-badge-dot"></span>
-              {{ equipment.statut }}
-            </span>
-            <span
-              class="eqd-state-chip"
-              [class.eqd-state-chip--ok]="!isBloque()"
-              [class.eqd-state-chip--blocked]="isBloque()"
-            >
-              {{ isBloque() ? "🔴 Équipement bloqué" : "🟢 Équipement actif" }}
+            <span [class]="'eqd-state-chip ' + unifiedStatusClass">
+              {{ unifiedStatusLabel }}
             </span>
             <span class="eqd-summary-sync">
               <i class="fa-regular fa-clock"></i>
@@ -704,6 +696,18 @@ import { BatteryExportService } from '../../services/battery-export.service';
       border: 1px solid rgba(239, 68, 68, 0.20);
     }
 
+    .eqd-state-chip--alert {
+      background: #FFF4EC;
+      color: #EA580C;
+      border: 1px solid rgba(234, 88, 12, 0.22);
+    }
+
+    .eqd-state-chip--inspection {
+      background: #FFFBEB;
+      color: #D97706;
+      border: 1px solid rgba(217, 119, 6, 0.22);
+    }
+
     /* ===== Modale de confirmation ===== */
     .eqd-modal-overlay {
       position: fixed;
@@ -821,7 +825,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
       color: #172033;
     }
 
-    .eqd-summary-imei {
+    .eqd-summary-id {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -829,7 +833,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
       flex-wrap: wrap;
     }
 
-    .eqd-imei-chip {
+    .eqd-id-chip {
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.8px;
@@ -840,7 +844,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
       border-radius: 999px;
     }
 
-    .eqd-imei-value {
+    .eqd-id-value {
       font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
       font-size: 13px;
       font-weight: 600;
@@ -1754,7 +1758,7 @@ export class EquipmentDetailPageComponent implements OnInit {
   readonly batteryLoading = signal(false);
   readonly batteryHistoryLoading = signal(false);
   readonly batteryError = signal<string | null>(null);
-  /** Historique de localisation (GET /api/equipements/{imei}/localisations). */
+  /** Historique de localisation (GET /api/equipements/{id}/localisations). */
   readonly locationHistory = signal<LocationHistoryEntry[]>([]);
   readonly locationHistoryLoading = signal(false);
   readonly locationHistoryError = signal<string | null>(null);
@@ -1789,7 +1793,7 @@ export class EquipmentDetailPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const imei = this.route.snapshot.paramMap.get('imei');
+    const id = this.route.snapshot.paramMap.get('id');
     const sourceParam = this.route.snapshot.queryParamMap.get('source');
     if (sourceParam === 'alerts') {
       this.source = 'alerts';
@@ -1797,8 +1801,8 @@ export class EquipmentDetailPageComponent implements OnInit {
       this.source = 'maintenance';
     }
 
-    if (imei) {
-      const eq = this.equipmentService.getByImei(imei);
+    if (id) {
+      const eq = this.equipmentService.getById(id);
       if (eq) {
         this.equipment = eq;
         this.diagnostic = this.equipmentService.getDiagnostic(eq);
@@ -1808,15 +1812,15 @@ export class EquipmentDetailPageComponent implements OnInit {
       // (Le frontend n'exécute aucune prédiction IA.)
       // Le diagnostic courant n'est PAS lancé automatiquement : il démarre
       // uniquement quand l'utilisateur clique sur « Lancer un diagnostic ».
-      this.loadBatteryHistory(imei);
-      this.loadLocationHistory(imei);
+      this.loadBatteryHistory(id);
+      this.loadLocationHistory(id);
     }
   }
 
-  /** Historique de localisation — GET /api/equipements/{imei}/localisations. */
-  private loadLocationHistory(imei: string): void {
+  /** Historique de localisation — GET /api/equipements/{id}/localisations. */
+  private loadLocationHistory(id: string): void {
     this.locationHistoryLoading.set(true);
-    this.equipmentService.getEquipmentLocationHistory(imei).subscribe({
+    this.equipmentService.getEquipmentLocationHistory(id).subscribe({
       next: entries => {
         this.locationHistory.set(entries);
         this.locationHistoryLoading.set(false);
@@ -1841,11 +1845,11 @@ export class EquipmentDetailPageComponent implements OnInit {
   }
 
   /** Récupère le diagnostic courant — GET /api/batterie/{device_id}/actuel. */
-  private loadBatteryDiagnostic(imei: string): void {
+  private loadBatteryDiagnostic(id: string): void {
     this.batteryLoading.set(true);
     this.batteryError.set(null);
     this.batteryDiagnosticSubscription = this.equipmentService
-      .getBatteryCurrentDiagnostic(imei)
+      .getBatteryCurrentDiagnostic(id)
       .subscribe({
         next: result => {
           this.batteryDiagnosticSubscription = null;
@@ -1870,11 +1874,11 @@ export class EquipmentDetailPageComponent implements OnInit {
    * le backend reste l'unique source des résultats.
    */
   lancerDiagnostic(): void {
-    const imei = this.route.snapshot.paramMap.get('imei');
-    if (!imei || this.batteryLoading()) return;
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id || this.batteryLoading()) return;
     this.batteryDiagnosticLaunched.set(true);
     this.batteryDiagnosticArrete.set(false);
-    this.loadBatteryDiagnostic(imei);
+    this.loadBatteryDiagnostic(id);
   }
 
   /** Arrête le diagnostic en cours (bouton « Arrêter ») : annule la requête HTTP. */
@@ -1897,9 +1901,9 @@ export class EquipmentDetailPageComponent implements OnInit {
   }
 
   /** Récupère l'historique — GET /api/batterie/{device_id}/historique. */
-  private loadBatteryHistory(imei: string): void {
+  private loadBatteryHistory(id: string): void {
     this.batteryHistoryLoading.set(true);
-    this.equipmentService.getBatteryHistory(imei).subscribe({
+    this.equipmentService.getBatteryHistory(id).subscribe({
       next: list => {
         this.batteryHistoryLoading.set(false);
         this.batteryHistory.set(list);
@@ -1968,17 +1972,17 @@ export class EquipmentDetailPageComponent implements OnInit {
   }
 
   /**
-   * Applique le changement d'état : PATCH /api/equipements/{imei}/status
+   * Applique le changement d'état : PATCH /api/equipements/{id}/status
    * (voir EquipmentService.setEquipmentStatus). Met à jour l'état affiché
    * immédiatement via le modèle local — sans recharger la page.
    */
   protected confirmerChangementStatut(): void {
     if (this.statusActionBusy() || !this.equipment) return;
-    const imei = this.equipment.imei;
+    const id = this.equipment.id;
     const willBlock = !this.isBloque();
     this.statusActionBusy.set(true);
 
-    this.equipmentService.setEquipmentStatus(imei, willBlock).subscribe({
+    this.equipmentService.setEquipmentStatus(id, willBlock).subscribe({
       next: result => {
         this.statusActionBusy.set(false);
         this.showStatusModal.set(false);
@@ -2036,12 +2040,26 @@ export class EquipmentDetailPageComponent implements OnInit {
     }
   }
 
-  /** Classe de badge du statut (présentation uniquement) */
-  get statusClass(): string {
+  /**
+   * Statut unifié affiché sur la page détail (une seule pastille pour éviter
+   * toute confusion). Priorité : bloqué > En alerte > À inspecter > Rien à signaler.
+   */
+  get unifiedStatusLabel(): string {
+    if (this.isBloque()) return '🔴 Équipement bloqué';
     switch (this.equipment?.statut) {
-      case 'En alerte': return 'eqd-badge-danger';
-      case 'Inspection': return 'eqd-badge-warning';
-      default: return 'eqd-badge-success';
+      case 'En alerte': return '⚠️ En alerte';
+      case 'Inspection': return '🔍 À inspecter';
+      default: return '🟢 Rien à signaler';
+    }
+  }
+
+  /** Classe de présentation de la pastille de statut unifié. */
+  get unifiedStatusClass(): string {
+    if (this.isBloque()) return 'eqd-state-chip--blocked';
+    switch (this.equipment?.statut) {
+      case 'En alerte': return 'eqd-state-chip--alert';
+      case 'Inspection': return 'eqd-state-chip--inspection';
+      default: return 'eqd-state-chip--ok';
     }
   }
 
@@ -2225,7 +2243,7 @@ export class EquipmentDetailPageComponent implements OnInit {
   exportCsv(): void {
     if (!this.equipment || this.batteryHistory().length === 0) return;
     this.exportError.set(null);
-    this.batteryExportService.exportCsv(this.equipment.imei, this.batteryHistory());
+    this.batteryExportService.exportCsv(this.equipment.id, this.batteryHistory());
   }
 
   async exportPdf(): Promise<void> {
@@ -2234,7 +2252,7 @@ export class EquipmentDetailPageComponent implements OnInit {
     try {
       const sohImageDataUrl = this.historyCharts?.getSohChartImageDataUrl() ?? null;
       await this.batteryExportService.exportPdf({
-        deviceId: this.equipment.imei,
+        deviceId: this.equipment.id,
         rapportDate: new Date().toISOString(),
         diagnostic: this.batteryDiagnostic(),
         history: this.batteryHistory(),
