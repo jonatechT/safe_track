@@ -136,24 +136,6 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
                 }
               </div>
 
-              <!-- ID / identifiant IoT -->
-              <div class="eqf-field">
-                <label class="eqf-label" for="eq-id">
-                  ID / identifiant IoT <span class="eqf-required">*</span>
-                </label>
-                <input
-                  id="eq-id"
-                  name="id"
-                  type="text"
-                  class="eqf-input"
-                  placeholder="Ex : ESP32-001"
-                  [(ngModel)]="id"
-                  required
-                />
-                @if (submitted() && !id.trim()) {
-                  <span class="eqf-error">L'identifiant IoT est obligatoire.</span>
-                }
-              </div>
               <!-- Mise en ligne -->
               <div class="eqf-field">
                 <label class="eqf-label" for="eq-mise">
@@ -414,7 +396,6 @@ export class EquipmentFormPageComponent {
   type = '';
   typeAutre = '';
   protected typeOpen = signal(false);
-  id = '';
   miseEnLigne = '';
   description = '';
 
@@ -454,18 +435,11 @@ export class EquipmentFormPageComponent {
     this.message.set('');
 
     // Vérifications locales (chaque champ obligatoire est validé individuellement).
-    const id = this.id.trim();
     const nom = this.nom.trim();
     const typeFinal = this.type === 'Autre' ? this.typeAutre.trim() : this.type;
 
-    if (!id || !nom || !this.type || (this.type === 'Autre' && !typeFinal)) {
+    if (!nom || !this.type || (this.type === 'Autre' && !typeFinal)) {
       this.showMessage('Veuillez remplir tous les champs obligatoires.', 'error');
-      return;
-    }
-
-    // L'ID doit être unique dans le parc.
-    if (this.equipmentService.getById(id)) {
-      this.showMessage('Un équipement avec cet ID existe déjà dans le parc.', 'error');
       return;
     }
 
@@ -488,8 +462,11 @@ export class EquipmentFormPageComponent {
     // automatiquement par l'ESP32/IoT et traité par le backend.
     // L'organisation est déterminée par le backend à partir de l'utilisateur
     // authentifié (aucun champ organisation côté frontend).
+    // L'équipement reçoit un identifiant technique généré localement.
+    // L'identifiant IoT réel (ESP32) sera transmis automatiquement par le
+    // device lors de sa première synchronisation avec le backend.
     const equipment: Equipment = {
-      id,
+      id: `EQ-${Date.now()}`,
       nom,
       statut: 'En ligne', // état initial déclaré — mis à jour ensuite par l'IoT/backend
       localisation: 'En attente du GPS (IoT)',

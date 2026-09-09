@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { AuthService } from '../../../auth/auth.service';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-superadmin-layout',
@@ -55,6 +56,16 @@ import { AuthService } from '../../../auth/auth.service';
             <span>Espace SuperAdmin</span>
           </div>
           <div class="sa-topbar-right">
+            <button
+              class="sa-theme-btn"
+              type="button"
+              [class.active]="isDarkMode"
+              (click)="toggleTheme()"
+              [attr.aria-label]="isDarkMode ? 'Passer en mode clair' : 'Passer en mode nuit'"
+              [attr.title]="isDarkMode ? 'Mode clair' : 'Mode nuit'"
+            >
+              <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+            </button>
             <div class="sa-profile" (click)="openProfile()" role="button" tabindex="0" (keydown.enter)="openProfile()" aria-label="Ouvrir le profil">
               <div class="sa-avatar">{{ currentUser?.name?.charAt(0)?.toUpperCase() || 'SA' }}</div>
               <div class="sa-profile-info">
@@ -311,9 +322,20 @@ export class SuperAdminLayoutComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private themeService: ThemeService
   ) {
     this.isSidebarCollapsed = this.loadSidebarState();
+  }
+
+  /** État du mode nuit (partagé via ThemeService) */
+  protected get isDarkMode(): boolean {
+    return this.themeService.isDark();
+  }
+
+  /** Bascule entre mode nuit et mode clair */
+  protected toggleTheme(): void {
+    this.themeService.toggle();
   }
 
   protected get currentUser() {

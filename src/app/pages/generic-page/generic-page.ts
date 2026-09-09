@@ -4,7 +4,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { BasePageComponent } from '../base-page/base-page';
 import { EquipmentService } from '../../services/equipment.service';
 import { MaintenanceService } from '../../services/maintenance.service';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService, User } from '../../auth/auth.service';
+import { UsersService } from '../../services/users.service';
+import { SettingsService } from '../../services/settings.service';
 
 interface StatCard {
   label: string;
@@ -51,6 +53,80 @@ interface TableRow {
           </div>
         }
         @if (tableHeaders.length) {
+          @if (isAlertsPage) {
+            <div class="alerts-tabs">
+              <button
+                type="button"
+                class="alerts-tab"
+                [class.active]="currentTab === 'en-cours'"
+                (click)="setTab('en-cours')"
+              >
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                En cours
+                <span class="alerts-tab-count">{{ openAlertCount }}</span>
+              </button>
+              <button
+                type="button"
+                class="alerts-tab"
+                [class.active]="currentTab === 'historique'"
+                (click)="setTab('historique')"
+              >
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Historique
+                <span class="alerts-tab-count">{{ historyAlertCount }}</span>
+              </button>
+            </div>
+
+            <div class="alerts-filter-bar">
+              <div class="alerts-filter-tabs">
+                <button
+                  type="button"
+                  class="alert-filter"
+                  [class.active]="severiteFilter === 'Tout'"
+                  (click)="setSeveriteFilter('Tout')"
+                >
+                  <i class="fa-solid fa-list-ul"></i>
+                  Tout
+                </button>
+                @for (sev of alertSeverites; track sev) {
+                  <button
+                    type="button"
+                    class="alert-filter"
+                    [class.active]="severiteFilter === sev"
+                    (click)="setSeveriteFilter(sev)"
+                  >
+                    <i
+                      class="fa-solid"
+                      [class.fa-circle-exclamation]="sev.toLowerCase() === 'critique'"
+                      [class.fa-triangle-exclamation]="sev.toLowerCase() !== 'critique'"
+                    ></i>
+                    {{ sev }}
+                  </button>
+                }
+              </div>
+              <div class="alerts-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="text"
+                  class="alerts-search-input"
+                  placeholder="Rechercher un équipement…"
+                  [value]="searchTerm"
+                  (input)="searchTerm = $any($event.target).value"
+                />
+                @if (searchTerm) {
+                  <button
+                    type="button"
+                    class="alerts-search-clear"
+                    (click)="searchTerm = ''"
+                    aria-label="Effacer la recherche"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+          @if (rows.length) {
           <div class="table-card">
             <div class="table-wrapper">
               <table class="data-table">
@@ -97,9 +173,23 @@ interface TableRow {
                             }
                           } @else if (header === 'Action') {
                             @if (row['Statut'] === 'Ouverte') {
-                              <button class="action-take-btn" (click)="prendreAlerte(row); $event.stopPropagation()">
-                                {{ row[header] }}
-                              </button>
+                              @if (isAdminUser()) {
+                                <button class="action-take-btn" (click)="prendreAlerte(row); $event.stopPropagation()">
+                                  <i class="fa-solid fa-user-clock"></i>
+                                  {{ planifMode ? 'Planifier' : 'Affecter' }}
+                                </button>
+                              } @else if (canTakeAlerts) {
+                                <button class="action-take-btn" (click)="prendreAlerte(row); $event.stopPropagation()">
+                                  <i
+                                    class="fa-solid"
+                                    [class.fa-hand]="!inspectionMode"
+                                    [class.fa-magnifying-glass]="inspectionMode"
+                                  ></i>
+                                  {{ inspectionMode ? 'Inspecter' : row[header] }}
+                                </button>
+                              } @else {
+                                <span class="done-label"><i class="fa-solid fa-lock"></i> En attente</span>
+                              }
                             } @else if (row['Statut'] === 'En cours') {
                               <button class="action-take-btn" (click)="terminerAlerte(row); $event.stopPropagation()">
                                 <i class="fa-solid fa-flag-checkered"></i> Terminer
@@ -116,6 +206,87 @@ interface TableRow {
                   }
                 </tbody>
               </table>
+            </div>
+            </div>
+          } @else {
+            @if (isAlertsPage) {
+              <div class="alerts-tab-empty">
+                @if (currentTab === 'historique') {
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  <p>Aucune alerte terminée pour l'instant.</p>
+                } @else {
+                  <i class="fa-solid fa-circle-check"></i>
+                  <p>Aucune alerte en cours. Tout est sous contrôle.</p>
+                }
+              </div>
+            }
+          }
+        }
+        @if (showAffectModal && selectedAlertRow) {
+          <div class="affect-overlay" (click)="closeAffectModal()">
+            <div class="affect-modal" role="dialog" aria-modal="true" aria-label="Affecter une intervention" (click)="$event.stopPropagation()">
+              <div class="affect-modal-header">
+                <div class="affect-modal-icon"><i class="fa-solid fa-user-clock"></i></div>
+                <div class="affect-modal-title-block">
+                  <h3 class="affect-modal-title">{{ planifMode ? 'Planifier une intervention' : 'Affecter une intervention' }}</h3>
+                  <span class="affect-modal-subtitle">{{ selectedAlertRow['Équipement'] }} — {{ selectedAlertRow['Type'] }}</span>
+                </div>
+                <button type="button" class="affect-modal-close" aria-label="Fermer" (click)="closeAffectModal()"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              @if (affectModeMulti) {
+                <div class="affect-multi-note">
+                  <i class="fa-solid fa-users"></i>
+                  Sélectionnez un ou plusieurs techniciens (max {{ maxTechniciens }}).
+                </div>
+              }
+              <div class="affect-modal-body">
+                @if (techniciensDisponibles.length) {
+                  <div class="affect-list">
+                    @for (tech of techniciensDisponibles; track tech.id) {
+                      <button
+                        type="button"
+                        class="affect-item"
+                        [class.selected]="isTechnicienSelected(tech.id)"
+                        (click)="toggleTechnicien(tech.id)"
+                      >
+                        <span class="affect-avatar">{{ tech.name.charAt(0) }}</span>
+                        <span class="affect-item-info">
+                          <span class="affect-item-name">{{ tech.name }}</span>
+                          <span class="affect-item-email">{{ tech.telephone || tech.email }}</span>
+                        </span>
+                        <i class="fa-solid fa-circle-check affect-check"></i>
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <p class="affect-empty">Aucun technicien actif disponible dans votre structure pour le moment.</p>
+                }
+                <button
+                  type="button"
+                  class="affect-item affect-self"
+                  [class.selected]="isTechnicienSelected(-1)"
+                  (click)="toggleTechnicien(-1)"
+                >
+                  <span class="affect-avatar">Moi</span>
+                  <span class="affect-item-info">
+                    <span class="affect-item-name">M'affecter cette intervention</span>
+                    <span class="affect-item-email">{{ currentUserName }}</span>
+                  </span>
+                  <i class="fa-solid fa-circle-check affect-check"></i>
+                </button>
+              </div>
+              <div class="affect-modal-footer">
+                <button type="button" class="affect-btn-cancel" (click)="closeAffectModal()">Annuler</button>
+                <button
+                  type="button"
+                  class="affect-btn-confirm"
+                  [disabled]="!selectedTechnicienIds.length"
+                  (click)="confirmerAffectation()"
+                >
+                  <i class="fa-solid fa-user-check"></i>
+                  {{ planifMode ? 'Planifier' : 'Affecter' }}
+                </button>
+              </div>
             </div>
           </div>
         }
@@ -256,6 +427,263 @@ interface TableRow {
     .location-link i { font-size: 12px; }
     .action-take-btn { background: transparent; color: #2563EB; border: 1px solid #2563EB; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
     .action-take-btn:hover { background: #2563EB; color: #FFFFFF; }
+    .alerts-tabs { display: flex; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+    .alerts-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .alerts-tab:hover { border-color: #BFDBFE; color: #2563EB; }
+    .alerts-tab.active {
+      background: #2563EB;
+      color: #FFFFFF;
+      border-color: #2563EB;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    .alerts-tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 10px;
+      background: rgba(37, 99, 235, 0.12);
+      color: #2563EB;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .alerts-tab.active .alerts-tab-count { background: rgba(255, 255, 255, 0.22); color: #FFFFFF; }
+    /* ===== Barre de filtres & recherche (page Alertes) ===== */
+    .alerts-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+    .alerts-filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .alert-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #64748B;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .alert-filter:hover { border-color: #BFDBFE; color: #2563EB; }
+    .alert-filter.active { background: #2563EB; border-color: #2563EB; color: #FFFFFF; }
+    .alerts-search { position: relative; display: flex; align-items: center; flex: 1; min-width: 200px; }
+    .alerts-search > i { position: absolute; left: 12px; color: #94A3B8; font-size: 13px; pointer-events: none; }
+    .alerts-search-input {
+      width: 100%;
+      padding: 8px 32px 8px 34px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #0F172A;
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    .alerts-search-input:focus { border-color: #2563EB; }
+    .alerts-search-input::placeholder { color: #94A3B8; }
+    .alerts-search-clear {
+      position: absolute;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: #94A3B8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .alerts-search-clear:hover { background: #F1F5F9; color: #0F172A; }
+    .affect-multi-note {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: #64748B;
+      padding: 10px 20px 4px;
+    }
+    .alerts-tab-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 36px;
+      background: #FFFFFF;
+      border: 1px dashed #CBD5E1;
+      border-radius: 12px;
+      color: #94A3B8;
+      text-align: center;
+    }
+    .alerts-tab-empty i { font-size: 26px; color: #22C55E; }
+    /* ===== Modale d'affectation d'une intervention (admin) ===== */
+    .affect-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .affect-modal {
+      background: #FFFFFF;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    }
+    .affect-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .affect-modal-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #EFF6FF;
+      color: #2563EB;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .affect-modal-title-block { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .affect-modal-title { margin: 0; font-size: 15px; font-weight: 700; color: #0F172A; }
+    .affect-modal-subtitle {
+      font-size: 11.5px;
+      color: #64748B;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .affect-modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #64748B;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .affect-modal-close:hover { background: #F1F5F9; color: #0F172A; }
+    .affect-modal-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+    .affect-list { display: flex; flex-direction: column; gap: 8px; }
+    .affect-item, .affect-self {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .affect-item:hover, .affect-self:hover { border-color: #BFDBFE; background: #F8FAFC; }
+    .affect-item.selected, .affect-self.selected {
+      border-color: #2563EB;
+      background: #EFF6FF;
+      box-shadow: 0 0 0 1px #2563EB;
+    }
+    .affect-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #EFF6FF;
+      color: #2563EB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .affect-item-info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .affect-item-name { font-size: 13px; font-weight: 600; color: #0F172A; }
+    .affect-item-email { font-size: 11.5px; color: #64748B; }
+    .affect-check { color: #2563EB; opacity: 0; transition: opacity 0.15s ease; }
+    .affect-item.selected .affect-check, .affect-self.selected .affect-check { opacity: 1; }
+    .affect-empty { font-size: 13px; color: #64748B; text-align: center; padding: 12px 0; }
+    .affect-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 20px;
+      border-top: 1px solid #E2E8F0;
+    }
+    .affect-btn-cancel {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #475569;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .affect-btn-cancel:hover { background: #F1F5F9; }
+    .affect-btn-confirm {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      background: #2563EB;
+      color: #FFFFFF;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .affect-btn-confirm:hover { background: #1D4ED8; }
+    .affect-btn-confirm:disabled { background: #CBD5E1; cursor: not-allowed; }
     .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 48px; color: #6B7280; text-align: center; }
     .empty-icon { font-size: 36px; color: #9CA3AF; }
 
@@ -306,15 +734,97 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private equipmentService: EquipmentService,
     private authService: AuthService,
+    private usersService: UsersService,
+    private settingsService: SettingsService,
     private router: Router
   ) {}
 
   get rows(): TableRow[] {
-    return this.tableRowsSignal();
+    return this.filteredRows();
+  }
+
+  /** Onglet actif de la page Alertes (« en-cours » | « historique ») */
+  currentTab: 'en-cours' | 'historique' = 'en-cours';
+
+  /** Filtre de sévérité actif (« Tout » par défaut) */
+  severiteFilter = 'Tout';
+
+  /** Terme de recherche libre (équipement / type d'anomalie) */
+  searchTerm = '';
+
+  /** Applique un filtre de sévérité */
+  setSeveriteFilter(sev: string): void {
+    this.severiteFilter = sev;
+  }
+
+  /** Sévérités présentes dans les données → génèrent les puces de filtre */
+  get alertSeverites(): string[] {
+    const set = new Set<string>();
+    for (const r of this.tableRowsSignal()) {
+      const s = r['Sévérité'];
+      if (s && s.trim()) set.add(s.trim());
+    }
+    return Array.from(set);
   }
 
   get cards(): StatCard[] {
     return this.statCardsSignal();
+  }
+
+  /** Vrai uniquement pour la page Alertes (les onglets n'existent pas ailleurs) */
+  get isAlertsPage(): boolean {
+    return this.title === 'Alertes';
+  }
+
+  /** Nombre d'alertes encore actives (Non pris + En cours) */
+  get openAlertCount(): number {
+    return this.tableRowsSignal().filter(r => r['Statut'] !== 'Terminée').length;
+  }
+
+  /** Nombre d'alertes terminées (visibles dans l'onglet Historique) */
+  get historyAlertCount(): number {
+    return this.tableRowsSignal().filter(r => r['Statut'] === 'Terminée').length;
+  }
+
+  /** Basculer entre les onglets « En cours » et « Historique » */
+  setTab(tab: 'en-cours' | 'historique'): void {
+    this.currentTab = tab;
+  }
+
+  /**
+   * Filtre les lignes selon l'onglet actif (page Alertes uniquement) :
+   * - « En cours » : toutes les alertes dont le statut n'est pas « Terminée »
+   * - « Historique » : uniquement les alertes « Terminée »
+   * Les autres pages ne sont pas filtrées.
+   */
+  private filteredRows(): TableRow[] {
+    const all = this.tableRowsSignal();
+    if (!this.isAlertsPage) return all;
+
+    // 1) Onglet : En cours vs Historique
+    let rows = all;
+    if (this.currentTab === 'historique') {
+      rows = all.filter(r => r['Statut'] === 'Terminée');
+    } else {
+      rows = all.filter(r => r['Statut'] !== 'Terminée');
+    }
+
+    // 2) Filtre de sévérité (Tout / Critique / Avertissement…)
+    if (this.severiteFilter !== 'Tout') {
+      rows = rows.filter(r => r['Sévérité'] === this.severiteFilter);
+    }
+
+    // 3) Recherche libre sur l'équipement ou le type d'anomalie
+    const q = this.searchTerm.trim().toLowerCase();
+    if (q) {
+      rows = rows.filter(r => {
+        const eq = String(r['Équipement'] ?? '').toLowerCase();
+        const type = String(r['Type'] ?? '').toLowerCase();
+        return eq.includes(q) || type.includes(q);
+      });
+    }
+
+    return rows;
   }
 
   /** Classe spécifique pour la page « Parc d'équipement » (styles dédiés) */
@@ -343,15 +853,25 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  /** Prendre une alerte : met à jour le statut et le technicien dans le tableau */
+  /** Prendre une alerte :
+   *  - Admin de structure / SuperAdmin → ouvre la modale d'affectation
+   *  - Technicien (USER) → prend l'alerte pour lui-même */
   prendreAlerte(row: TableRow): void {
-    const userName = this.authService.getUser()?.name || 'Utilisateur';
+    if (this.isAdminUser()) {
+      this.ouvrirAffectation(row);
+      return;
+    }
+    this.assignerAlerte(row, this.currentUserName);
+  }
+
+  /** Met à jour une alerte « Ouverte » en « En cours » avec le technicien assigné */
+  private assignerAlerte(row: TableRow, technicienName: string): void {
     const updated = this.tableRowsSignal().map(r => {
       if (r['Équipement'] === row['Équipement'] && r['Statut'] === 'Ouverte') {
         return {
           ...r,
           'Statut': 'En cours',
-          'Technicien': userName,
+          'Technicien': technicienName,
           'Action': 'En cours'
         };
       }
@@ -359,6 +879,111 @@ export class GenericPageComponent implements OnInit, AfterViewInit {
     });
     this.tableRowsSignal.set(updated);
     this.refreshAlertCounters();
+  }
+
+  /* ===== Affectation d'une intervention à un technicien (admin) ===== */
+
+  showAffectModal = false;
+  selectedAlertRow: TableRow | null = null;
+  selectedTechnicienIds: number[] = [];
+
+  /** L'utilisateur connecté est un administrateur : il peut affecter les interventions */
+  isAdminUser(): boolean {
+    return this.authService.isStructureAdmin() || this.authService.isSuperAdmin();
+  }
+
+  /* ===== Réglages issus de la page Paramètres ===== */
+
+  /** Affectation multi-techniciens activée dans les paramètres */
+  get affectModeMulti(): boolean {
+    return this.settingsService.settings().multiTechniciens;
+  }
+
+  /** Nombre maximal de techniciens par intervention (paramètres) */
+  get maxTechniciens(): number {
+    return this.settingsService.settings().maxTechniciens;
+  }
+
+  /** Les techniciens peuvent prendre une alerte sans affectation admin préalable */
+  get canTakeAlerts(): boolean {
+    return this.settingsService.settings().priseEnChargeGlobale;
+  }
+
+  /** Le bouton d'affectation agit en mode « planification d'une maintenance » */
+  get planifMode(): boolean {
+    return this.settingsService.settings().planifierMaintenance;
+  }
+
+  /** Les techniciens inspectent d'abord l'alerte avant de la prendre */
+  get inspectionMode(): boolean {
+    return this.settingsService.settings().inspectionTechniciens;
+  }
+
+  /** Nom de la personne connectée */
+  get currentUserName(): string {
+    return this.authService.getUser()?.name || 'Utilisateur';
+  }
+
+  /** Techniciens ACTIFS de la structure de l'admin, triés par nom */
+  get techniciensDisponibles(): User[] {
+    const structureId = this.authService.getUser()?.structureId;
+    if (!structureId) return [];
+    return this.usersService
+      .getUsersByStructure(structureId)
+      .filter(u => u.role === 'USER' && (u.statut ?? 'ACTIVE') === 'ACTIVE')
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  /** Ouvre la modale de sélection d'un technicien pour une alerte donnée */
+  private ouvrirAffectation(row: TableRow): void {
+    this.selectedAlertRow = row;
+    this.selectedTechnicienIds = [];
+    this.showAffectModal = true;
+  }
+
+  protected closeAffectModal(): void {
+    this.showAffectModal = false;
+    this.selectedAlertRow = null;
+    this.selectedTechnicienIds = [];
+  }
+
+  protected isTechnicienSelected(id: number): boolean {
+    return this.selectedTechnicienIds.includes(id);
+  }
+
+  /**
+   * Sélection / désélection d'un technicien.
+   * En mode multiple, on limite la sélection au maximum configuré.
+   * « M'affecter » (id -1) est exclusif : on ne peut pas le cumuler avec un technicien.
+   */
+  protected toggleTechnicien(id: number): void {
+    if (id === -1) {
+      this.selectedTechnicienIds = this.selectedTechnicienIds.includes(-1) ? [] : [-1];
+      return;
+    }
+    if (!this.affectModeMulti) {
+      this.selectedTechnicienIds = [id];
+      return;
+    }
+    if (this.selectedTechnicienIds.includes(id)) {
+      this.selectedTechnicienIds = this.selectedTechnicienIds.filter(x => x !== id);
+    } else if (this.selectedTechnicienIds.length < this.maxTechniciens) {
+      this.selectedTechnicienIds = [...this.selectedTechnicienIds, id];
+    }
+  }
+
+  /** Valide l'affectation : l'intervention passe « En cours » avec le(s) technicien(s) choisi(s) */
+  protected confirmerAffectation(): void {
+    if (this.selectedAlertRow === null || this.selectedTechnicienIds.length === 0) return;
+    const row = this.selectedAlertRow;
+    const names = this.selectedTechnicienIds
+      .filter(id => id !== -1)
+      .map(id => this.techniciensDisponibles.find(t => t.id === id)?.name)
+      .filter((n): n is string => !!n);
+    if (this.selectedTechnicienIds.includes(-1)) names.unshift(this.currentUserName);
+    const technicienName = names.length ? names.join(' & ') : this.currentUserName;
+    this.assignerAlerte(row, technicienName);
+    this.closeAffectModal();
   }
 
   /** Terminer une alerte : met à jour le statut en "Terminée" */

@@ -8,6 +8,7 @@ import { AuthService } from './auth/auth.service';
 import { User } from './auth/auth.service';
 import { StructureService } from './superadmin/services/structure.service';
 import { MaintenanceService, NotificationItem } from './services/maintenance.service';
+import { ThemeService } from './services/theme.service';
 
 interface MenuItem {
   label: string;
@@ -26,7 +27,6 @@ export class App {
   protected readonly title = signal('SAFE Track');
 
   private readonly SIDEBAR_STATE_KEY = 'safe_track_sidebar_collapsed';
-  private readonly THEME_STATE_KEY = 'safe_track_theme';
 
   isSidebarCollapsed = false;
   isMobileMenuOpen = false;
@@ -34,15 +34,17 @@ export class App {
   showProfile = false;
   showNotifications = false;
 
-  /** Mode nuit activé ? (persisté dans localStorage) */
-  isDarkMode = false;
+  /** Mode nuit activé ? (état partagé via ThemeService, aussi utilisé par l'espace SuperAdmin) */
+  protected get isDarkMode(): boolean {
+    return this.themeService.isDark();
+  }
 
   protected readonly menuItems: MenuItem[] = [
     { label: 'Tableau de bord', icon: 'fa-solid fa-chart-pie', route: '/dashboard', active: true },
     { label: "Parc d'équipement", icon: 'fa-solid fa-cube', route: '/equipements' },
-    { label: 'Alertes', icon: 'fa-solid fa-bell', route: '/alerts' },
-    { label: 'Maintenance', icon: 'fa-solid fa-wrench', route: '/maintenance' },
+    { label: 'Alertes', icon: 'fa-solid fa-triangle-exclamation', route: '/alerts' },
     { label: 'Rapports', icon: 'fa-solid fa-file-lines', route: '/rapports' },
+    { label: 'Paramètres', icon: 'fa-solid fa-gear', route: '/parametres' },
     { label: 'Techniciens', icon: 'fa-solid fa-users', route: '/users' }
   ];
 
@@ -57,11 +59,11 @@ export class App {
     private authService: AuthService,
     private router: Router,
     private structureService: StructureService,
-    private maintenanceService: MaintenanceService
+    private maintenanceService: MaintenanceService,
+    private themeService: ThemeService
   ) {
     this.isSidebarCollapsed = this.loadSidebarState();
-    this.isDarkMode = this.loadThemeState();
-    this.applyThemeState();
+    this.themeService.init();
     // Suivre la navigation pour l'état actif du menu (y compris au clic et au retour navigateur)
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(e => {
       this.activeUrl.set(e.urlAfterRedirects.split('?')[0].replace(/\/$/, ''));
@@ -159,31 +161,9 @@ export class App {
     }
   }
 
-  /** Bascule entre le mode nuit et le mode clair */
+  /** Bascule entre le mode nuit et le mode clair (délégué au ThemeService partagé) */
   protected toggleTheme(): void {
-    this.isDarkMode = !this.isDarkMode;
-    this.saveThemeState();
-    this.applyThemeState();
-  }
-
-  private loadThemeState(): boolean {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(this.THEME_STATE_KEY) === 'dark';
-    }
-    return false;
-  }
-
-  private saveThemeState(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(this.THEME_STATE_KEY, this.isDarkMode ? 'dark' : 'light');
-    }
-  }
-
-  /** Applique/retire la classe dark-mode sur <body> (portée globale : toutes les pages) */
-  private applyThemeState(): void {
-    if (typeof document !== 'undefined') {
-      document.body.classList.toggle('dark-mode', this.isDarkMode);
-    }
+    this.themeService.toggle();
   }
 
   protected toggleMobileMenu(): void {
@@ -253,6 +233,6 @@ export class App {
 
   protected validerAlerte(item: any): void {
     this.maintenanceService.validerAlerte(item.id);
-    this.router.navigate(['/maintenance']);
+    this.router.navigate(['/alerts']);
   }
 }

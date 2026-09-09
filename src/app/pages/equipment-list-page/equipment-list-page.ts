@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BasePageComponent } from '../base-page/base-page';
 import { EquipmentService, Equipment } from '../../services/equipment.service';
+import { EquipmentFormModalComponent } from '../equipment-form-page/equipment-form-modal';
 
 @Component({
   selector: 'app-equipment-list-page',
   standalone: true,
-  imports: [BasePageComponent],
+  imports: [BasePageComponent, EquipmentFormModalComponent],
   template: `
     <app-base-page
       [title]="pageTitle"
@@ -19,6 +20,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
           <span>Ajouter un équipement</span>
         </button>
       </div>
+      <app-equipment-form-modal #eqmModal />
       <div class="equip-content">
         <!-- KPI Cards -->
         <div class="stat-grid">
@@ -230,6 +232,9 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
   `]
 })
 export class EquipmentListPageComponent {
+  /** Référence à la modale « Ajouter un équipement » */
+  @ViewChild('eqmModal') eqmModal?: EquipmentFormModalComponent;
+
   /** Liste affichée (filtrée en mode « en ligne » : seuls les équipements non bloqués). */
   equipments: Equipment[] = [];
   /** Vrai quand la page est affichée via la route /location/en-ligne. */
@@ -274,6 +279,6 @@ export class EquipmentListPageComponent {
   }
 
   ajouterEquipement(): void {
-    this.router.navigate(['/equipements/nouveau']);
+    this.eqmModal?.show();
   }
 }

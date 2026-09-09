@@ -65,7 +65,7 @@ export const pageData: Record<string, PageData> = {
   alerts: {
     title: 'Alertes',
     subtitle: 'Toutes les alertes et notifications de votre parc.',
-    icon: 'fa-solid fa-bell',
+    icon: 'fa-solid fa-triangle-exclamation',
     statCards: [
       { label: 'Critiques', value: '1', icon: 'fa-solid fa-circle-exclamation', color: '#EF4444', bgColor: '#FEE2E2', progress: 50 },
       { label: 'Avertissements', value: '1', icon: 'fa-solid fa-triangle-exclamation', color: '#F59E0B', bgColor: '#FEF3C7', progress: 50 },
@@ -113,8 +113,11 @@ export const routes: Route[] = [
   { path: 'location/en-ligne', redirectTo: '/equipements/en-ligne', pathMatch: 'full' },
   { path: 'equipements/nouveau', loadComponent: () => import('./pages/equipment-form-page/equipment-form-page').then(m => m.EquipmentFormPageComponent), canActivate: [authGuard] },
   { path: 'equipements/:id', loadComponent: () => import('./pages/equipment-detail-page/equipment-detail-page').then(m => m.EquipmentDetailPageComponent), canActivate: [authGuard] },
-  { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
+  // Ancienne route Maintenance : la maintenance est désormais intégrée au cycle de vie des alertes.
+  // L'ancien lien redirige vers la page Alertes pour préserver les bookmarks existants.
+  { path: 'maintenance', redirectTo: '/alerts', pathMatch: 'full' },
   { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },
+  { path: 'parametres', loadComponent: () => import('./pages/settings-page/settings-page').then(m => m.SettingsPageComponent), canActivate: [authGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['alerts'], canActivate: [authGuard] },
   { path: 'users', loadComponent: () => import('./features/users/users-list').then(m => m.UsersListComponent), canActivate: [structureAdminGuard] },
   {

@@ -32,6 +32,14 @@ export interface RapportIntervention {
   redacteur: string;
   piecesRemplacees?: string;
   dureeIntervention?: string;
+  /** Type de rapport : intervention (par défaut) ou conformité */
+  typeRapport?: 'intervention' | 'conformite';
+  /** Conformité : l'inspection a-t-elle été réalisée ? */
+  inspectionRealisee?: 'oui' | 'non';
+  /** Conformité : l'équipement est-il conforme ? */
+  equipementConforme?: 'oui' | 'non' | 'na';
+  /** Conformité : commentaire libre d'inspection */
+  commentaireInspection?: string;
 }
 
 @Injectable({

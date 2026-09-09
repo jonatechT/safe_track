@@ -106,6 +106,9 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-modal-icon-warning { background: #FFFBEB; color: #F59E0B; }
     .users-modal-title { font-size: 16px; font-weight: 700; color: #0F172A; }
     .users-modal-body { font-size: 13px; color: #64748B; line-height: 1.6; margin-bottom: 20px; }
+    .users-modal-body--form { display: flex; flex-direction: column; gap: 16px; }
+    .users-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: #F1F5F9; color: #64748B; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease; margin-left: auto; }
+    .users-modal-close:hover { background: #E2E8F0; color: #0F172A; }
     .users-modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
 
     @media (max-width: 1024px) {
@@ -126,6 +129,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
 })
 export class UsersListComponent {
   protected showForm = signal(false);
+  protected showAddModal = signal(false);
   protected message = signal('');
   protected messageType = signal<'success' | 'error'>('success');
   protected showConfirmModal = signal(false);
@@ -175,6 +179,17 @@ export class UsersListComponent {
     }
   }
 
+  /** Ouvre la fenêtre modale d'ajout de technicien */
+  protected openAddModal(): void {
+    this.showAddModal.set(true);
+  }
+
+  /** Ferme la fenêtre modale d'ajout de technicien */
+  protected closeAddModal(): void {
+    this.showAddModal.set(false);
+    this.resetForm();
+  }
+
   protected createUser(): void {
     this.message.set('');
     const fullName = `${this.formData.prenom} ${this.formData.nom}`.trim();
@@ -205,9 +220,9 @@ export class UsersListComponent {
       dateCreation: new Date().toISOString()
     };
     this.usersService.createUser(newUser);
-this.message.set(`Le technicien « ${fullName} » a été créé avec succès.`);
+    this.message.set(`Le technicien « ${fullName} » a été créé avec succès.`);
     this.messageType.set('success');
-    this.toggleForm();
+    this.closeAddModal();
     setTimeout(() => this.message.set(''), 4000);
   }
 
