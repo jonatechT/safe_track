@@ -880,6 +880,65 @@ body.dark-mode app-superadmin-layout .sa-profile-action:hover {
   color: #F1F5F9 !important;
 }
 
+/* --- Layout : sidebar & shell en mode nuit --- */
+body.dark-mode app-superadmin-layout {
+  background: #0B1220 !important;
+}
+body.dark-mode app-superadmin-layout .sa-layout {
+  background: #0B1220 !important;
+}
+body.dark-mode app-superadmin-layout .sa-sidebar {
+  background: #0B1A2E !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-mode app-superadmin-layout .sa-sidebar-toggle {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #94A3B8 !important;
+}
+body.dark-mode app-superadmin-layout .sa-sidebar-toggle:hover {
+  background: rgba(56, 189, 248, 0.2) !important;
+  color: #38BDF8 !important;
+}
+body.dark-mode app-superadmin-layout .sa-logo-text {
+  color: #F1F5F9 !important;
+}
+body.dark-mode app-superadmin-layout .sa-logo-badge {
+  color: #93C5FD !important;
+  background: rgba(37, 99, 235, 0.25) !important;
+}
+body.dark-mode app-superadmin-layout .sa-logo-icon {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+body.dark-mode app-superadmin-layout .sa-nav-item {
+  color: #CBD5E1 !important;
+}
+body.dark-mode app-superadmin-layout .sa-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #FFFFFF !important;
+}
+body.dark-mode app-superadmin-layout .sa-nav-item.active {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.35) !important;
+}
+body.dark-mode app-superadmin-layout .sa-sidebar-footer {
+  border-top-color: rgba(255, 255, 255, 0.12) !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-btn {
+  background: rgba(37, 99, 235, 0.25) !important;
+  color: #E2E8F0 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-btn:hover {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+}
+body.dark-mode app-superadmin-layout .sa-avatar {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
 /* --- Pages : cartes, tableaux, badges, formulaires --- */
 body.dark-mode .sa-card {
   background: #111827 !important;
@@ -1604,9 +1663,11 @@ body.dark-mode .sa-modal-icon-danger { background: rgba(220, 38, 38, 0.16) !impo
 body.dark-mode .sa-modal-icon-warning { background: rgba(245, 158, 11, 0.16) !important; color: #FCD34D !important; }
 /* ===== Modale « Ajouter une structure » (sam-*) — mode nuit ===== */
 body.dark-mode .sam-overlay { background: rgba(0, 0, 0, 0.7) !important; }
-body.dark-mode .sam-modal { background: #111827 !important; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important; }
+body.dark-mode .sam-modal { background: #111827 !important; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important; scrollbar-color: #334155 transparent !important; }
+body.dark-mode .sam-modal::-webkit-scrollbar-track { background: transparent !important; }
+body.dark-mode .sam-modal::-webkit-scrollbar-thumb { background: #334155 !important; }
+body.dark-mode .sam-modal::-webkit-scrollbar-thumb:hover { background: #475569 !important; }
 body.dark-mode .sam-header { background: #111827 !important; border-bottom-color: #1F2937 !important; }
-body.dark-mode .sam-header-icon { background: rgba(37, 99, 235, 0.18) !important; color: #93C5FD !important; }
 body.dark-mode .sam-title { color: #F1F5F9 !important; }
 body.dark-mode .sam-subtitle { color: #94A3B8 !important; }
 body.dark-mode .sam-close { background: #1E293B !important; color: #CBD5E1 !important; }

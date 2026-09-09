@@ -394,12 +394,31 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(245, 158, 11, 0.16) !im
   background: #FFF;
   border-radius: 20px;
   width: 100%; max-width: 720px;
-  max-height: 92vh; overflow-y: auto;
+  max-height: 92vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2);
   animation: sa-scale-in 0.22s ease;
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
 }
+/* Scrollbar : coins arrondis respectés (le curseur s'arrête avant les coins) */
+.sam-modal::-webkit-scrollbar { width: 12px; }
+.sam-modal::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 0 20px 20px 0;
+  margin: 10px 0;
+}
+.sam-modal::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+  min-height: 40px;
+}
+.sam-modal::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 .sam-header {
-  display: flex; align-items: flex-start; gap: 14px;
+  display: flex; align-items: center; gap: 14px;
   padding: 22px 24px 16px;
   border-bottom: 1px solid #E2E8F0;
   position: sticky; top: 0; background: #FFF; z-index: 2;
@@ -538,8 +557,11 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(245, 158, 11, 0.16) !im
 /* ===== Modale sam-* — mode nuit ===== */
 body.dark-mode .sam-overlay { background: rgba(0, 0, 0, 0.7) !important; }
 body.dark-mode .sam-modal { background: #111827 !important; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important; }
+body.dark-mode .sam-modal { scrollbar-color: #334155 transparent !important; }
+body.dark-mode .sam-modal::-webkit-scrollbar-track { background: transparent !important; }
+body.dark-mode .sam-modal::-webkit-scrollbar-thumb { background: #334155 !important; }
+body.dark-mode .sam-modal::-webkit-scrollbar-thumb:hover { background: #475569 !important; }
 body.dark-mode .sam-header { background: #111827 !important; border-bottom-color: #1F2937 !important; }
-body.dark-mode .sam-header-icon { background: rgba(37, 99, 235, 0.18) !important; color: #93C5FD !important; }
 body.dark-mode .sam-title { color: #F1F5F9 !important; }
 body.dark-mode .sam-subtitle { color: #94A3B8 !important; }
 body.dark-mode .sam-close { background: #1E293B !important; color: #CBD5E1 !important; }
