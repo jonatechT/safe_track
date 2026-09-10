@@ -425,8 +425,17 @@ body.dark-mode app-equipment-detail-page .eqd-battery-diag,
 body.dark-mode app-equipment-detail-page .eqd-loc-history,
 body.dark-mode app-equipment-detail-page .eqd-modal {
   background: #111827 !important;
-  border-color: #1F2937 !important;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid #1F2937 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35), 0 24px 64px rgba(0, 0, 0, 0.55) !important;
+}
+body.dark-mode app-equipment-detail-page .eqd-modal-head {
+  background: linear-gradient(180deg, #1E40AF, #1E3A8A) !important;
+  border-bottom-color: #172554 !important;
+}
+body.dark-mode app-equipment-detail-page .eqd-modal-icon--danger,
+body.dark-mode app-equipment-detail-page .eqd-modal-icon--success {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
 }
 
 /* Surfaces imbriquÃ©es (dÃ©gradÃ©s clairs) -> sombre */
@@ -1342,15 +1351,18 @@ body.dark-mode app-settings-page .stg-btn-danger:hover {
 }
 /* ===== Page Rapports â€” mode nuit (fenÃªtre modale de rÃ©daction / consultation) ===== */
 body.dark-mode app-rapports-page .rapport-overlay {
-  background: rgba(0, 0, 0, 0.65) !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(1.2) !important;
 }
 body.dark-mode app-rapports-page .rapport-modal {
   background: #111827 !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important;
+  border: 1px solid #1F2937 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35), 0 24px 64px rgba(0, 0, 0, 0.55) !important;
 }
 body.dark-mode app-rapports-page .rapport-modal-header {
-  background: #1E293B !important;
-  border-bottom-color: #1F2937 !important;
+  background: linear-gradient(180deg, #1E40AF, #1E3A8A) !important;
+  border-bottom-color: #172554 !important;
 }
 body.dark-mode app-rapports-page .rapport-modal-icon {
   background: rgba(255, 255, 255, 0.1) !important;
@@ -1379,16 +1391,61 @@ body.dark-mode app-rapports-page .rapport-textarea,
 body.dark-mode app-rapports-page .rapport-input {
   background: #0B1220 !important;
   border-color: #1F2937 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important;
   color: #E2E8F0 !important;
 }
 body.dark-mode app-rapports-page .rapport-select:focus,
 body.dark-mode app-rapports-page .rapport-textarea:focus,
 body.dark-mode app-rapports-page .rapport-input:focus {
-  border-color: #3B82F6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18) !important;
+  border-color: #2563EB !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.25) !important;
 }
 body.dark-mode app-rapports-page .rapport-textarea::placeholder,
 body.dark-mode app-rapports-page .rapport-input::placeholder {
+  color: #64748B !important;
+}
+
+/* ===== Dropdown sélection d'intervention — mode nuit ===== */
+body.dark-mode app-rapports-page .rapport-dd-trigger {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+  color: #E2E8F0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-trigger:hover {
+  border-color: #334155 !important;
+}
+body.dark-mode app-rapports-page .rapport-dd--open .rapport-dd-trigger {
+  border-color: #2563EB !important;
+  background: #0B1220 !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-placeholder {
+  color: #64748B !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-eq {
+  color: #F1F5F9 !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-chevron {
+  color: #94A3B8 !important;
+}
+body.dark-mode app-rapports-page .rapport-dd--open .rapport-dd-chevron {
+  color: #60A5FA !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-panel {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-option:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-option--selected {
+  background: rgba(59, 130, 246, 0.22) !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-option-eq {
+  color: #F1F5F9 !important;
+}
+body.dark-mode app-rapports-page .rapport-dd-empty {
   color: #64748B !important;
 }
 body.dark-mode app-rapports-page .rapport-btn-cancel {
@@ -1438,33 +1495,37 @@ body.dark-mode app-rapports-page .rapport-view-conformite span {
 }
 /* ===== Modale Â« Ajouter un Ã©quipement Â» (equipment-list) â€” mode nuit ===== */
 body.dark-mode app-equipment-list-page .eqm-overlay {
-  background: rgba(0, 0, 0, 0.65) !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(1.2) !important;
 }
 body.dark-mode app-equipment-list-page .eqm-modal {
   background: #111827 !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important;
+  border: 1px solid #1F2937 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35), 0 24px 64px rgba(0, 0, 0, 0.55) !important;
 }
 body.dark-mode app-equipment-list-page .eqm-header {
-  background: #111827 !important;
-  border-bottom-color: #1F2937 !important;
+  background: linear-gradient(180deg, #1E40AF, #1E3A8A) !important;
+  border-bottom-color: #172554 !important;
 }
 body.dark-mode app-equipment-list-page .eqm-header-icon {
-  background: rgba(37, 99, 235, 0.18) !important;
-  color: #93C5FD !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #F1F5F9 !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
 }
 body.dark-mode app-equipment-list-page .eqm-title {
-  color: #F1F5F9 !important;
+  color: #FFFFFF !important;
 }
 body.dark-mode app-equipment-list-page .eqm-subtitle {
-  color: #94A3B8 !important;
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 body.dark-mode app-equipment-list-page .eqm-close {
-  background: #1E293B !important;
-  color: #CBD5E1 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #F1F5F9 !important;
 }
 body.dark-mode app-equipment-list-page .eqm-close:hover {
-  background: #334155 !important;
-  color: #F1F5F9 !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #FFFFFF !important;
 }
 body.dark-mode app-equipment-list-page .eqm-label {
   color: #CBD5E1 !important;
@@ -1484,19 +1545,20 @@ body.dark-mode app-equipment-list-page .eqm-select {
   background: #0B1220 !important;
   border-color: #1F2937 !important;
   color: #E2E8F0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important;
 }
 body.dark-mode app-equipment-list-page .eqm-input:focus,
 body.dark-mode app-equipment-list-page .eqm-select:focus {
-  border-color: #3B82F6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18) !important;
+  border-color: #2563EB !important;
+  background: #0B1220 !important;
 }
 body.dark-mode app-equipment-list-page .eqm-input::placeholder {
   color: #64748B !important;
 }
 body.dark-mode app-equipment-list-page .eqm-select-menu {
-  background: #0F172A !important;
-  border-color: #1F2937 !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+  background: #111827 !important;
+  border: 1px solid #1F2937 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.5) !important;
 }
 body.dark-mode app-equipment-list-page .eqm-select-option {
   color: #CBD5E1 !important;
@@ -1639,23 +1701,25 @@ body.dark-mode .sa-loading { color: #94A3B8 !important; }
 body.dark-mode .sa-spinner { border-color: #334155 !important; border-top-color: #60A5FA !important; }
 
 /* Modales partagÃ©es superadmin */
-body.dark-mode .sa-modal-overlay { background: rgba(0, 0, 0, 0.7) !important; }
+body.dark-mode .sa-modal-overlay { background: rgba(0, 0, 0, 0.45) !important; backdrop-filter: blur(8px) saturate(1.2) !important; -webkit-backdrop-filter: blur(8px) saturate(1.2) !important; }
 body.dark-mode .sa-modal {
-  background: #111827 !important;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important;
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0.8)) !important;
+  backdrop-filter: blur(24px) saturate(1.6) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35), 0 24px 64px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
-body.dark-mode .sa-modal-title { color: #F1F5F9 !important; }
+body.dark-mode .sa-modal-header { background: linear-gradient(180deg, #1E40AF, #1E3A8A) !important; border-bottom-color: #172554 !important; }
+body.dark-mode .sa-modal-title { color: #FFFFFF !important; }
 body.dark-mode .sa-modal-body { color: #94A3B8 !important; }
-body.dark-mode .sa-modal-icon-danger { background: rgba(220, 38, 38, 0.16) !important; color: #FCA5A5 !important; }
-body.dark-mode .sa-modal-icon-warning { background: rgba(245, 158, 11, 0.16) !important; color: #FCD34D !important; }
+body.dark-mode .sa-modal-icon-danger { background: rgba(255, 255, 255, 0.14) !important; color: #FCA5A5 !important; border-color: rgba(255, 255, 255, 0.22) !important; }
+body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !important; color: #FCD34D !important; border-color: rgba(255, 255, 255, 0.22) !important; }
 /* ===== Modale Â« Ajouter une structure Â» (sam-*) â€” mode nuit ===== */
-body.dark-mode .sam-overlay { background: rgba(0, 0, 0, 0.72) !important; }
+body.dark-mode .sam-overlay { background: rgba(0, 0, 0, 0.45) !important; backdrop-filter: blur(8px) saturate(1.2) !important; -webkit-backdrop-filter: blur(8px) saturate(1.2) !important; }
 body.dark-mode .sam-modal {
-  background: linear-gradient(180deg, rgba(17, 24, 39, 0.72), transparent) !important;
-  backdrop-filter: blur(20px) saturate(1.4) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 40px rgba(37, 99, 235, 0.18), 0 24px 64px rgba(0, 0, 0, 0.6) !important;
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35), 0 24px 64px rgba(0, 0, 0, 0.55) !important;
 }
 body.dark-mode .sam-modal::before {
   background: linear-gradient(90deg, #2563EB, #3B82F6) !important;
@@ -1676,14 +1740,14 @@ body.dark-mode .sam-body::-webkit-scrollbar-thumb {
 }
 body.dark-mode .sam-body::-webkit-scrollbar-thumb:hover { background-color: #475569 !important; }
 body.dark-mode .sam-header {
-  background: rgba(17, 24, 39, 0.86) !important;
-  border-bottom-color: #1F2937 !important;
+  background: linear-gradient(180deg, #1E40AF, #1E3A8A) !important;
+  border-bottom-color: #172554 !important;
 }
-body.dark-mode .sam-title { color: #F1F5F9 !important; }
-body.dark-mode .sam-subtitle { color: #94A3B8 !important; }
-body.dark-mode .sam-close { background: #1E293B !important; color: #CBD5E1 !important; }
-body.dark-mode .sam-close:hover { background: #334155 !important; color: #F1F5F9 !important; }
-body.dark-mode .sam-stepper { background: #0B1220 !important; border-color: #1F2937 !important; }
+body.dark-mode .sam-title { color: #FFFFFF !important; }
+body.dark-mode .sam-subtitle { color: rgba(255, 255, 255, 0.75) !important; }
+body.dark-mode .sam-close { background: rgba(255, 255, 255, 0.1) !important; color: #F1F5F9 !important; }
+body.dark-mode .sam-close:hover { background: rgba(255, 255, 255, 0.18) !important; color: #FFF !important; }
+body.dark-mode .sam-stepper { background: #0B1220 !important; border-color: #1F2937 !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important; }
 body.dark-mode .sam-stepper::before {
   background: linear-gradient(90deg, rgba(37, 99, 235, 0.22), rgba(59, 130, 246, 0.22)) !important;
 }
@@ -1700,34 +1764,37 @@ body.dark-mode .sam-alert--success { background: rgba(16, 185, 129, 0.14) !impor
 body.dark-mode .sam-step-title { color: #F1F5F9 !important; }
 body.dark-mode .sam-step-sub { color: #94A3B8 !important; }
 body.dark-mode .sam-optional { background: rgba(37, 99, 235, 0.18) !important; color: #93C5FD !important; border-color: rgba(59, 130, 246, 0.35) !important; }
-body.dark-mode .sam-grid { background: #0B1220 !important; border-color: #1F2937 !important; }
+body.dark-mode .sam-grid { background: #0F172A !important; border-color: #1F2937 !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important; }
 body.dark-mode .sam-label { color: #CBD5E1 !important; }
 body.dark-mode .sam-input, body.dark-mode .sam-select, body.dark-mode .sam-textarea {
-  background: #1C1917 !important; border-color: #334155 !important; color: #E2E8F0 !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
+  background: #0B1220 !important; border-color: #1F2937 !important; color: #E2E8F0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important;
 }
 body.dark-mode .sam-input:focus, body.dark-mode .sam-select:focus, body.dark-mode .sam-textarea:focus {
-  border-color: #3B82F6 !important; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18) !important;
+  border-color: #2563EB !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important;
 }
 body.dark-mode .sam-input::placeholder, body.dark-mode .sam-textarea::placeholder { color: #64748B !important; }
 body.dark-mode .sam-note { background: rgba(37, 99, 235, 0.16) !important; color: #93C5FD !important; border-color: rgba(59, 130, 246, 0.35) !important; }
-body.dark-mode .sam-review-section { background: #0F172A !important; border-color: #1F2937 !important; }
+body.dark-mode .sam-review-section { background: #0F172A !important; border-color: #1F2937 !important; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35) !important; }
 body.dark-mode .sam-review-title { color: #E2E8F0 !important; }
 body.dark-mode .sam-review-row { border-bottom-color: #1F2937 !important; }
 body.dark-mode .sam-review-row span { color: #94A3B8 !important; }
 body.dark-mode .sam-review-row strong { color: #F1F5F9 !important; }
 body.dark-mode .sam-review-empty { color: #64748B !important; }
 body.dark-mode .sam-actions {
-  background: rgba(17, 24, 39, 0.92) !important;
+  background: #111827 !important;
   border-top-color: #1F2937 !important;
 }
 body.dark-mode .sam-btn--secondary { background: #1F2937 !important; color: #CBD5E1 !important; border-color: #475569 !important; }
 body.dark-mode .sam-btn--secondary:hover { background: #475569 !important; color: #F1F5F9 !important; }
 body.dark-mode .sam-btn--ghost { background: transparent !important; color: #CBD5E1 !important; border-color: #475569 !important; }
 body.dark-mode .sam-btn--ghost:hover { background: #1F2937 !important; color: #F1F5F9 !important; }
-body.dark-mode .sam-heading-overline { color: #93C5FD !important; }
+body.dark-mode .sam-heading-overline { color: rgba(255, 255, 255, 0.7) !important; }
 body.dark-mode .sam-header-icon {
-  filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.45)) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #F1F5F9 !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  filter: none !important;
 }
 /* ===== Page Â« Ajouter / Modifier une structure Â» (sf-*) â€” mode nuit ===== */
 body.dark-mode app-structure-form {

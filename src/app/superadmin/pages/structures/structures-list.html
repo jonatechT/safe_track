@@ -136,59 +136,70 @@
 @if (showCreateModal()) {
   <div class="sam-overlay" (click)="closeCreateModal()">
     <div class="sam-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
-      <div class="sam-header">
-        <div class="sam-hero-glow"></div>
-        <div class="sam-header-icon">
-          <i class="fa-solid fa-building"></i>
+      <!-- Bandeau supérieur : progression horizontale -->
+      <div class="sam-rail">
+        <div class="sam-rail-glow"></div>
+
+        <div class="sam-rail-steps">
+          <div class="sam-rail-step" [class.sam-rail-step--active]="step() === 1" [class.sam-rail-step--done]="step() > 1">
+            <span class="sam-rail-step-icon">
+              @if (step() > 1) { <i class="fa-solid fa-check"></i> } @else { <i class="fa-solid fa-building-columns"></i> }
+            </span>
+            <span class="sam-rail-step-text">
+              <strong>Structure</strong>
+            </span>
+          </div>
+          <div class="sam-rail-line" [class.sam-rail-line--done]="step() > 1"></div>
+
+          <div class="sam-rail-step" [class.sam-rail-step--active]="step() === 2" [class.sam-rail-step--done]="step() > 2">
+            <span class="sam-rail-step-icon">
+              @if (step() > 2) { <i class="fa-solid fa-check"></i> } @else { <i class="fa-solid fa-map-location-dot"></i> }
+            </span>
+            <span class="sam-rail-step-text">
+              <strong>Localisation</strong>
+            </span>
+          </div>
+          <div class="sam-rail-line" [class.sam-rail-line--done]="step() > 2"></div>
+
+          <div class="sam-rail-step" [class.sam-rail-step--active]="step() === 3" [class.sam-rail-step--done]="step() > 3">
+            <span class="sam-rail-step-icon">
+              @if (step() > 3) { <i class="fa-solid fa-check"></i> } @else { <i class="fa-solid fa-user-shield"></i> }
+            </span>
+            <span class="sam-rail-step-text">
+              <strong>Administrateur</strong>
+            </span>
+          </div>
+          <div class="sam-rail-line" [class.sam-rail-line--done]="step() > 3"></div>
+
+          <div class="sam-rail-step" [class.sam-rail-step--active]="step() === 4">
+            <span class="sam-rail-step-icon"><i class="fa-solid fa-clipboard-check"></i></span>
+            <span class="sam-rail-step-text">
+              <strong>Validation</strong>
+            </span>
+          </div>
         </div>
-        <div class="sam-header-title-block">
-          <span class="sam-heading-overline">Gestion des structures</span>
-          <h3 class="sam-title">Ajouter une structure</h3>
-          <p class="sam-subtitle">Créez la structure et son administrateur en deux étapes.</p>
-        </div>
-        <button type="button" class="sam-close" (click)="closeCreateModal()" aria-label="Fermer">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
       </div>
 
-      <div class="sam-body">
-        <!-- Stepper -->
-        <div class="sam-stepper" [style.--sam-progress]="step() === 1 ? '18%' : step() === 2 ? '58%' : '100%'">
-          <div class="sam-step" [class.sam-step--active]="step() === 1" [class.sam-step--done]="step() > 1">
-            <span class="sam-step-num">
-              @if (step() > 1) { <i class="fa-solid fa-check"></i> } @else { 1 }
-            </span>
-            <span class="sam-step-label">Structure</span>
-          </div>
-          <div class="sam-step-line" [class.sam-step-line--done]="step() > 1"></div>
-          <div class="sam-step" [class.sam-step--active]="step() === 2" [class.sam-step--done]="step() > 2">
-            <span class="sam-step-num">
-              @if (step() > 2) { <i class="fa-solid fa-check"></i> } @else { 2 }
-            </span>
-            <span class="sam-step-label">Administrateur</span>
-          </div>
-          <div class="sam-step-line" [class.sam-step-line--done]="step() > 2"></div>
-          <div class="sam-step" [class.sam-step--active]="step() === 3">
-            <span class="sam-step-num">3</span>
-            <span class="sam-step-label">Validation</span>
-          </div>
-        </div>
+      <!-- Panneau droit : contenu de l'étape -->
+      <div class="sam-main">
+        <div class="sam-main-scroll">
+          <span class="sam-eyebrow">Étape {{ step() }} sur 4</span>
 
-        @if (stepError()) {
-          <div class="sam-error">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            {{ stepError() }}
-          </div>
-        }
+          @if (stepError()) {
+            <div class="sam-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              {{ stepError() }}
+            </div>
+          }
 
-        @if (message()) {
-          <div class="sam-alert" [class.sam-alert--success]="messageType() === 'success'">
-            <i class="fa-solid" [class.fa-circle-check]="messageType() === 'success'" [class.fa-circle-xmark]="messageType() === 'error'"></i>
-            {{ message() }}
-          </div>
-        }
+          @if (message()) {
+            <div class="sam-alert" [class.sam-alert--success]="messageType() === 'success'">
+              <i class="fa-solid" [class.fa-circle-check]="messageType() === 'success'" [class.fa-circle-xmark]="messageType() === 'error'"></i>
+              {{ message() }}
+            </div>
+          }
 
-        <!-- Étape 1 : informations principales -->
+          <!-- Étape 1 : informations principales de la structure -->
         @if (step() === 1) {
           <div class="sam-step-content">
             <div class="sam-step-head">
@@ -201,10 +212,6 @@
                 <input type="text" class="sam-input" [(ngModel)]="form.nom" placeholder="Ex : Centre de Santé ABC" />
               </div>
               <div class="sam-field">
-                <label class="sam-label">Code / Identifiant unique <span class="sam-required">*</span></label>
-                <input type="text" class="sam-input" [(ngModel)]="form.code" placeholder="Ex : CS-ABC-001" />
-              </div>
-              <div class="sam-field">
                 <label class="sam-label">Email <span class="sam-required">*</span></label>
                 <input type="email" class="sam-input" [(ngModel)]="form.email" placeholder="contact@structure.com" />
               </div>
@@ -212,10 +219,18 @@
                 <label class="sam-label">Téléphone</label>
                 <input type="tel" class="sam-input" [(ngModel)]="form.telephone" placeholder="+226 XX XX XX XX" />
               </div>
-              <div class="sam-field sam-field--full">
-                <label class="sam-label">Adresse</label>
-                <input type="text" class="sam-input" [(ngModel)]="form.adresse" placeholder="Adresse complète" />
-              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Étape 2 : localisation et description -->
+        @if (step() === 2) {
+          <div class="sam-step-content">
+            <div class="sam-step-head">
+              <h4 class="sam-step-title">Localisation</h4>
+              <p class="sam-step-sub">Renseignez la localisation et une éventuelle description de la structure.</p>
+            </div>
+            <div class="sam-grid">
               <div class="sam-field">
                 <label class="sam-label">Ville <span class="sam-required">*</span></label>
                 <input type="text" class="sam-input" [(ngModel)]="form.ville" placeholder="Ex : Ouagadougou" />
@@ -225,11 +240,8 @@
                 <input type="text" class="sam-input" [(ngModel)]="form.pays" placeholder="Ex : Burkina Faso" />
               </div>
               <div class="sam-field">
-                <label class="sam-label">Statut</label>
-                <select class="sam-input sam-select" [(ngModel)]="form.statut">
-                  <option value="ACTIVE">Active</option>
-                  <option value="INACTIVE">Inactive</option>
-                </select>
+                <label class="sam-label">Adresse</label>
+                <input type="text" class="sam-input" [(ngModel)]="form.adresse" placeholder="Adresse complète" />
               </div>
               <div class="sam-field sam-field--full">
                 <label class="sam-label">Description</label>
@@ -239,8 +251,8 @@
           </div>
         }
 
-<!-- Étape 2 : administrateur -->
-        @if (step() === 2) {
+<!-- Étape 3 : administrateur -->
+        @if (step() === 3) {
           <div class="sam-step-content">
             <div class="sam-step-head">
               <h4 class="sam-step-title">Administrateur de la structure</h4>
@@ -272,8 +284,8 @@
           </div>
         }
 
-        <!-- Étape 3 : validation -->
-        @if (step() === 3) {
+        <!-- Étape 4 : validation -->
+        @if (step() === 4) {
           <div class="sam-step-content">
             <div class="sam-step-head">
               <h4 class="sam-step-title">Vérification</h4>
@@ -283,13 +295,11 @@
               <div class="sam-review-section">
                 <h5 class="sam-review-title">Structure</h5>
                 <div class="sam-review-row"><span>Nom</span><strong>{{ form.nom }}</strong></div>
-                <div class="sam-review-row"><span>Code</span><strong>{{ form.code }}</strong></div>
                 <div class="sam-review-row"><span>Email</span><strong>{{ form.email }}</strong></div>
                 <div class="sam-review-row"><span>Téléphone</span><strong>{{ form.telephone || '—' }}</strong></div>
-                <div class="sam-review-row"><span>Adresse</span><strong>{{ form.adresse || '—' }}</strong></div>
                 <div class="sam-review-row"><span>Ville</span><strong>{{ form.ville }}</strong></div>
                 <div class="sam-review-row"><span>Pays</span><strong>{{ form.pays }}</strong></div>
-                <div class="sam-review-row"><span>Statut</span><strong>{{ form.statut === 'ACTIVE' ? 'Active' : 'Inactive' }}</strong></div>
+                <div class="sam-review-row"><span>Adresse</span><strong>{{ form.adresse || '—' }}</strong></div>
                 @if (form.description) {
                   <div class="sam-review-row"><span>Description</span><strong>{{ form.description }}</strong></div>
                 }
@@ -302,37 +312,38 @@
                   <div class="sam-review-row"><span>Téléphone</span><strong>{{ form.adminTelephone || '—' }}</strong></div>
                   <div class="sam-review-row"><span>Mot de passe</span><strong>{{ form.adminMotDePasse ? '••••••••' : '—' }}</strong></div>
                 } @else {
-                  <p class="sam-review-empty">Aucun administrateur ne sera créé.</p>
+                  <p class="sam-review-empty"><i class="fa-solid fa-circle-info"></i> Aucun administrateur ne sera créé.</p>
                 }
               </div>
             </div>
           </div>
         }
-      </div>
+        </div>
 
-      <div class="sam-actions">
-        @if (step() > 1) {
-          <button type="button" class="sam-btn sam-btn--ghost" (click)="prevStep()">
-            <i class="fa-solid fa-arrow-left"></i> Retour
+        <div class="sam-actions">
+          @if (step() > 1) {
+            <button type="button" class="sam-btn sam-btn--ghost" (click)="prevStep()">
+              <i class="fa-solid fa-arrow-left"></i> Retour
+            </button>
+          }
+          <button type="button" class="sam-btn sam-btn--secondary" (click)="closeCreateModal()">
+            Annuler
           </button>
-        }
-        <button type="button" class="sam-btn sam-btn--secondary" (click)="closeCreateModal()">
-          Annuler
-        </button>
-        @if (step() < 3) {
-          <button type="button" class="sam-btn sam-btn--primary" (click)="nextStep()">
-            Suivant <i class="fa-solid fa-arrow-right"></i>
-          </button>
-        } @else {
-          <button type="button" class="sam-btn sam-btn--success" (click)="submitCreate()" [disabled]="isSaving()">
-            @if (isSaving()) {
-              <i class="fa-solid fa-spinner fa-spin"></i>
-            } @else {
-              <i class="fa-solid fa-check"></i>
-            }
-            {{ isSaving() ? 'Création...' : 'Créer la structure' }}
-          </button>
-        }
+          @if (step() < 4) {
+            <button type="button" class="sam-btn sam-btn--primary" (click)="nextStep()">
+              Suivant <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          } @else {
+            <button type="button" class="sam-btn sam-btn--success" (click)="submitCreate()" [disabled]="isSaving()">
+              @if (isSaving()) {
+                <i class="fa-solid fa-spinner fa-spin"></i>
+              } @else {
+                <i class="fa-solid fa-check"></i>
+              }
+              {{ isSaving() ? 'Création...' : 'Créer la structure' }}
+            </button>
+          }
+        </div>
       </div>
     </div>
   </div>

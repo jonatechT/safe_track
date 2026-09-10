@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BasePageComponent } from '../base-page/base-page';
 import { MaintenanceService, MaintenanceItem, RapportIntervention } from '../../services/maintenance.service';
@@ -100,7 +100,6 @@ import { AuthService } from '../../auth/auth.service';
           </div>
           <div class="rapport-modal-title-block">
             <h3 class="rapport-modal-title">Rapport d'intervention</h3>
-            <span class="rapport-modal-subtitle">Rédiger un nouveau rapport</span>
           </div>
           <button class="rapport-modal-close" (click)="fermerRapport()" aria-label="Fermer">
             <i class="fa-solid fa-xmark"></i>
@@ -109,19 +108,36 @@ import { AuthService } from '../../auth/auth.service';
 
         <div class="rapport-modal-body">
           <div class="rapport-field">
-            <label class="rapport-label" for="rapport-item">
-              <i class="fa-solid fa-wrench"></i> Intervention concernée <span class="rapport-required">*</span>
-            </label>
-            <select id="rapport-item" class="rapport-select" [(ngModel)]="selectedItemId" (ngModelChange)="surSelectionIntervention()">
-              <option [ngValue]="null" disabled>Sélectionnez une intervention terminée...</option>
-              @for (item of rapports; track item.id) {
-                <option [ngValue]="item.id">{{ item.equipment }} — {{ item.type }}{{ item.rapport ? ' (rapport existant)' : '' }}</option>
+            <label class="rapport-label">Intervention concernée <span class="rapport-required">*</span></label>
+            <div class="rapport-dd" [class.rapport-dd--open]="rapportDropdownOpen" (keydown.escape)="rapportDropdownOpen = false">
+              <button type="button" id="rapport-item" class="rapport-dd-trigger" (click)="$event.stopPropagation(); toggleRapportDropdown()" [attr.aria-expanded]="rapportDropdownOpen" aria-haspopup="listbox">
+                @if (selectedIntervention; as sel) {
+                  <span class="rapport-dd-selected">
+                    <span class="rapport-dd-eq">{{ sel.equipment }}</span>
+                  </span>
+                } @else {
+                  <span class="rapport-dd-placeholder">Sélectionnez une intervention terminée…</span>
+                }
+                <i class="fa-solid fa-chevron-down rapport-dd-chevron"></i>
+              </button>
+              @if (rapportDropdownOpen) {
+                <div class="rapport-dd-panel" (click)="$event.stopPropagation()">
+                  <div class="rapport-dd-list" role="listbox">
+                    @for (item of rapports; track item.id) {
+                      <button type="button" class="rapport-dd-option" [class.rapport-dd-option--selected]="item.id === selectedItemId" (click)="choisirIntervention(item)" role="option" [attr.aria-selected]="item.id === selectedItemId">
+                        <span class="rapport-dd-option-eq">{{ item.equipment }}</span>
+                      </button>
+                    } @empty {
+                      <div class="rapport-dd-empty">Aucune intervention disponible</div>
+                    }
+                  </div>
+                </div>
               }
-            </select>
+            </div>
           </div>
           <div class="rapport-field">
             <label class="rapport-label" for="rapport-contenu">
-              <i class="fa-solid fa-align-left"></i> Description de l'intervention <span class="rapport-required">*</span>
+              Description de l'intervention <span class="rapport-required">*</span>
             </label>
             <textarea
               id="rapport-contenu"
@@ -134,7 +150,7 @@ import { AuthService } from '../../auth/auth.service';
           </div>
           <div class="rapport-field">
             <label class="rapport-label" for="rapport-pieces">
-              <i class="fa-solid fa-boxes-stacked"></i> Pièces remplacées
+              Pièces remplacées
             </label>
             <input
               id="rapport-pieces"
@@ -145,7 +161,7 @@ import { AuthService } from '../../auth/auth.service';
           </div>
           <div class="rapport-field">
             <label class="rapport-label" for="rapport-duree">
-              <i class="fa-solid fa-clock"></i> Durée de l'intervention
+              Durée de l'intervention
             </label>
             <input
               id="rapport-duree"
@@ -344,8 +360,8 @@ import { AuthService } from '../../auth/auth.service';
     .btn-export { background: transparent; color: #10B981; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
     .btn-export:hover { background: #ECFDF5; color: #059669; }
 
-    .rapport-select { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; background: #FFF; cursor: pointer; transition: all 0.2s ease; }
-    .rapport-select:focus { border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
+    .rapport-select { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; background: rgba(255, 255, 255, 0.35); cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
+    .rapport-select:focus { border-color: #2563EB; background: rgba(255, 255, 255, 0.55); }
 
     /* Modal rédaction */
     .rapport-field { display: flex; flex-direction: column; gap: 6px; }
@@ -355,12 +371,12 @@ import { AuthService } from '../../auth/auth.service';
     .rapport-label { font-size: 12px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 6px; }
     .rapport-label i { color: #1E3A8A; font-size: 12px; }
     .rapport-required { color: #EF4444; font-weight: 700; }
-    .rapport-select { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; background: #FFF; cursor: pointer; transition: all 0.2s ease; }
-    .rapport-select:focus { border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); }
-    .rapport-textarea { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; resize: vertical; min-height: 100px; outline: none; transition: all 0.2s ease; background: #F8FAFC; }
-    .rapport-textarea:focus { border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); background: #FFF; }
-    .rapport-input { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; transition: all 0.2s ease; background: #F8FAFC; }
-    .rapport-input:focus { border-color: #1E3A8A; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1); background: #FFF; }
+    .rapport-select { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; background: #FFFFFF; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
+    .rapport-select:focus { border-color: #2563EB; background: #FFFFFF; }
+    .rapport-textarea { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; resize: vertical; min-height: 100px; outline: none; transition: all 0.2s ease; background: #FFFFFF; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
+    .rapport-textarea:focus { border-color: #2563EB; background: #FFFFFF; }
+    .rapport-input { border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; transition: all 0.2s ease; background: #FFFFFF; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
+    .rapport-input:focus { border-color: #2563EB; background: #FFFFFF; }
     .rapport-btn-submit { background: #2563EB; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
     .rapport-btn-submit:hover { background: #1D4ED8; transform: translateY(-1px); }
     .rapport-btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
@@ -368,16 +384,16 @@ import { AuthService } from '../../auth/auth.service';
     .rapport-btn-export:hover { background: #059669; }
 
     /* Modal rapport */
-    .rapport-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); z-index: 1500; backdrop-filter: blur(2px); }
-    .rapport-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; max-width: 92vw; max-height: 90vh; background: #FFF; border-radius: 16px; z-index: 1501; box-shadow: 0 24px 64px rgba(15, 23, 42, 0.25); display: flex; flex-direction: column; overflow: hidden; animation: rapportSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .rapport-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.35); z-index: 1500; backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); }
+    .rapport-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; max-width: 92vw; max-height: 90vh; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; z-index: 1501; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); display: flex; flex-direction: column; overflow: hidden; animation: rapportSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     @keyframes rapportSlideIn { from { opacity: 0; transform: translate(-50%, -48%); } to { opacity: 1; transform: translate(-50%, -50%); } }
-    .rapport-modal-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E2E8F0; background: #1D4ED8; }
-    .rapport-modal-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, 0.15); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .rapport-modal-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #1E40AF; background: linear-gradient(180deg, #2563EB, #1D4ED8); }
+    .rapport-modal-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, 0.18); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.25); }
     .rapport-modal-title-block { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-    .rapport-modal-title { font-size: 16px; font-weight: 700; color: #FFF; margin: 0; }
-    .rapport-modal-subtitle { font-size: 11px; color: #000000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .rapport-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255, 255, 255, 0.1); color: #E2E8F0; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
-    .rapport-modal-close:hover { background: rgba(255, 255, 255, 0.2); }
+    .rapport-modal-title { font-size: 16px; font-weight: 700; color: #FFF; margin: 0; letter-spacing: -0.2px; }
+    .rapport-modal-subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.75); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rapport-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255, 255, 255, 0.12); color: #FFF; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
+    .rapport-modal-close:hover { background: rgba(255, 255, 255, 0.22); }
     .rapport-modal-body { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
     .rapport-view-meta { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0; }
     .rapport-view-meta-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #64748B; }
@@ -390,6 +406,25 @@ import { AuthService } from '../../auth/auth.service';
     .rapport-modal-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid #E2E8F0; }
     .rapport-btn-cancel { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
     .rapport-btn-cancel:hover { background: #E2E8F0; }
+
+    /* Dropdown personnalisé — sélection d'intervention */
+    .rapport-dd { position: relative; }
+    .rapport-dd-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid #E2E8F0; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-family: inherit; color: #0F172A; outline: none; background: #FFFFFF; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); text-align: left; }
+    .rapport-dd-trigger:hover { border-color: #CBD5E1; }
+    .rapport-dd--open .rapport-dd-trigger { border-color: #2563EB; background: #FFFFFF; }
+    .rapport-dd-placeholder { color: #94A3B8; }
+    .rapport-dd-selected { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .rapport-dd-eq { font-weight: 600; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rapport-dd-chevron { color: #64748B; font-size: 12px; flex-shrink: 0; transition: transform 0.2s ease; }
+    .rapport-dd--open .rapport-dd-chevron { transform: rotate(180deg); color: #2563EB; }
+    .rapport-dd-panel { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1), 0 12px 32px rgba(15, 23, 42, 0.18); overflow: hidden; display: flex; flex-direction: column; animation: rapportDdIn 0.15s ease; }
+    @keyframes rapportDdIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+    .rapport-dd-list { max-height: 220px; overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+    .rapport-dd-option { display: flex; align-items: center; width: 100%; border: none; background: transparent; border-radius: 10px; padding: 10px 12px; cursor: pointer; text-align: left; font-family: inherit; transition: background 0.15s ease; }
+    .rapport-dd-option:hover { background: rgba(37, 99, 235, 0.08); }
+    .rapport-dd-option--selected { background: rgba(37, 99, 235, 0.12); }
+    .rapport-dd-option-eq { font-size: 13px; font-weight: 600; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rapport-dd-empty { padding: 18px 12px; text-align: center; font-size: 12px; color: #94A3B8; font-style: italic; }
 
     @media (max-width: 1024px) {
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -406,6 +441,7 @@ export class RapportsPageComponent implements OnInit {
   selectedItemId: string | null = null;
   showRapportModal = false;
   showRapportView = false;
+  rapportDropdownOpen = false;
   rapportForm: {
     contenu: string;
     piecesRemplacees?: string;
@@ -452,6 +488,28 @@ export class RapportsPageComponent implements OnInit {
     return !this.rapportForm.contenu.trim();
   }
 
+  /** Intervention actuellement sélectionnée dans le dropdown */
+  get selectedIntervention(): MaintenanceItem | null {
+    return this.rapports.find(i => i.id === this.selectedItemId) || null;
+  }
+
+  /** Ferme le dropdown au clic en dehors */
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.rapportDropdownOpen = false;
+  }
+
+  toggleRapportDropdown(): void {
+    this.rapportDropdownOpen = !this.rapportDropdownOpen;
+  }
+
+  /** Sélectionne une intervention dans le dropdown */
+  choisirIntervention(item: MaintenanceItem): void {
+    this.selectedItemId = item.id;
+    this.rapportDropdownOpen = false;
+    this.surSelectionIntervention();
+  }
+
   getSansRapportPourcent(): number {
     const total = this.getTermineesCount();
     return total === 0 ? 0 : Math.round((this.getSansRapportCount() / total) * 100);
@@ -466,6 +524,7 @@ export class RapportsPageComponent implements OnInit {
   ouvrirRapport(item?: MaintenanceItem): void {
     this.selectedItem = item || null;
     this.selectedItemId = item?.id || null;
+    this.rapportDropdownOpen = false;
     this.rapportForm = {
       contenu: item?.rapport?.contenu || '',
       piecesRemplacees: item?.rapport?.piecesRemplacees || '',
@@ -503,6 +562,7 @@ export class RapportsPageComponent implements OnInit {
     this.showRapportModal = false;
     this.showRapportView = false;
     this.selectedItem = null;
+    this.rapportDropdownOpen = false;
   }
 
   enregistrerRapport(): void {

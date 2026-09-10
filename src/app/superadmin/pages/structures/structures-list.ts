@@ -38,9 +38,9 @@ export class StructuresListComponent implements OnInit {
   protected showConfirmModal = signal(false);
   protected selectedStructure = signal<Structure | null>(null);
 
-  // Modale « Ajouter une structure » (3 étapes)
+  // Modale « Ajouter une structure » (4 étapes)
   protected showCreateModal = signal(false);
-  protected step = signal<1 | 2 | 3>(1);
+  protected step = signal<1 | 2 | 3 | 4>(1);
   protected stepError = signal('');
   protected isSaving = signal(false);
 
@@ -94,7 +94,7 @@ protected confirmToggleStatus(structure: Structure): void {
     this.cancelModal();
   }
 
-  // ===== Modale « Ajouter une structure » (3 étapes) =====
+  // ===== Modale « Ajouter une structure » (4 étapes) =====
 
   private emptyForm(): StructureForm {
     return {
@@ -132,6 +132,17 @@ protected confirmToggleStatus(structure: Structure): void {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
+  /** Génère un code identifiant unique (slug) à partir du nom de la structure */
+  private genererCodeStructure(nom: string): string {
+    const slug = nom
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    return `STR-${slug.slice(0, 40)}${slug ? '' : Math.floor(1000 + Math.random() * 9000)}`;
+  }
+
   protected nextStep(): void {
     this.stepError.set('');
     this.message.set('');
@@ -140,12 +151,14 @@ protected confirmToggleStatus(structure: Structure): void {
     if (s === 1) {
       const f = this.form;
       if (!f.nom.trim()) { this.stepError.set('Le nom de la structure est obligatoire.'); return; }
-      if (!f.code.trim()) { this.stepError.set('Le code / identifiant unique est obligatoire.'); return; }
       if (!f.email.trim() || !this.isValidEmail(f.email)) { this.stepError.set('Veuillez saisir un email valide pour la structure.'); return; }
-      if (!f.ville.trim()) { this.stepError.set('La ville est obligatoire.'); return; }
-      if (!f.pays.trim()) { this.stepError.set('Le pays est obligatoire.'); return; }
       this.step.set(2);
     } else if (s === 2) {
+      const f = this.form;
+      if (!f.ville.trim()) { this.stepError.set('La ville est obligatoire.'); return; }
+      if (!f.pays.trim()) { this.stepError.set('Le pays est obligatoire.'); return; }
+      this.step.set(3);
+    } else if (s === 3) {
       const f = this.form;
       const adminStarted = f.adminNom.trim() || f.adminEmail.trim() || f.adminTelephone.trim() || f.adminMotDePasse.trim();
       if (adminStarted) {
@@ -158,7 +171,7 @@ protected confirmToggleStatus(structure: Structure): void {
           return;
         }
       }
-      this.step.set(3);
+      this.step.set(4);
     }
   }
 
@@ -166,7 +179,7 @@ protected confirmToggleStatus(structure: Structure): void {
     this.stepError.set('');
     this.message.set('');
     if (this.step() > 1) {
-      this.step.update(v => (v - 1) as 1 | 2 | 3);
+      this.step.update(v => (v - 1) as 1 | 2 | 3 | 4);
     }
   }
 
@@ -179,7 +192,7 @@ protected confirmToggleStatus(structure: Structure): void {
     setTimeout(() => {
       const created = this.structureService.createStructure({
         nom: f.nom.trim(),
-        code: f.code.trim(),
+        code: this.genererCodeStructure(f.nom.trim()),
         description: f.description.trim(),
         email: f.email.trim().toLowerCase(),
         telephone: f.telephone.trim(),

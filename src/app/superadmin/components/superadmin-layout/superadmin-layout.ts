@@ -285,14 +285,14 @@ import { ThemeService } from '../../../services/theme.service';
     .sa-profile-logout-btn:focus-visible { outline: 2px solid #EF4444; outline-offset: 2px; }
 
     /* Modal */
-    .sa-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
-    .sa-modal { background: #FFF; border-radius: 16px; padding: 24px; width: 90%; max-width: 440px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2); }
-    .sa-modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .sa-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.35); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); }
+    .sa-modal { background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.75)); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 20px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6); overflow: hidden; }
+    .sa-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; background: linear-gradient(180deg, #2563EB, #1D4ED8); border-bottom: 1px solid #1E40AF; margin: 0; }
     .sa-modal-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-    .sa-modal-icon-danger { background: #FEF2F2; color: #EF4444; }
-    .sa-modal-title { font-size: 16px; font-weight: 700; color: #0F172A; }
-    .sa-modal-body { font-size: 13px; color: #64748B; line-height: 1.6; margin-bottom: 20px; }
-    .sa-modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+    .sa-modal-icon-danger { background: rgba(255, 255, 255, 0.18); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.25); }
+    .sa-modal-title { font-size: 16px; font-weight: 700; color: #FFFFFF; }
+    .sa-modal-body { font-size: 13px; color: #334155; line-height: 1.6; margin: 0; padding: 20px 24px; }
+    .sa-modal-actions { display: flex; justify-content: flex-end; gap: 12px; padding: 0 24px 22px; }
     .sa-btn-secondary { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
     .sa-btn-secondary:hover { background: #E2E8F0; }
     .sa-btn-danger { background: #EF4444; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }

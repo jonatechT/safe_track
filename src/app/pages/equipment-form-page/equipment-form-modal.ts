@@ -21,7 +21,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
             </div>
             <div class="eqm-header-title-block">
               <h3 class="eqm-title">Ajouter un équipement</h3>
-              <p class="eqm-subtitle">Déclarez l'équipement : la position GPS et les mesures seront transmises automatiquement par l'IoT.</p>
+              <p class="eqm-subtitle">Position GPS et mesures transmises automatiquement par l'IoT.</p>
             </div>
             <button type="button" class="eqm-close" (click)="close()" aria-label="Fermer">
               <i class="fa-solid fa-xmark"></i>
@@ -178,42 +178,45 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
   styles: [`
 .eqm-overlay {
       position: fixed; inset: 0;
-      background: rgba(15, 23, 42, 0.55);
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(8px) saturate(1.2);
+      -webkit-backdrop-filter: blur(8px) saturate(1.2);
       display: flex; align-items: center; justify-content: center;
       z-index: 1000; padding: 16px;
     }
     .eqm-modal {
-      background: #FFF;
+      background: #FFFFFF;
       border: 1px solid #E2E8F0;
-      border-radius: 10px;
+      border-radius: 20px;
       width: 100%; max-width: 500px;
       max-height: 92vh; overflow-y: auto;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2);
     }
     .eqm-header {
       display: flex; align-items: flex-start; gap: 14px;
       padding: 18px 20px 14px;
-      border-bottom: 1px solid #E2E8F0;
-      position: sticky; top: 0; background: #FFF; z-index: 2;
-      border-radius: 10px 10px 0 0;
+      border-bottom: 1px solid #1E40AF;
+      position: sticky; top: 0; background: linear-gradient(180deg, #2563EB, #1D4ED8); z-index: 2;
+      border-radius: 20px 20px 0 0;
     }
     .eqm-header-icon {
       width: 40px; height: 40px; border-radius: 10px;
-      background: #EFF6FF; color: #2563EB;
+      background: rgba(255, 255, 255, 0.18); color: #FFF;
       display: flex; align-items: center; justify-content: center;
       font-size: 16px; flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
     .eqm-header-title-block { flex: 1; min-width: 0; }
-    .eqm-title { font-size: 18px; font-weight: 600; color: #0F172A; margin: 0; }
-    .eqm-subtitle { font-size: 12.5px; color: #64748B; margin: 4px 0 0; line-height: 1.5; }
+    .eqm-title { font-size: 18px; font-weight: 600; color: #FFF; margin: 0; letter-spacing: -0.2px; }
+    .eqm-subtitle { font-size: 12.5px; color: rgba(255, 255, 255, 0.75); margin: 4px 0 0; line-height: 1.5; }
     .eqm-close {
       width: 32px; height: 32px; border-radius: 8px;
-      background: transparent; color: #94A3B8;
+      background: rgba(255, 255, 255, 0.12); color: #FFF;
       display: flex; align-items: center; justify-content: center;
       border: none; cursor: pointer; font-size: 15px;
       transition: all 0.15s ease; flex-shrink: 0;
     }
-    .eqm-close:hover { background: #F1F5F9; color: #0F172A; }
+    .eqm-close:hover { background: rgba(255, 255, 255, 0.22); color: #FFF; }
 
     .eqm-body { padding: 20px 24px 24px; }
 
@@ -237,23 +240,25 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
       padding: 11px 14px;
       border: 1px solid #E2E8F0; border-radius: 8px;
       font-size: 13.5px; font-family: inherit;
-      color: #0F172A; background: #FFF;
+      color: #0F172A; background: #FFFFFF;
       outline: none; width: 100%; box-sizing: border-box;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+      transition: border-color 0.15s ease, background 0.15s ease;
     }
     .eqm-input:hover { border-color: #CBD5E1; }
-    .eqm-input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+    .eqm-input:focus { border-color: #2563EB; background: #FFFFFF; }
 
     .eqm-select-wrap { position: relative; }
-    .eqm-select { cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; background-color: #F8FAFC; font-weight: 500; }
+    .eqm-select { cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; background-color: #FFFFFF; font-weight: 500; }
     .eqm-select-placeholder { color: #94A3B8; font-weight: 400; }
     .eqm-select-arrow { font-size: 12px; color: #64748B; pointer-events: none; transition: transform 0.2s ease, color 0.2s ease; }
     .eqm-select-open .eqm-select-arrow { transform: rotate(180deg); color: #2563EB; }
     .eqm-select-menu {
       position: absolute; top: calc(100% + 6px); left: 0; right: 0;
       margin: 0; padding: 6px; list-style: none;
-      background: #FFF; border: 1px solid #E2E8F0; border-radius: 12px;
-      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0; border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1), 0 12px 32px rgba(15, 23, 42, 0.18);
       z-index: 30; animation: eqmDropIn 0.18s ease both; box-sizing: border-box;
     }
     .eqm-select-option {
@@ -269,7 +274,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
 
     .eqm-actions {
       display: flex; justify-content: flex-end; gap: 12px;
-      margin-top: 24px; padding-top: 18px; border-top: 1px solid #F1F5F9;
+      margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(15, 23, 42, 0.1);
     }
     .eqm-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;

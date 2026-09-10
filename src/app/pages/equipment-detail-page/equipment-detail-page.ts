@@ -713,7 +713,9 @@ import { BatteryExportService } from '../../services/battery-export.service';
       position: fixed;
       inset: 0;
       z-index: 1000;
-      background: rgba(15, 23, 42, 0.55);
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(8px) saturate(1.2);
+      -webkit-backdrop-filter: blur(8px) saturate(1.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -725,15 +727,19 @@ import { BatteryExportService } from '../../services/battery-export.service';
       max-width: 420px;
       background: #FFFFFF;
       border: 1px solid #E2E8F0;
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
-      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2);
+      padding: 0;
+      overflow: hidden;
     }
 
     .eqd-modal-head {
       display: flex;
       align-items: center;
       gap: 14px;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, #2563EB, #1D4ED8);
+      border-bottom: 1px solid #1E40AF;
     }
 
     .eqd-modal-icon {
@@ -745,37 +751,41 @@ import { BatteryExportService } from '../../services/battery-export.service';
       justify-content: center;
       font-size: 16px;
       flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
     .eqd-modal-icon--danger {
-      background: rgba(239, 68, 68, 0.10);
+      background: rgba(255, 255, 255, 0.9);
       color: #EF4444;
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
     .eqd-modal-icon--success {
-      background: rgba(32, 201, 151, 0.12);
+      background: rgba(255, 255, 255, 0.9);
       color: #0FA97E;
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
     .eqd-modal-title {
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #0F172A;
+      color: #FFFFFF;
     }
 
     .eqd-modal-body {
-      margin: 16px 0 0;
+      margin: 0;
+      padding: 20px 24px;
       font-size: 14px;
       line-height: 1.6;
-      color: #3D4A63;
+      color: #334155;
     }
 
     .eqd-modal-actions {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
-      margin-top: 22px;
+      padding: 0 24px 22px;
     }
 
     /* ===== Carte résumé ===== */
