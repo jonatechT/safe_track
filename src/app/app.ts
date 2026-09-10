@@ -7,7 +7,8 @@ import { filter } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { User } from './auth/auth.service';
 import { StructureService } from './superadmin/services/structure.service';
-import { MaintenanceService, NotificationItem } from './services/maintenance.service';
+import { MaintenanceService, NotificationItem, MaintenanceItem } from './services/maintenance.service';
+import { EquipmentService } from './services/equipment.service';
 import { ThemeService } from './services/theme.service';
 
 interface MenuItem {
@@ -33,6 +34,7 @@ export class App {
   showLogoutConfirm = false;
   showProfile = false;
   showNotifications = false;
+  showAlertsPanel = false;
 
   /** Mode nuit activé ? (état partagé via ThemeService, aussi utilisé par l'espace SuperAdmin) */
   protected get isDarkMode(): boolean {
@@ -61,6 +63,7 @@ export class App {
     private router: Router,
     private structureService: StructureService,
     private maintenanceService: MaintenanceService,
+    private equipmentService: EquipmentService,
     private themeService: ThemeService
   ) {
     this.isSidebarCollapsed = this.loadSidebarState();
@@ -198,6 +201,41 @@ export class App {
     this.router.navigate(['/login']);
   }
 
+  /**
+   * Alertes ouvertes (non prises) — distinct des notifications ci-dessous.
+   * Les notifications journalisent les actions déjà effectuées sur la plateforme
+   * (« X a pris l'alerte Y ») ; cette icône signale les nouvelles alertes à traiter.
+   */
+  protected get openAlerts(): MaintenanceItem[] {
+    return this.maintenanceService.getItems().filter(i => !i.prisPar && i.alertes > 0);
+  }
+
+  protected get openAlertsCount(): number {
+    return this.openAlerts.length;
+  }
+
+  protected toggleAlertsPanel(): void {
+    this.showAlertsPanel = !this.showAlertsPanel;
+    if (this.showAlertsPanel) {
+      this.showNotifications = false;
+    }
+  }
+
+  protected closeAlertsPanel(): void {
+    this.showAlertsPanel = false;
+  }
+
+  /** Ouvre le détail de l'équipement concerné par l'alerte, sinon la liste complète. */
+  protected openAlert(item: MaintenanceItem): void {
+    this.closeAlertsPanel();
+    const equipment = this.equipmentService.getAll().find(e => e.nom === item.equipment);
+    if (equipment) {
+      this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'alerts' } });
+    } else {
+      this.router.navigate(['/alerts']);
+    }
+  }
+
   protected get notifications(): NotificationItem[] {
     return this.maintenanceService.notifications();
   }
@@ -213,6 +251,7 @@ export class App {
   protected toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
     if (this.showNotifications) {
+      this.showAlertsPanel = false;
       this.markAllNotificationsRead();
     }
   }

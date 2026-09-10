@@ -24,7 +24,7 @@ export class AuthService {
   private readonly USER_KEY = 'safe_track_user';
   private readonly USERS_REGISTRY_KEY = 'safe_track_users';
   private readonly USERS_VERSION_KEY = 'safe_track_users_version';
-  private readonly USERS_CURRENT_VERSION = '2';
+  private readonly USERS_CURRENT_VERSION = '3';
 
   /** Version de la session de connexion (clé séparée du registre des comptes) */
   private readonly SESSION_VERSION_KEY = 'safe_track_session_version';
@@ -106,6 +106,28 @@ export class AuthService {
         statut: 'ACTIVE',
         telephone: '+226 71 77 88 99',
         dateCreation: '2024-06-18T10:00:00.000Z',
+        motDePasse: 'technicien123'
+      },
+      {
+        id: 6,
+        name: 'Mme Kaboré',
+        email: 'kabore@safe-track.com',
+        role: 'USER',
+        structureId: 'STR-001',
+        statut: 'ACTIVE',
+        telephone: '+226 70 22 33 44',
+        dateCreation: '2024-07-05T10:00:00.000Z',
+        motDePasse: 'technicien123'
+      },
+      {
+        id: 7,
+        name: 'M. Zongo',
+        email: 'zongo@safe-track.com',
+        role: 'USER',
+        structureId: 'STR-002',
+        statut: 'ACTIVE',
+        telephone: '+226 76 88 99 00',
+        dateCreation: '2024-08-14T10:00:00.000Z',
         motDePasse: 'technicien123'
       }
     ];

@@ -50,17 +50,7 @@
               <label class="users-form-label">Mot de passe temporaire *</label>
               <input type="text" class="users-form-input" [(ngModel)]="formData.motDePasse" placeholder="8 caractères minimum" />
             </div>
-            <div class="users-form-group">
-              <label class="users-form-label">Statut</label>
-              <select class="users-form-select" [(ngModel)]="formData.statut">
-                <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
-              </select>
-            </div>
           </div>
-          <p class="users-form-info">
-            Le rôle sera automatiquement défini sur <strong>USER</strong> et la structure sur <strong>{{ structureName() }}</strong>.
-          </p>
         </div>
         <div class="users-modal-actions">
           <button class="users-btn-secondary" (click)="closeAddModal()">Annuler</button>

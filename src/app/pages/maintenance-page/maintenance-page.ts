@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BasePageComponent } from '../base-page/base-page';
 import { MaintenanceService, MaintenanceItem } from '../../services/maintenance.service';
 import { EquipmentService } from '../../services/equipment.service';
@@ -30,10 +30,10 @@ import { AuthService } from '../../auth/auth.service';
           </div>
           <div class="stat-card stat-card--pink">
             <div class="stat-main">
-              <span class="stat-label">Alertes actives</span>
-              <span class="stat-value"><strong>{{ getAlertesActives() }}</strong></span>
+              <span class="stat-label">Planifiées</span>
+              <span class="stat-value"><strong>{{ getPlanifiees() }}</strong></span>
             </div>
-            <i class="fa-solid fa-bell stat-icon stat-icon--pink"></i>
+            <i class="fa-solid fa-calendar-days stat-icon stat-icon--pink"></i>
           </div>
         </div>
 
@@ -60,13 +60,13 @@ import { AuthService } from '../../auth/auth.service';
                   <th>Type</th>
                   <th>Date</th>
                   <th>Technicien</th>
-                  <th>Statut</th>
+                  <th>Numéro</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 @for (item of items; track item.id) {
-                  <tr (click)="ouvrirDetail(item.id)">
+                  <tr [class.locked-row]="!peutOuvrirDetail(item)" (click)="peutOuvrirDetail(item) && ouvrirDetail(item.id)">
                     <td>
                       <div class="equipment-cell">
                         <span class="equipment-name">{{ item.equipment }}</span>
@@ -90,20 +90,12 @@ import { AuthService } from '../../auth/auth.service';
                         <span class="tech-none">—</span>
                       }
                     </td>
-                    <td>
-                      @if (item.statut === 'En cours' && item.prisPar) {
-                        <span class="status-badge status-en-cours"><i class="fa-solid fa-clock"></i> Intervention en cours</span>
-                      } @else if (item.statut === 'Terminée') {
-                        <span class="status-badge status-terminee"><i class="fa-solid fa-check"></i> Terminée</span>
-                      } @else {
-                        <span class="status-badge status-non-pris"><i class="fa-solid fa-hourglass-half"></i> Non pris</span>
-                      }
-                    </td>
+                    <td><span class="numero-code">N°{{ item.numero.toString().padStart(3, '0') }}</span></td>
                     <td class="actions-cell">
-                      @if (item.alertes > 0 && !item.prisPar) {
-                        <button class="btn-prendre" (click)="prendreAlerte(item); $event.stopPropagation()">
-                          Prendre l'alerte
-                        </button>
+                      @if (!peutOuvrirDetail(item)) {
+                        <span class="locked-label" title="Intervention assignée à un autre technicien">
+                          <i class="fa-solid fa-lock"></i> Assignée
+                        </span>
                       } @else if (item.statut === 'En cours' && item.prisPar) {
                         <button class="btn-terminer" (click)="terminerMaintenance(item); $event.stopPropagation()">
                           <i class="fa-solid fa-flag-checkered"></i> Terminer
@@ -259,6 +251,15 @@ import { AuthService } from '../../auth/auth.service';
     .tech-date { font-weight: 400; opacity: 0.85; font-size: 10px; }
     .tech-none { color: #94A3B8; font-size: 12px; }
 
+    /* Numéro d'intervention (remplace la colonne Statut) */
+    .numero-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; font-weight: 600; color: #475569; }
+
+    /* Ligne verrouillée pour un technicien non assigné : info visible, détail inaccessible */
+    .locked-row { cursor: default; }
+    .locked-row:hover td { background-color: #FFFFFF !important; border-color: #E2E8F0 !important; }
+    .locked-label { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #94A3B8; }
+    .locked-label i { font-size: 11px; }
+
     /* Bandeau de retour utilisateur */
     .feedback-banner {
       display: flex;
@@ -313,16 +314,26 @@ export class MaintenancePageComponent {
     private maintenanceService: MaintenanceService,
     private equipmentService: EquipmentService,
     private authService: AuthService,
+    private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) {
+    // Feedback provenant d'une redirection depuis la page Alertes ou du guard de permission.
+    const params = this.route.snapshot.queryParamMap;
+    if (params.get('taken') === '1') {
+      this.showFeedback('Alerte prise en charge avec succès : elle apparaît maintenant ici.', 'success');
+    } else if (params.get('denied') === '1') {
+      this.showFeedback("Accès refusé : cette intervention est assignée à un autre technicien.", 'error');
+    }
+  }
 
   /**
    * Liste réactive lue directement depuis le signal du service :
    * elle se met à jour automatiquement après chaque action et lors des
    * synchronisations multi-onglets (autre technicien ayant pris une alerte).
+   * Ne contient plus les alertes non prises (visibles uniquement sur /alerts).
    */
   get items(): MaintenanceItem[] {
-    return this.maintenanceService.getItems();
+    return this.maintenanceService.getItems().filter(i => i.prisPar || i.alertes === 0);
   }
 
   getCurrentUserName(): string {
@@ -333,6 +344,15 @@ export class MaintenancePageComponent {
     return this.authService.isStructureAdmin() || this.authService.isSuperAdmin();
   }
 
+  /**
+   * Un technicien ne peut ouvrir le détail que d'une intervention non prise,
+   * ou de celle qui lui est assignée. L'admin voit toujours tout.
+   */
+  peutOuvrirDetail(item: MaintenanceItem): boolean {
+    if (this.isAdmin()) return true;
+    return !item.prisPar || item.prisPar === this.getCurrentUserName();
+  }
+
   getEnCours(): number {
     return this.items.filter(i => i.statut === 'En cours').length;
   }
@@ -341,8 +361,8 @@ export class MaintenancePageComponent {
     return this.items.filter(i => i.statut === 'Terminée').length;
   }
 
-  getAlertesActives(): number {
-    return this.items.filter(i => i.alertes > 0).length;
+  getPlanifiees(): number {
+    return this.items.filter(i => i.statut === 'Planifiée').length;
   }
 
   getEnCoursPourcent(): number {
@@ -355,9 +375,9 @@ export class MaintenancePageComponent {
     return total === 0 ? 0 : Math.round((this.getTerminees() / total) * 100);
   }
 
-  getAlertesActivesPourcent(): number {
+  getPlanifieesPourcent(): number {
     const total = this.items.length;
-    return total === 0 ? 0 : Math.round((this.getAlertesActives() / total) * 100);
+    return total === 0 ? 0 : Math.round((this.getPlanifiees() / total) * 100);
   }
 
   /** Génère le style conic-gradient pour un cercle de progression */

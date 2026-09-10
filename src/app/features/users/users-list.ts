@@ -16,7 +16,8 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-header .users-btn-primary { position: relative; top: 5px; }
     .users-title { font-size: 24px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px; }
     .users-subtitle { font-size: 14px; color: #64748B; margin-top: 4px; }
-    .users-btn-primary { background: #2563EB; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+    .users-btn-primary { background: #2563EB; color: #FFF; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+    .users-btn-primary i { color: #FFF; }
     .users-btn-primary:hover { background: #1D4ED8; transform: translateY(-1px); }
     .users-btn-secondary { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
     .users-btn-secondary:hover { background: #E2E8F0; }
@@ -32,12 +33,12 @@ import { StructureService } from '../../superadmin/services/structure.service';
     /* Carte contenant un tableau : apparence de carte supprimée */
     .users-card--table { background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; }
     .users-card-title { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 16px; }
-    .users-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .users-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
     .users-form-group { display: flex; flex-direction: column; gap: 6px; }
     .users-form-label { font-size: 12px; font-weight: 600; color: #475569; }
-    .users-form-input { padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 13px; color: #0F172A; background: rgba(255, 255, 255, 0.35); outline: none; transition: all 0.2s ease; font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
+    .users-form-input { padding: 12px 16px; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 14px; color: #0F172A; background: rgba(255, 255, 255, 0.35); outline: none; transition: all 0.2s ease; font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
     .users-form-input:focus { border-color: #2563EB; background: rgba(255, 255, 255, 0.55); }
-    .users-form-select { padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 13px; color: #0F172A; background: rgba(255, 255, 255, 0.35); outline: none; cursor: pointer; font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
+    .users-form-select { padding: 12px 16px; border: 1px solid #E2E8F0; border-radius: 10px; font-size: 14px; color: #0F172A; background: rgba(255, 255, 255, 0.35); outline: none; cursor: pointer; font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08); }
     .users-form-select:focus { border-color: #2563EB; }
     .users-form-info { font-size: 12px; color: #94A3B8; margin-top: 8px; }
     .users-form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid #F1F5F9; }
@@ -100,16 +101,16 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 24px; color: #94A3B8; }
     .users-empty-icon { font-size: 36px; color: #CBD5E1; }
     .users-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.35); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); }
-    .users-modal { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; overflow: hidden; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); }
-    .users-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; background: linear-gradient(180deg, #2563EB, #1D4ED8); border-bottom: 1px solid #1E40AF; border-radius: 20px 20px 0 0; margin: 0; }
+    .users-modal { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); }
+    .users-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; background: linear-gradient(180deg, #2563EB, #1D4ED8); border-bottom: 1px solid #1E40AF; border-radius: 20px 20px 0 0; margin: 0; flex-shrink: 0; }
     .users-modal-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .users-modal-icon-warning { background: rgba(255, 255, 255, 0.9); color: #F59E0B; border: 1px solid rgba(255, 255, 255, 0.3); }
     .users-modal-title { font-size: 18px; font-weight: 600; color: #FFFFFF; }
-    .users-modal-body { font-size: 13px; color: #334155; line-height: 1.6; padding: 20px 24px; margin: 0; }
-    .users-modal-body--form { display: flex; flex-direction: column; gap: 16px; }
+    .users-modal-body { flex: 1; min-height: 0; overflow-y: auto; font-size: 13px; color: #334155; line-height: 1.6; padding: 20px 24px; margin: 0; }
+    .users-modal-body--form { display: flex; flex-direction: column; gap: 10px; }
     .users-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255, 255, 255, 0.12); color: #FFFFFF; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease; margin-left: auto; }
     .users-modal-close:hover { background: rgba(255, 255, 255, 0.22); color: #FFFFFF; }
-    .users-modal-actions { display: flex; justify-content: flex-end; gap: 12px; padding: 0 24px 22px; }
+    .users-modal-actions { display: flex; justify-content: flex-end; gap: 12px; padding: 0 24px 22px; flex-shrink: 0; }
 
     @media (max-width: 1024px) {
       .users-table-wrapper { overflow-x: auto; }

@@ -2,8 +2,12 @@ import { Injectable, signal } from '@angular/core';
 
 export interface MaintenanceItem {
   id: string;
+  /** Numéro d'affichage stable de l'intervention (ex. "N°003"), attribué à la création. */
+  numero: number;
   equipment: string;
   type: string;
+  /** Sévérité de l'alerte d'origine — absente pour une maintenance planifiée directement. */
+  severite?: 'Critique' | 'Avertissement';
   datePrevue: string;
   technicien: string;
   statut: 'Planifiée' | 'En attente' | 'En cours' | 'Terminée';
@@ -46,7 +50,7 @@ export interface RapportIntervention {
   providedIn: 'root'
 })
 export class MaintenanceService {
-  private readonly STORAGE_KEY = 'safe_track_maintenance_v5';
+  private readonly STORAGE_KEY = 'safe_track_maintenance_v6';
 
   readonly maintenanceItems = signal<MaintenanceItem[]>(this.loadInitialData());
   readonly notifications = signal<NotificationItem[]>([]);
@@ -69,12 +73,13 @@ export class MaintenanceService {
   }
 
   private loadInitialData(): MaintenanceItem[] {
-    // Nettoyage des anciennes clés de stockage (migration v1 -> v2 -> v3 -> v4 -> v5)
+    // Nettoyage des anciennes clés de stockage (migration v1 -> v2 -> v3 -> v4 -> v5 -> v6)
     if (typeof window !== 'undefined') {
       localStorage.removeItem('safe_track_maintenance');
       localStorage.removeItem('safe_track_maintenance_v2');
       localStorage.removeItem('safe_track_maintenance_v3');
       localStorage.removeItem('safe_track_maintenance_v4');
+      localStorage.removeItem('safe_track_maintenance_v5');
     }
     // Charger les données persistées : les prises d'alerte doivent survivre
     // à un rafraîchissement pour que tous les techniciens voient qui a pris quoi.
@@ -91,11 +96,45 @@ export class MaintenanceService {
         }
       }
     }
+    // Un item par équipement existant, couvrant les 4 états du cycle de vie
+    // (alerte critique non prise, alerte avertissement non prise, en cours, terminée).
     const items: MaintenanceItem[] = [
-      { id: 'm1', equipment: 'Kit solaire #SK-045', type: 'Charge trop lente', datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'Planifiée', alertes: 1, localisation: '12.3685°N, -1.5250°E', lienLocalisation: '12.3685,-1.5250' }
+      {
+        id: 'm1', numero: 1, equipment: 'Kit solaire #SK-045', type: 'Violation de box',
+        severite: 'Critique', datePrevue: '10 septembre 2026', technicien: '', statut: 'En attente', alertes: 1,
+        localisation: '12.3685°N, -1.5250°E', lienLocalisation: '12.3685,-1.5250'
+      },
+      {
+        id: 'm2', numero: 2, equipment: 'Kit solaire #SK-067', type: 'Déplacement non autorisé',
+        severite: 'Avertissement', datePrevue: '10 septembre 2026', technicien: '', statut: 'En attente', alertes: 1,
+        localisation: '11.1784°N, -4.2979°E', lienLocalisation: '11.1784,-4.2979'
+      },
+      {
+        id: 'm3', numero: 3, equipment: 'Kit solaire #SK-089', type: 'Charge trop lente',
+        datePrevue: '15 août 2026', technicien: 'M. Ouedraogo', statut: 'En cours', alertes: 1,
+        prisPar: 'M. Ouedraogo', datePrise: '05/09 09:12',
+        localisation: '12.2513°N, -2.3510°E', lienLocalisation: '12.2513,-2.3510'
+      },
+      {
+        id: 'm4', numero: 4, equipment: 'Kit solaire #SK-102', type: 'Nettoyage panneaux',
+        datePrevue: '20 août 2026', technicien: 'M. Traore', statut: 'Terminée', alertes: 0,
+        prisPar: 'M. Traore', datePrise: '20/08 14:30',
+        localisation: '12.3714°N, -1.5197°E', lienLocalisation: '12.3714,-1.5197',
+        rapport: {
+          contenu: 'Nettoyage complet des panneaux solaires, aucune anomalie détectée.',
+          dateRedaction: '20/08/2026',
+          redacteur: 'M. Traore',
+          dureeIntervention: '45 min'
+        }
+      }
     ];
     this.save(items);
     return items;
+  }
+
+  /** Prochain numéro d'affichage disponible (monotone, jamais réutilisé). */
+  private nextNumero(): number {
+    return Math.max(0, ...this.maintenanceItems().map(i => i.numero ?? 0)) + 1;
   }
 
   private save(items: MaintenanceItem[]): void {
@@ -109,10 +148,11 @@ export class MaintenanceService {
   }
 
   /** Planifier une nouvelle maintenance (admin uniquement) */
-  planifierMaintenance(item: Omit<MaintenanceItem, 'id'>): void {
+  planifierMaintenance(item: Omit<MaintenanceItem, 'id' | 'numero'>): void {
     const newItem: MaintenanceItem = {
       ...item,
-      id: 'm' + Date.now()
+      id: 'm' + Date.now(),
+      numero: this.nextNumero()
     };
     const items = [...this.maintenanceItems(), newItem];
     this.maintenanceItems.set(items);

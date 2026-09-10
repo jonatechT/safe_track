@@ -95,6 +95,20 @@
         >
           <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
         </button>
+        <div class="alerts-bell-wrapper">
+          <button
+            class="alerts-bell-btn"
+            [class.active]="showAlertsPanel"
+            (click)="toggleAlertsPanel()"
+            [attr.aria-label]="showAlertsPanel ? 'Fermer les alertes' : 'Afficher les alertes'"
+            [attr.title]="showAlertsPanel ? 'Fermer les alertes' : 'Alertes non prises'"
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            @if (openAlertsCount > 0) {
+              <span class="alerts-badge">{{ openAlertsCount }}</span>
+            }
+          </button>
+        </div>
         <div class="notification-wrapper">
           <button
             class="notification-btn"
@@ -205,6 +219,59 @@
       <button class="profile-logout-btn" (click)="openLogoutConfirm()" aria-label="Se déconnecter">
         <i class="fa-solid fa-right-from-bracket"></i>
         Se déconnecter
+      </button>
+    </div>
+  </div>
+}
+
+<!-- Alerts panel (distinct des notifications : alertes non prises, pas un journal d'actions) -->
+@if (showAlertsPanel && !isAuthPage() && !isSuperAdminPage()) {
+  <div class="alerts-bell-overlay" (click)="closeAlertsPanel()"></div>
+  <div class="alerts-bell-panel" role="dialog" aria-label="Alertes non prises">
+    <div class="alerts-bell-panel-header">
+      <div class="alerts-bell-panel-title-block">
+        <h3 class="alerts-bell-panel-title">
+          <i class="fa-solid fa-triangle-exclamation"></i> Alertes
+        </h3>
+        <span class="alerts-bell-panel-subtitle">
+          @if (openAlertsCount > 0) {
+            {{ openAlertsCount }} alerte(s) non prise(s) en charge
+          } @else {
+            Aucune alerte ouverte
+          }
+        </span>
+      </div>
+      <button class="alerts-bell-panel-close" (click)="closeAlertsPanel()" aria-label="Fermer les alertes">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="alerts-bell-panel-body">
+      @if (openAlerts.length === 0) {
+        <div class="alerts-bell-empty">
+          <i class="fa-solid fa-circle-check"></i>
+          <span class="alerts-bell-empty-title">Tout est sous contrôle</span>
+          <span class="alerts-bell-empty-subtitle">Aucune alerte en attente pour l'instant.</span>
+        </div>
+      } @else {
+        @for (item of openAlerts; track item.id) {
+          <div class="alert-bell-item" (click)="openAlert(item)">
+            <div class="alert-bell-icon" [class.critique]="item.severite === 'Critique'">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="alert-bell-content">
+              <span class="alert-bell-message">{{ item.type }} — {{ item.equipment }}</span>
+              <span class="alert-bell-time">
+                <i class="fa-solid fa-hashtag"></i> N°{{ item.numero.toString().padStart(3, '0') }}
+              </span>
+            </div>
+          </div>
+        }
+      }
+    </div>
+    <div class="alerts-bell-panel-footer">
+      <button class="alerts-bell-all-btn" (click)="closeAlertsPanel(); navigateTo('/alerts')" aria-label="Voir toutes les alertes">
+        <i class="fa-solid fa-list"></i> Voir toutes les alertes
+        <i class="fa-solid fa-arrow-right"></i>
       </button>
     </div>
   </div>

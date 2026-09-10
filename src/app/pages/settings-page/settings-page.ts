@@ -21,22 +21,15 @@ import { ThemeService } from '../../services/theme.service';
           </div>
         }
 
-        <!-- ===== Gestion des interventions ===== -->
+        <!-- ===== Affectation multi-techniciens ===== -->
         <div class="stg-card">
           <div class="stg-card-header">
-            <div class="stg-card-icon"><i class="fa-solid fa-user-clock"></i></div>
+            <div class="stg-card-icon stg-card-icon--amber"><i class="fa-solid fa-users-gear"></i></div>
             <div>
-              <h3 class="stg-card-title">Gestion des interventions</h3>
-              <p class="stg-card-subtitle">Personnalisez la façon dont les alertes sont prises en charge par les techniciens.</p>
+              <h3 class="stg-card-title">Affectation multi-techniciens</h3>
+              <p class="stg-card-subtitle">Permettre à l'admin d'affecter plusieurs techniciens à une même alerte.</p>
             </div>
-          </div>
-
-          <div class="stg-row">
-            <div class="stg-row-info">
-              <span class="stg-row-title">Affectation multi-techniciens</span>
-              <span class="stg-row-desc">Permettre à l'admin d'affecter plusieurs techniciens à une même alerte.</span>
-            </div>
-            <label class="stg-switch">
+            <label class="stg-switch stg-card-switch">
               <input type="checkbox" [checked]="settings.multiTechniciens" (change)="toggle('multiTechniciens', $any($event.target).checked)" />
               <span class="stg-slider"></span>
             </label>
@@ -54,29 +47,48 @@ import { ThemeService } from '../../services/theme.service';
               </select>
             </div>
           }
+        </div>
 
-          <div class="stg-sep"></div>
-
-          <div class="stg-row">
-            <div class="stg-row-info">
-              <span class="stg-row-title">Auto-prise en charge des alertes</span>
-              <span class="stg-row-desc">Les techniciens peuvent prendre eux-mêmes une alerte sans attendre une affectation de l'admin.</span>
+        <!-- ===== Auto-prise en charge des alertes ===== -->
+        <div class="stg-card">
+          <div class="stg-card-header">
+            <div class="stg-card-icon stg-card-icon--green"><i class="fa-solid fa-hand-pointer"></i></div>
+            <div>
+              <h3 class="stg-card-title">Auto-prise en charge des alertes</h3>
+              <p class="stg-card-subtitle">Les techniciens peuvent prendre eux-mêmes une alerte sans attendre une affectation de l'admin.</p>
             </div>
-            <label class="stg-switch">
+            <label class="stg-switch stg-card-switch">
               <input type="checkbox" [checked]="settings.priseEnChargeGlobale" (change)="toggle('priseEnChargeGlobale', $any($event.target).checked)" />
               <span class="stg-slider"></span>
             </label>
           </div>
+        </div>
 
-          <div class="stg-sep"></div>
-
-          <div class="stg-row">
-            <div class="stg-row-info">
-              <span class="stg-row-title">Planification d'une intervention de maintenance</span>
-              <span class="stg-row-desc">Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance.</span>
+        <!-- ===== Planification d'une intervention de maintenance ===== -->
+        <div class="stg-card">
+          <div class="stg-card-header">
+            <div class="stg-card-icon stg-card-icon--blue"><i class="fa-solid fa-calendar-check"></i></div>
+            <div>
+              <h3 class="stg-card-title">Planification d'une intervention de maintenance</h3>
+              <p class="stg-card-subtitle">Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance.</p>
             </div>
-            <label class="stg-switch">
+            <label class="stg-switch stg-card-switch">
               <input type="checkbox" [checked]="settings.planifierMaintenance" (change)="toggle('planifierMaintenance', $any($event.target).checked)" />
+              <span class="stg-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ===== Inspection avant prise en charge ===== -->
+        <div class="stg-card">
+          <div class="stg-card-header">
+            <div class="stg-card-icon stg-card-icon--red"><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div>
+              <h3 class="stg-card-title">Inspection avant prise en charge</h3>
+              <p class="stg-card-subtitle">Le technicien doit d'abord inspecter l'alerte avant de la prendre en charge (le bouton devient « Inspecter »).</p>
+            </div>
+            <label class="stg-switch stg-card-switch">
+              <input type="checkbox" [checked]="settings.inspectionTechniciens" (change)="toggle('inspectionTechniciens', $any($event.target).checked)" />
               <span class="stg-slider"></span>
             </label>
           </div>
@@ -161,6 +173,9 @@ import { ThemeService } from '../../services/theme.service';
     }
     .stg-card-icon--purple { background: #F3E8FF; color: #7C3AED; }
     .stg-card-icon--red { background: #FEF2F2; color: #DC2626; }
+    .stg-card-icon--green { background: #ECFDF5; color: #059669; }
+    .stg-card-icon--amber { background: #FFFBEB; color: #D97706; }
+    .stg-card-switch { margin-left: auto; flex-shrink: 0; }
     .stg-card-title { margin: 0; font-size: 15px; font-weight: 700; color: #0F172A; }
     .stg-card-subtitle { margin: 2px 0 0; font-size: 12px; color: #64748B; }
 
