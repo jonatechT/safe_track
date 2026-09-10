@@ -137,7 +137,12 @@
   <div class="sam-overlay" (click)="closeCreateModal()">
     <div class="sam-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
       <div class="sam-header">
+        <div class="sam-hero-glow"></div>
+        <div class="sam-header-icon">
+          <i class="fa-solid fa-building"></i>
+        </div>
         <div class="sam-header-title-block">
+          <span class="sam-heading-overline">Gestion des structures</span>
           <h3 class="sam-title">Ajouter une structure</h3>
           <p class="sam-subtitle">Créez la structure et son administrateur en deux étapes.</p>
         </div>
@@ -148,7 +153,7 @@
 
       <div class="sam-body">
         <!-- Stepper -->
-        <div class="sam-stepper">
+        <div class="sam-stepper" [style.--sam-progress]="step() === 1 ? '18%' : step() === 2 ? '58%' : '100%'">
           <div class="sam-step" [class.sam-step--active]="step() === 1" [class.sam-step--done]="step() > 1">
             <span class="sam-step-num">
               @if (step() > 1) { <i class="fa-solid fa-check"></i> } @else { 1 }

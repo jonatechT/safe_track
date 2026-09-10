@@ -14,7 +14,7 @@ import { ThemeService } from '../../../services/theme.service';
         <div class="sa-sidebar-header">
           <div class="sa-logo-row">
             <div class="sa-logo-icon">
-              <img src="logo.jpg" alt="SAFE Track" class="sa-logo-img" />
+              <img src="logo.jpg" alt="Shango" class="sa-logo-img" />
             </div>
             <button class="sa-sidebar-toggle" (click)="toggleSidebar()" [attr.aria-label]="sidebarToggleLabel" [attr.title]="sidebarToggleLabel">
               <i class="fa-solid" [class.fa-angles-left]="!isSidebarCollapsed" [class.fa-angles-right]="isSidebarCollapsed"></i>

@@ -71,7 +71,7 @@ export class BatteryExportService {
     doc.text('RAPPORT DIAGNOSTIC BATTERIE', margin, 12);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text('SAFE TRACK — suivi de l\'état de santé des batteries', margin, 18);
+    doc.text("SHANGO — suivi de l'état de santé des batteries", margin, 18);
     doc.setTextColor(20, 30, 50);
 
     // ===== Fiche d'informations =====
@@ -190,7 +190,7 @@ export class BatteryExportService {
     doc.setFontSize(8);
     doc.setTextColor(130, 140, 160);
     doc.text(
-      'Rapport généré automatiquement par SAFE Track — Diagnostic batterie.',
+      'Rapport généré automatiquement par Shango — Diagnostic batterie.',
       margin,
       Math.max(y, 280) + 6
     );

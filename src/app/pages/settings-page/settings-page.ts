@@ -80,19 +80,6 @@ import { ThemeService } from '../../services/theme.service';
               <span class="stg-slider"></span>
             </label>
           </div>
-
-          <div class="stg-sep"></div>
-
-          <div class="stg-row">
-            <div class="stg-row-info">
-              <span class="stg-row-title">Inspection par les techniciens</span>
-              <span class="stg-row-desc">Les techniciens peuvent inspecter les alertes avant la prise en charge (bouton « Inspecter »).</span>
-            </div>
-            <label class="stg-switch">
-              <input type="checkbox" [checked]="settings.inspectionTechniciens" (change)="toggle('inspectionTechniciens', $any($event.target).checked)" />
-              <span class="stg-slider"></span>
-            </label>
-          </div>
         </div>
 
         <!-- ===== Apparence ===== -->
@@ -127,7 +114,7 @@ import { ThemeService } from '../../services/theme.service';
           </div>
           <div class="stg-row">
             <div class="stg-row-info">
-              <span class="stg-row-title">SAFE Track</span>
+              <span class="stg-row-title">Shango</span>
               <span class="stg-row-desc">Plateforme de suivi et de télémaintenance des équipements — version {{ appVersion }}.</span>
             </div>
           </div>

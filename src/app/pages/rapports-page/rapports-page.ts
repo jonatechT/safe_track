@@ -108,64 +108,6 @@ import { AuthService } from '../../auth/auth.service';
         </div>
 
         <div class="rapport-modal-body">
-          <div class="rapport-type-switch" role="radiogroup" aria-label="Type de rapport">
-            <label class="rapport-type-option" [class.active]="rapportType === 'intervention'">
-              <input type="radio" name="rapportType" value="intervention" [(ngModel)]="rapportType" />
-              <i class="fa-solid fa-file-pen"></i>
-              <span>Rapport d'intervention</span>
-            </label>
-            <label class="rapport-type-option" [class.active]="rapportType === 'conformite'">
-              <input type="radio" name="rapportType" value="conformite" [(ngModel)]="rapportType" />
-              <i class="fa-solid fa-clipboard-check"></i>
-              <span>Rapport de conformité</span>
-            </label>
-          </div>
-
-          @if (rapportType === 'conformite') {
-            <!-- ══ Questionnaire de conformité ══ -->
-            <div class="rapport-field">
-              <span class="rapport-label">
-                <i class="fa-solid fa-magnifying-glass"></i> Inspection réalisée ? <span class="rapport-required">*</span>
-              </span>
-              <div class="rapport-radio-row">
-                <label class="rapport-radio-option">
-                  <input type="radio" name="inspectionRealisee" value="oui" [(ngModel)]="rapportForm.inspectionRealisee" />
-                  <span>Oui</span>
-                </label>
-                <label class="rapport-radio-option">
-                  <input type="radio" name="inspectionRealisee" value="non" [(ngModel)]="rapportForm.inspectionRealisee" />
-                  <span>Non</span>
-                </label>
-              </div>
-            </div>
-            <div class="rapport-field">
-              <span class="rapport-label">
-                <i class="fa-solid fa-circle-check"></i> Équipement conforme ? <span class="rapport-required">*</span>
-              </span>
-              <div class="rapport-radio-row">
-                <label class="rapport-radio-option">
-                  <input type="radio" name="equipementConforme" value="oui" [(ngModel)]="rapportForm.equipementConforme" />
-                  <span>Oui</span>
-                </label>
-                <label class="rapport-radio-option">
-                  <input type="radio" name="equipementConforme" value="non" [(ngModel)]="rapportForm.equipementConforme" />
-                  <span>Non</span>
-                </label>
-                <label class="rapport-radio-option">
-                  <input type="radio" name="equipementConforme" value="na" [(ngModel)]="rapportForm.equipementConforme" />
-                  <span>N/A</span>
-                </label>
-              </div>
-            </div>
-            <div class="rapport-field">
-              <label class="rapport-label" for="rapport-commentaire-inspection">
-                <i class="fa-solid fa-file-lines"></i> Commentaire d'inspection
-              </label>
-              <textarea id="rapport-commentaire-inspection" class="rapport-textarea" rows="4"
-                        [(ngModel)]="rapportForm.commentaireInspection"
-                        placeholder="Décrivez les observations relevées lors de l'inspection..."></textarea>
-            </div>
-          } @else {
           <div class="rapport-field">
             <label class="rapport-label" for="rapport-item">
               <i class="fa-solid fa-wrench"></i> Intervention concernée <span class="rapport-required">*</span>
@@ -212,13 +154,12 @@ import { AuthService } from '../../auth/auth.service';
               placeholder="Ex : 2h30"
             />
           </div>
-          }
         </div>
 
         <div class="rapport-modal-footer">
           <button class="rapport-btn-cancel" (click)="fermerRapport()">Annuler</button>
           <button class="rapport-btn-submit" (click)="enregistrerRapport()" [disabled]="rapportSubmitDisabled">
-            <i class="fa-solid fa-check"></i> {{ rapportType === 'conformite' ? 'Enregistrer le rapport de conformité' : 'Enregistrer le rapport' }}
+            <i class="fa-solid fa-check"></i> Enregistrer le rapport
           </button>
         </div>
       </div>
@@ -408,26 +349,6 @@ import { AuthService } from '../../auth/auth.service';
 
     /* Modal rédaction */
     .rapport-field { display: flex; flex-direction: column; gap: 6px; }
-    .rapport-type-switch { display: flex; gap: 10px; flex-wrap: wrap; }
-    .rapport-type-option {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 14px;
-      border: 1px solid #E2E8F0;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      color: #334155;
-      cursor: pointer;
-      background: #FFF;
-      transition: all 0.15s ease;
-    }
-    .rapport-type-option.active { background: #EFF6FF; border-color: #2563EB; color: #1E3A8A; }
-    .rapport-type-option input { accent-color: #2563EB; }
-    .rapport-radio-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .rapport-radio-option { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #334155; cursor: pointer; }
-    .rapport-radio-option input { accent-color: #2563EB; }
     .rapport-view-conformite { display: flex; flex-direction: column; gap: 4px; padding: 12px; background: #F0FDF4; border-radius: 10px; border: 1px solid #A7F3D0; }
     .rapport-view-conformite strong { font-size: 12px; color: #047857; }
     .rapport-view-conformite span { font-size: 13px; color: #334155; }
@@ -485,21 +406,14 @@ export class RapportsPageComponent implements OnInit {
   selectedItemId: string | null = null;
   showRapportModal = false;
   showRapportView = false;
-  rapportType: 'intervention' | 'conformite' = 'intervention';
   rapportForm: {
     contenu: string;
     piecesRemplacees?: string;
     dureeIntervention?: string;
-    inspectionRealisee?: 'oui' | 'non';
-    equipementConforme?: 'oui' | 'non' | 'na';
-    commentaireInspection?: string;
   } = {
     contenu: '',
     piecesRemplacees: '',
-    dureeIntervention: '',
-    inspectionRealisee: undefined,
-    equipementConforme: undefined,
-    commentaireInspection: ''
+    dureeIntervention: ''
   };
 
   constructor(
@@ -532,12 +446,9 @@ export class RapportsPageComponent implements OnInit {
     return 100;
   }
 
-  /** Bouton d'envoi : désactivé tant que les champs obligatoires du type sélectionné ne sont pas renseignés */
+  /** Bouton d'envoi : désactivé tant que les champs obligatoires ne sont pas renseignés */
   get rapportSubmitDisabled(): boolean {
     if (!this.selectedItemId) return true;
-    if (this.rapportType === 'conformite') {
-      return !this.rapportForm.inspectionRealisee || !this.rapportForm.equipementConforme;
-    }
     return !this.rapportForm.contenu.trim();
   }
 
@@ -555,14 +466,10 @@ export class RapportsPageComponent implements OnInit {
   ouvrirRapport(item?: MaintenanceItem): void {
     this.selectedItem = item || null;
     this.selectedItemId = item?.id || null;
-    this.rapportType = item?.rapport?.typeRapport || 'intervention';
     this.rapportForm = {
       contenu: item?.rapport?.contenu || '',
       piecesRemplacees: item?.rapport?.piecesRemplacees || '',
-      dureeIntervention: item?.rapport?.dureeIntervention || '',
-      inspectionRealisee: item?.rapport?.inspectionRealisee,
-      equipementConforme: item?.rapport?.equipementConforme,
-      commentaireInspection: item?.rapport?.commentaireInspection || ''
+      dureeIntervention: item?.rapport?.dureeIntervention || ''
     };
     this.showRapportModal = true;
     this.showRapportView = false;
@@ -572,24 +479,16 @@ export class RapportsPageComponent implements OnInit {
   surSelectionIntervention(): void {
     const item = this.rapports.find(i => i.id === this.selectedItemId);
     if (item?.rapport) {
-      this.rapportType = item.rapport.typeRapport || 'intervention';
       this.rapportForm = {
         contenu: item.rapport.contenu,
         piecesRemplacees: item.rapport.piecesRemplacees || '',
-        dureeIntervention: item.rapport.dureeIntervention || '',
-        inspectionRealisee: item.rapport.inspectionRealisee,
-        equipementConforme: item.rapport.equipementConforme,
-        commentaireInspection: item.rapport.commentaireInspection || ''
+        dureeIntervention: item.rapport.dureeIntervention || ''
       };
     } else {
-      this.rapportType = 'intervention';
       this.rapportForm = {
         contenu: '',
         piecesRemplacees: '',
-        dureeIntervention: '',
-        inspectionRealisee: undefined,
-        equipementConforme: undefined,
-        commentaireInspection: ''
+        dureeIntervention: ''
       };
     }
   }
@@ -608,25 +507,14 @@ export class RapportsPageComponent implements OnInit {
 
   enregistrerRapport(): void {
     if (!this.selectedItemId || this.rapportSubmitDisabled) return;
-    const rapport: RapportIntervention =
-      this.rapportType === 'conformite'
-        ? {
-            contenu: this.rapportForm.commentaireInspection?.trim() || '',
-            typeRapport: 'conformite' as const,
-            inspectionRealisee: this.rapportForm.inspectionRealisee,
-            equipementConforme: this.rapportForm.equipementConforme,
-            commentaireInspection: this.rapportForm.commentaireInspection?.trim() || undefined,
-            dateRedaction: new Date().toLocaleDateString('fr-FR'),
-            redacteur: this.authService.getUser()?.name || 'Technicien'
-          }
-        : {
-            contenu: this.rapportForm.contenu.trim(),
-            typeRapport: 'intervention' as const,
-            piecesRemplacees: this.rapportForm.piecesRemplacees?.trim() || undefined,
-            dureeIntervention: this.rapportForm.dureeIntervention?.trim() || undefined,
-            dateRedaction: new Date().toLocaleDateString('fr-FR'),
-            redacteur: this.authService.getUser()?.name || 'Technicien'
-          };
+    const rapport: RapportIntervention = {
+      contenu: this.rapportForm.contenu.trim(),
+      typeRapport: 'intervention' as const,
+      piecesRemplacees: this.rapportForm.piecesRemplacees?.trim() || undefined,
+      dureeIntervention: this.rapportForm.dureeIntervention?.trim() || undefined,
+      dateRedaction: new Date().toLocaleDateString('fr-FR'),
+      redacteur: this.authService.getUser()?.name || 'Technicien'
+    };
     this.maintenanceService.redigerRapport(this.selectedItemId, rapport);
     this.rapports = this.maintenanceService.getItems().filter(i => i.statut === 'Terminée');
     this.fermerRapport();
@@ -637,7 +525,7 @@ export class RapportsPageComponent implements OnInit {
     const r = item.rapport;
     const contenu = [
       '========================================',
-      "RAPPORT D'INTERVENTION — SAFE TRACK",
+      "RAPPORT D'INTERVENTION — SHANGO",
       '========================================',
       '',
       `Équipement : ${item.equipment}`,
@@ -658,7 +546,7 @@ export class RapportsPageComponent implements OnInit {
       r.piecesRemplacees ? `PIÈCES REMPLACÉES : ${r.piecesRemplacees}` : '',
       '',
       '========================================',
-      'Document généré automatiquement par SAFE Track'
+      'Document généré automatiquement par Shango'
     ].filter(line => line !== '').join(String.fromCharCode(10));
 
     try {

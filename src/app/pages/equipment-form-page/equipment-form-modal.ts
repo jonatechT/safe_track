@@ -179,43 +179,41 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
 .eqm-overlay {
       position: fixed; inset: 0;
       background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(4px);
       display: flex; align-items: center; justify-content: center;
       z-index: 1000; padding: 16px;
-      animation: eqmFade 0.2s ease;
     }
     .eqm-modal {
       background: #FFF;
-      border-radius: 16px;
-      width: 100%; max-width: 720px;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      width: 100%; max-width: 500px;
       max-height: 92vh; overflow-y: auto;
-      box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2);
-      animation: eqmScaleIn 0.22s ease;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
     }
     .eqm-header {
       display: flex; align-items: flex-start; gap: 14px;
-      padding: 22px 24px 16px;
+      padding: 18px 20px 14px;
       border-bottom: 1px solid #E2E8F0;
       position: sticky; top: 0; background: #FFF; z-index: 2;
-      border-radius: 16px 16px 0 0;
+      border-radius: 10px 10px 0 0;
     }
     .eqm-header-icon {
-      width: 42px; height: 42px; border-radius: 12px;
+      width: 40px; height: 40px; border-radius: 10px;
       background: #EFF6FF; color: #2563EB;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
+      font-size: 16px; flex-shrink: 0;
     }
     .eqm-header-title-block { flex: 1; min-width: 0; }
-    .eqm-title { font-size: 17px; font-weight: 700; color: #0F172A; margin: 0; }
+    .eqm-title { font-size: 18px; font-weight: 600; color: #0F172A; margin: 0; }
     .eqm-subtitle { font-size: 12.5px; color: #64748B; margin: 4px 0 0; line-height: 1.5; }
     .eqm-close {
-      width: 34px; height: 34px; border-radius: 10px;
-      background: #F1F5F9; color: #64748B;
+      width: 32px; height: 32px; border-radius: 8px;
+      background: transparent; color: #94A3B8;
       display: flex; align-items: center; justify-content: center;
       border: none; cursor: pointer; font-size: 15px;
       transition: all 0.15s ease; flex-shrink: 0;
     }
-    .eqm-close:hover { background: #E2E8F0; color: #0F172A; }
+    .eqm-close:hover { background: #F1F5F9; color: #0F172A; }
 
     .eqm-body { padding: 20px 24px 24px; }
 
@@ -237,14 +235,14 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
 
     .eqm-input {
       padding: 11px 14px;
-      border: 1px solid #E2E8F0; border-radius: 10px;
+      border: 1px solid #E2E8F0; border-radius: 8px;
       font-size: 13.5px; font-family: inherit;
       color: #0F172A; background: #FFF;
       outline: none; width: 100%; box-sizing: border-box;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
     .eqm-input:hover { border-color: #CBD5E1; }
-    .eqm-input:focus { border-color: #94A3B8; box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.10); }
+    .eqm-input:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
 
     .eqm-select-wrap { position: relative; }
     .eqm-select { cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 10px; background-color: #F8FAFC; font-weight: 500; }
@@ -275,20 +273,18 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
     }
     .eqm-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      padding: 11px 18px; border-radius: 10px; border: 1px solid transparent;
+      padding: 10px 16px; border-radius: 8px; border: 1px solid transparent;
       font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
-    .eqm-btn--primary { background: #2563EB; color: #FFF; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
-    .eqm-btn--primary:hover:not(:disabled) { background: #1D4ED8; transform: translateY(-1px); }
+    .eqm-btn--primary { background: #2563EB; color: #FFF; }
+    .eqm-btn--primary:hover:not(:disabled) { background: #1D4ED8; }
     .eqm-btn--ghost { background: #FFF; color: #475569; border-color: #E2E8F0; }
-    .eqm-btn--ghost:hover { background: #F8FAFC; color: #1E293B; }
+    .eqm-btn--ghost:hover { background: #F1F5F9; color: #1E293B; }
     .eqm-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
     .eqm-textarea { height: auto; min-height: 96px; padding: 12px 14px; line-height: 1.5; resize: vertical; }
 
-    @keyframes eqmFade { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes eqmScaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
     @keyframes eqmDropIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes eqmSlideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 

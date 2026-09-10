@@ -177,7 +177,7 @@ import { EquipmentFormModalComponent } from '../equipment-form-page/equipment-fo
     }
     .btn-detail:hover { background-color: #2563EB; color: #FFFFFF; }
 
-    /* ===== Apparition en cascade des lignes (comme les autres listes Safe Track) ===== */
+    /* ===== Apparition en cascade des lignes (comme les autres listes Shango) ===== */
     .equip-row-animate {
       animation: equipRowIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
     }

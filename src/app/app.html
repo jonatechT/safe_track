@@ -4,7 +4,7 @@
     <div class="sidebar-header">
       <div class="sidebar-logo-row">
         <div class="logo-icon">
-          <img src="logo.jpg" alt="SHANGO logo" class="logo-img" />
+          <img src="logo.jpg" alt="Shango logo" class="logo-img" />
         </div>
         <button class="sidebar-toggle" (click)="toggleSidebar()" [attr.aria-label]="sidebarToggleLabel" [attr.title]="sidebarToggleLabel">
           <i class="fa-solid" [class.fa-angles-left]="!isSidebarCollapsed" [class.fa-angles-right]="isSidebarCollapsed"></i>
@@ -42,7 +42,7 @@
   <aside class="mobile-sidebar" *ngIf="isMobileMenuOpen && !isAuthPage() && !isSuperAdminPage()">
     <div class="sidebar-logo">
       <div class="logo-icon">
-        <img src="logo.jpg" alt="SHANGO logo" class="logo-img" />
+        <img src="logo.jpg" alt="Shango logo" class="logo-img" />
       </div>
       <span class="logo-text">SHANGO</span>
       <button class="mobile-menu-close" (click)="closeMobileMenu()" aria-label="Fermer le menu">

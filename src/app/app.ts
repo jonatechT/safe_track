@@ -24,7 +24,7 @@ interface MenuItem {
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('SAFE Track');
+  protected readonly title = signal('Shango');
 
   private readonly SIDEBAR_STATE_KEY = 'safe_track_sidebar_collapsed';
 

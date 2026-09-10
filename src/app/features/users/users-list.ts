@@ -99,16 +99,16 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-badge-inactive { background: #FEF2F2; color: #EF4444; }
     .users-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 24px; color: #94A3B8; }
     .users-empty-icon { font-size: 36px; color: #CBD5E1; }
-    .users-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-    .users-modal { background: #FFF; border-radius: 16px; padding: 24px; width: 90%; max-width: 440px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2); }
+    .users-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.55); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .users-modal { background: #FFF; border: 1px solid #E2E8F0; border-radius: 10px; padding: 24px; width: 90%; max-width: 440px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18); }
     .users-modal-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
     .users-modal-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .users-modal-icon-warning { background: #FFFBEB; color: #F59E0B; }
-    .users-modal-title { font-size: 16px; font-weight: 700; color: #0F172A; }
+    .users-modal-title { font-size: 18px; font-weight: 600; color: #0F172A; }
     .users-modal-body { font-size: 13px; color: #64748B; line-height: 1.6; margin-bottom: 20px; }
     .users-modal-body--form { display: flex; flex-direction: column; gap: 16px; }
-    .users-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: #F1F5F9; color: #64748B; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease; margin-left: auto; }
-    .users-modal-close:hover { background: #E2E8F0; color: #0F172A; }
+    .users-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent; color: #94A3B8; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease; margin-left: auto; }
+    .users-modal-close:hover { background: #F1F5F9; color: #0F172A; }
     .users-modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
 
     @media (max-width: 1024px) {

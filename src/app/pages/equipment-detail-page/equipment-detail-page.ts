@@ -713,8 +713,7 @@ import { BatteryExportService } from '../../services/battery-export.service';
       position: fixed;
       inset: 0;
       z-index: 1000;
-      background: rgba(23, 32, 51, 0.45);
-      backdrop-filter: blur(3px);
+      background: rgba(15, 23, 42, 0.55);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -725,9 +724,9 @@ import { BatteryExportService } from '../../services/battery-export.service';
       width: 100%;
       max-width: 420px;
       background: #FFFFFF;
-      border: 1px solid rgba(79, 124, 255, 0.12);
-      border-radius: 18px;
-      box-shadow: 0 24px 60px rgba(23, 32, 51, 0.25);
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
       padding: 24px;
     }
 
@@ -738,13 +737,13 @@ import { BatteryExportService } from '../../services/battery-export.service';
     }
 
     .eqd-modal-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
@@ -760,10 +759,9 @@ import { BatteryExportService } from '../../services/battery-export.service';
 
     .eqd-modal-title {
       margin: 0;
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      color: #172033;
+      font-size: 18px;
+      font-weight: 600;
+      color: #0F172A;
     }
 
     .eqd-modal-body {

@@ -1,4 +1,4 @@
-/* Leaflet CSS */
+﻿/* Leaflet CSS */
 @import 'leaflet/dist/leaflet.css';
 
 /* Global styles */
@@ -39,7 +39,7 @@ body {
   background: #94A3B8;
 }
 
-/* Icônes à contour (remplissage vide) */
+/* IcÃ´nes Ã  contour (remplissage vide) */
 .icon-outline {
   -webkit-text-stroke: 1.2px currentColor;
   -webkit-text-fill-color: transparent;
@@ -62,8 +62,8 @@ body {
 }
 
 /* ============================================================
-   MODE NUIT — activé via la classe .dark-mode posée sur <body>
-   (sélecteurs globaux : s'appliquent aux styles composants)
+   MODE NUIT â€” activÃ© via la classe .dark-mode posÃ©e sur <body>
+   (sÃ©lecteurs globaux : s'appliquent aux styles composants)
    ============================================================ */
 
 /* --- Base --- */
@@ -165,7 +165,7 @@ body.dark-mode .notifications-empty-title {
   color: #94A3B8;
 }
 
-/* --- Modales génériques --- */
+/* --- Modales gÃ©nÃ©riques --- */
 body.dark-mode .logout-modal {
   background: #111827;
 }
@@ -191,7 +191,7 @@ body.dark-mode .stat-card--red,
 body.dark-mode .stat-card--purple,
 body.dark-mode .stat-card--pink,
 body.dark-mode .stat-card--orange {
-  /* !important : écrase les styles inline / bindings [style.background] (page générique Alertes) */
+  /* !important : Ã©crase les styles inline / bindings [style.background] (page gÃ©nÃ©rique Alertes) */
   background: #111827 !important;
   border-color: #1F2937 !important;
 }
@@ -209,8 +209,8 @@ body.dark-mode .progress-text {
 }
 
 /* --- Tableaux --- */
-/* NB : !important requis pour battre les styles scopés des composants (_ngcontent),
-   qui posent background-color: #FFFFFF sur tr/td avec une spécificité supérieure. */
+/* NB : !important requis pour battre les styles scopÃ©s des composants (_ngcontent),
+   qui posent background-color: #FFFFFF sur tr/td avec une spÃ©cificitÃ© supÃ©rieure. */
 body.dark-mode .data-table thead th {
   color: #CBD5E1 !important;
   background: #1E293B !important;
@@ -238,7 +238,7 @@ body.dark-mode .data-table tbody td:nth-child(4),
 body.dark-mode .data-table tbody td:nth-child(5) {
   color: #94A3B8 !important;
 }
-/* Lignes sélectionnées (.active) : restent bleues en mode nuit */
+/* Lignes sÃ©lectionnÃ©es (.active) : restent bleues en mode nuit */
 body.dark-mode .data-table tbody tr.active {
   background-color: #2563EB !important;
 }
@@ -251,7 +251,7 @@ body.dark-mode .data-table tbody tr.active:hover td {
   background-color: #2563EB !important;
   border-color: #2563EB !important;
 }
-/* Nom d'équipement dans les cellules (sinon texte sombre illisible sur fond sombre) */
+/* Nom d'Ã©quipement dans les cellules (sinon texte sombre illisible sur fond sombre) */
 body.dark-mode .equipment-name {
   color: #F1F5F9 !important;
 }
@@ -318,7 +318,7 @@ body.dark-mode textarea::placeholder {
   color: #64748B;
 }
 
-/* --- Page Dashboard (racine .dashboard blanche par défaut + textes dédiés) --- */
+/* --- Page Dashboard (racine .dashboard blanche par dÃ©faut + textes dÃ©diÃ©s) --- */
 body.dark-mode .dashboard {
   background: #0B1220;
 }
@@ -327,7 +327,7 @@ body.dark-mode .dashboard-title {
   color: #F1F5F9;
 }
 
-/* Liste catégories */
+/* Liste catÃ©gories */
 body.dark-mode .category-name {
   color: #CBD5E1;
 }
@@ -357,7 +357,7 @@ body.dark-mode .legend-value {
   color: #F1F5F9;
 }
 
-/* Items Activités & Alertes */
+/* Items ActivitÃ©s & Alertes */
 body.dark-mode .activity-item,
 body.dark-mode .alert-item {
   background: #111827;
@@ -377,7 +377,7 @@ body.dark-mode .alert-title {
   color: #F1F5F9;
 }
 
-/* Pastilles de statut (fond pastel translucide adapté au sombre) */
+/* Pastilles de statut (fond pastel translucide adaptÃ© au sombre) */
 body.dark-mode .status-progress {
   background: rgba(37, 99, 235, 0.18);
   color: #93C5FD;
@@ -403,7 +403,7 @@ body.dark-mode .page-subtitle-main {
   color: #94A3B8 !important;
 }
 
-/* ===== Colonnes ID / Date du tableau Parc d'équipement ===== */
+/* ===== Colonnes ID / Date du tableau Parc d'Ã©quipement ===== */
 body.dark-mode .id-code {
   color: #93C5FD !important;
 }
@@ -412,7 +412,7 @@ body.dark-mode .sync-time {
   color: #94A3B8 !important;
 }
 
-/* ===== Page Détail équipement (app-equipment-detail-page) ===== */
+/* ===== Page DÃ©tail Ã©quipement (app-equipment-detail-page) ===== */
 body.dark-mode app-equipment-detail-page {
   background: #0B1220 !important;
 }
@@ -429,7 +429,7 @@ body.dark-mode app-equipment-detail-page .eqd-modal {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35) !important;
 }
 
-/* Surfaces imbriquées (dégradés clairs) -> sombre */
+/* Surfaces imbriquÃ©es (dÃ©gradÃ©s clairs) -> sombre */
 body.dark-mode app-equipment-detail-page .eqd-diag-item,
 body.dark-mode app-equipment-detail-page .eqd-bdiag-stat-card,
 body.dark-mode app-equipment-detail-page .eqd-loc-card,
@@ -473,7 +473,7 @@ body.dark-mode app-equipment-detail-page .eqd-badge-neutral {
   color: #94A3B8 !important;
 }
 
-/* Textes intermédiaires */
+/* Textes intermÃ©diaires */
 body.dark-mode app-equipment-detail-page .eqd-modal-body,
 body.dark-mode app-equipment-detail-page .eqd-coords,
 body.dark-mode app-equipment-detail-page .eqd-bdiag-message,
@@ -482,7 +482,7 @@ body.dark-mode app-equipment-detail-page .eqd-loc-note {
   color: #CBD5E1 !important;
 }
 
-/* Bouton fantôme (Retour) : lisible sur fond sombre, y compris au survol */
+/* Bouton fantÃ´me (Retour) : lisible sur fond sombre, y compris au survol */
 body.dark-mode app-equipment-detail-page .eqd-btn-ghost {
   color: #CBD5E1 !important;
   background: rgba(148, 163, 184, 0.08) !important;
@@ -513,8 +513,8 @@ body.dark-mode app-battery-history-charts .bhc-sub {
   color: #94A3B8 !important;
 }
 
-/* ===== Détail équipement — fonds clairs restants ===== */
-/* Carte historique batterie + état vide */
+/* ===== DÃ©tail Ã©quipement â€” fonds clairs restants ===== */
+/* Carte historique batterie + Ã©tat vide */
 body.dark-mode app-equipment-detail-page .eqd-battery-history,
 body.dark-mode app-equipment-detail-page .eqd-empty {
   background: #111827 !important;
@@ -580,13 +580,13 @@ body.dark-mode app-equipment-detail-page .eqd-badge-neutral {
   background: rgba(148, 163, 184, 0.16) !important;
 }
 
-/* Carte de localisation « actuelle » : conserve sa teinte verte */
+/* Carte de localisation Â« actuelle Â» : conserve sa teinte verte */
 body.dark-mode app-equipment-detail-page .eqd-loc-card--current {
   background: rgba(16, 185, 129, 0.10) !important;
 }
 
 /* ===== Tableaux : badges Statut / Technicien / Alerte (Maintenance, Alertes) ===== */
-/* Maintenance — badges de statut */
+/* Maintenance â€” badges de statut */
 body.dark-mode app-maintenance-page .status-planifiee {
   background: rgba(217, 119, 6, 0.15) !important;
   color: #FBBF24 !important;
@@ -611,7 +611,7 @@ body.dark-mode app-maintenance-page .status-non-pris {
   border-color: rgba(203, 213, 225, 0.25) !important;
 }
 
-/* Maintenance — badges d'alerte */
+/* Maintenance â€” badges d'alerte */
 body.dark-mode app-maintenance-page .alert-active {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #FCA5A5 !important;
@@ -624,7 +624,7 @@ body.dark-mode app-maintenance-page .alert-none {
   border-color: rgba(209, 213, 219, 0.25) !important;
 }
 
-/* Maintenance — badge technicien ayant pris l'alerte */
+/* Maintenance â€” badge technicien ayant pris l'alerte */
 body.dark-mode app-maintenance-page .tech-badge {
   background: rgba(16, 185, 129, 0.15) !important;
   color: #6EE7B7 !important;
@@ -637,7 +637,7 @@ body.dark-mode app-maintenance-page .tech-badge.tech-mine {
   border-color: rgba(191, 219, 254, 0.28) !important;
 }
 
-/* Alertes — badges de statut */
+/* Alertes â€” badges de statut */
 body.dark-mode app-generic-page .status-alert {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #FCA5A5 !important;
@@ -744,7 +744,7 @@ body.dark-mode app-profile-page .profile-logout-btn:hover {
   border-color: rgba(248, 113, 113, 0.5) !important;
 }
 
-/* ===== Fenêtre « Ajouter un équipement » (equipment-form-page) ===== */
+/* ===== FenÃªtre Â« Ajouter un Ã©quipement Â» (equipment-form-page) ===== */
 body.dark-mode app-equipment-form-page .eqf-card {
   background: #111827 !important;
   border-color: #1F2937 !important;
@@ -835,8 +835,8 @@ body.dark-mode app-equipment-form-page .eqf-alert--error {
 }
 
 /* ==========================================================================
-   MODE NUIT — SUPERADMIN (layout + 4 pages partageant superadmin-styles.scss)
-   Sélecteurs globaux avec !important pour battre les styles scopés Angular.
+   MODE NUIT â€” SUPERADMIN (layout + 4 pages partageant superadmin-styles.scss)
+   SÃ©lecteurs globaux avec !important pour battre les styles scopÃ©s Angular.
    ========================================================================== */
 
 /* --- Layout : topbar, contenu, panneau profil --- */
@@ -1059,7 +1059,7 @@ body.dark-mode .sa-pagination-btn.active {
 }
 
 /* ==========================================================================
-   MODE NUIT — SHELL PRINCIPAL (sidebar)
+   MODE NUIT â€” SHELL PRINCIPAL (sidebar)
    ========================================================================== */
 
 /* --- Sidebar --- */
@@ -1144,7 +1144,7 @@ body.dark-mode .profile-role {
   color: #94A3B8 !important;
 }
 
-/* ===== Onglets page Alertes (En cours / Historique) — mode nuit ===== */
+/* ===== Onglets page Alertes (En cours / Historique) â€” mode nuit ===== */
 body.dark-mode .alerts-tabs .alerts-tab {
   background: #111827 !important;
   border-color: #1F2937 !important;
@@ -1176,7 +1176,7 @@ body.dark-mode .alerts-tab-empty i {
   color: #22C55E !important;
 }
 
-/* ===== Modale d'affectation d'une intervention — mode nuit ===== */
+/* ===== Modale d'affectation d'une intervention â€” mode nuit ===== */
 body.dark-mode .affect-overlay {
   background: rgba(2, 6, 23, 0.7) !important;
 }
@@ -1248,7 +1248,7 @@ body.dark-mode .affect-btn-confirm:disabled {
   color: #94A3B8 !important;
 }
 
-/* ===== Barre de filtres & recherche (page Alertes) — mode nuit ===== */
+/* ===== Barre de filtres & recherche (page Alertes) â€” mode nuit ===== */
 body.dark-mode .alert-filter {
   background: #111827 !important;
   border-color: #1F2937 !important;
@@ -1282,7 +1282,7 @@ body.dark-mode .affect-multi-note {
   color: #94A3B8 !important;
 }
 
-/* ===== Page Paramètres — mode nuit ===== */
+/* ===== Page ParamÃ¨tres â€” mode nuit ===== */
 body.dark-mode app-settings-page .stg-card {
   background: #111827 !important;
   border-color: #1F2937 !important;
@@ -1340,7 +1340,7 @@ body.dark-mode app-settings-page .stg-btn-danger:hover {
   border-color: #DC2626 !important;
   color: #FFFFFF !important;
 }
-/* ===== Page Rapports — mode nuit (fenêtre modale de rédaction / consultation) ===== */
+/* ===== Page Rapports â€” mode nuit (fenÃªtre modale de rÃ©daction / consultation) ===== */
 body.dark-mode app-rapports-page .rapport-overlay {
   background: rgba(0, 0, 0, 0.65) !important;
 }
@@ -1373,19 +1373,6 @@ body.dark-mode app-rapports-page .rapport-label {
 }
 body.dark-mode app-rapports-page .rapport-label i {
   color: #93C5FD !important;
-}
-body.dark-mode app-rapports-page .rapport-type-option {
-  background: #1E293B !important;
-  border-color: #334155 !important;
-  color: #CBD5E1 !important;
-}
-body.dark-mode app-rapports-page .rapport-type-option.active {
-  background: rgba(37, 99, 235, 0.25) !important;
-  border-color: #2563EB !important;
-  color: #93C5FD !important;
-}
-body.dark-mode app-rapports-page .rapport-radio-option {
-  color: #CBD5E1 !important;
 }
 body.dark-mode app-rapports-page .rapport-select,
 body.dark-mode app-rapports-page .rapport-textarea,
@@ -1449,7 +1436,7 @@ body.dark-mode app-rapports-page .rapport-view-conformite strong {
 body.dark-mode app-rapports-page .rapport-view-conformite span {
   color: #E2E8F0 !important;
 }
-/* ===== Modale « Ajouter un équipement » (equipment-list) — mode nuit ===== */
+/* ===== Modale Â« Ajouter un Ã©quipement Â» (equipment-list) â€” mode nuit ===== */
 body.dark-mode app-equipment-list-page .eqm-overlay {
   background: rgba(0, 0, 0, 0.65) !important;
 }
@@ -1540,7 +1527,7 @@ body.dark-mode app-equipment-list-page .eqm-btn--ghost:hover {
 body.dark-mode app-equipment-list-page .eqm-actions {
   border-top-color: #1F2937 !important;
 }
-/* ===== SuperAdmin — mode nuit (styles scopés superadmin-styles.scss ne match pas body) ===== */
+/* ===== SuperAdmin â€” mode nuit (styles scopÃ©s superadmin-styles.scss ne match pas body) ===== */
 body.dark-mode .sa-page-header .sa-title { color: #F1F5F9 !important; }
 body.dark-mode .sa-page-header .sa-subtitle { color: #94A3B8 !important; }
 
@@ -1651,7 +1638,7 @@ body.dark-mode .sa-empty-icon { color: #334155 !important; }
 body.dark-mode .sa-loading { color: #94A3B8 !important; }
 body.dark-mode .sa-spinner { border-color: #334155 !important; border-top-color: #60A5FA !important; }
 
-/* Modales partagées superadmin */
+/* Modales partagÃ©es superadmin */
 body.dark-mode .sa-modal-overlay { background: rgba(0, 0, 0, 0.7) !important; }
 body.dark-mode .sa-modal {
   background: #111827 !important;
@@ -1661,36 +1648,66 @@ body.dark-mode .sa-modal-title { color: #F1F5F9 !important; }
 body.dark-mode .sa-modal-body { color: #94A3B8 !important; }
 body.dark-mode .sa-modal-icon-danger { background: rgba(220, 38, 38, 0.16) !important; color: #FCA5A5 !important; }
 body.dark-mode .sa-modal-icon-warning { background: rgba(245, 158, 11, 0.16) !important; color: #FCD34D !important; }
-/* ===== Modale « Ajouter une structure » (sam-*) — mode nuit ===== */
-body.dark-mode .sam-overlay { background: rgba(0, 0, 0, 0.7) !important; }
-body.dark-mode .sam-modal { background: #111827 !important; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55) !important; scrollbar-color: #334155 transparent !important; }
-body.dark-mode .sam-modal::-webkit-scrollbar-track { background: transparent !important; }
-body.dark-mode .sam-modal::-webkit-scrollbar-thumb { background: #334155 !important; }
-body.dark-mode .sam-modal::-webkit-scrollbar-thumb:hover { background: #475569 !important; }
-body.dark-mode .sam-header { background: #111827 !important; border-bottom-color: #1F2937 !important; }
+/* ===== Modale Â« Ajouter une structure Â» (sam-*) â€” mode nuit ===== */
+body.dark-mode .sam-overlay { background: rgba(0, 0, 0, 0.72) !important; }
+body.dark-mode .sam-modal {
+  background: linear-gradient(180deg, rgba(17, 24, 39, 0.72), transparent) !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 40px rgba(37, 99, 235, 0.18), 0 24px 64px rgba(0, 0, 0, 0.6) !important;
+}
+body.dark-mode .sam-modal::before {
+  background: linear-gradient(90deg, #2563EB, #3B82F6) !important;
+  box-shadow: 0 2px 14px rgba(37, 99, 235, 0.45) !important;
+}
+body.dark-mode .sam-body { scrollbar-color: #334155 transparent !important; }
+body.dark-mode .sam-body::-webkit-scrollbar { width: 14px !important; background: transparent !important; }
+body.dark-mode .sam-body::-webkit-scrollbar-track { background: transparent !important; }
+body.dark-mode .sam-body::-webkit-scrollbar-corner { background: transparent !important; }
+body.dark-mode .sam-body::-webkit-scrollbar-thumb {
+  background-color: #334155 !important;
+  border-radius: 999px !important;
+  border: 4px solid transparent !important;
+  border-top-width: 14px !important;
+  border-bottom-width: 14px !important;
+  background-clip: content-box !important;
+  min-height: 56px !important;
+}
+body.dark-mode .sam-body::-webkit-scrollbar-thumb:hover { background-color: #475569 !important; }
+body.dark-mode .sam-header {
+  background: rgba(17, 24, 39, 0.86) !important;
+  border-bottom-color: #1F2937 !important;
+}
 body.dark-mode .sam-title { color: #F1F5F9 !important; }
 body.dark-mode .sam-subtitle { color: #94A3B8 !important; }
 body.dark-mode .sam-close { background: #1E293B !important; color: #CBD5E1 !important; }
 body.dark-mode .sam-close:hover { background: #334155 !important; color: #F1F5F9 !important; }
+body.dark-mode .sam-stepper { background: #0B1220 !important; border-color: #1F2937 !important; }
+body.dark-mode .sam-stepper::before {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.22), rgba(59, 130, 246, 0.22)) !important;
+}
 body.dark-mode .sam-step-num { background: #1F2937 !important; color: #94A3B8 !important; }
 body.dark-mode .sam-step-label { color: #94A3B8 !important; }
-body.dark-mode .sam-step--active .sam-step-num { background: #2563EB !important; color: #FFF !important; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important; }
+body.dark-mode .sam-step--active .sam-step-num { background: #2563EB !important; color: #FFF !important; box-shadow: 0 6px 14px rgba(37, 99, 235, 0.35) !important; }
 body.dark-mode .sam-step--active .sam-step-label { color: #E2E8F0 !important; }
-body.dark-mode .sam-step--done .sam-step-num { background: #059669 !important; color: #FFF !important; }
-body.dark-mode .sam-step--done .sam-step-label { color: #6EE7B7 !important; }
+body.dark-mode .sam-step--done .sam-step-num { background: #3B82F6 !important; color: #FFF !important; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3) !important; }
+body.dark-mode .sam-step--done .sam-step-label { color: #93C5FD !important; }
 body.dark-mode .sam-step-line { background: #1F2937 !important; }
-body.dark-mode .sam-step-line--done { background: #059669 !important; }
+body.dark-mode .sam-step-line--done { background: linear-gradient(90deg, #2563EB, #3B82F6) !important; }
 body.dark-mode .sam-error { background: rgba(220, 38, 38, 0.14) !important; color: #FCA5A5 !important; border-color: rgba(220, 38, 38, 0.35) !important; }
 body.dark-mode .sam-alert--success { background: rgba(16, 185, 129, 0.14) !important; color: #6EE7B7 !important; border-color: rgba(16, 185, 129, 0.35) !important; }
 body.dark-mode .sam-step-title { color: #F1F5F9 !important; }
 body.dark-mode .sam-step-sub { color: #94A3B8 !important; }
 body.dark-mode .sam-optional { background: rgba(37, 99, 235, 0.18) !important; color: #93C5FD !important; border-color: rgba(59, 130, 246, 0.35) !important; }
+body.dark-mode .sam-grid { background: #0B1220 !important; border-color: #1F2937 !important; }
 body.dark-mode .sam-label { color: #CBD5E1 !important; }
 body.dark-mode .sam-input, body.dark-mode .sam-select, body.dark-mode .sam-textarea {
-  background: #0B1220 !important; border-color: #1F2937 !important; color: #E2E8F0 !important;
+  background: #1C1917 !important; border-color: #334155 !important; color: #E2E8F0 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
 }
 body.dark-mode .sam-input:focus, body.dark-mode .sam-select:focus, body.dark-mode .sam-textarea:focus {
-  border-color: #3B82F6 !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18) !important;
+  border-color: #3B82F6 !important; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18) !important;
 }
 body.dark-mode .sam-input::placeholder, body.dark-mode .sam-textarea::placeholder { color: #64748B !important; }
 body.dark-mode .sam-note { background: rgba(37, 99, 235, 0.16) !important; color: #93C5FD !important; border-color: rgba(59, 130, 246, 0.35) !important; }
@@ -1700,12 +1717,19 @@ body.dark-mode .sam-review-row { border-bottom-color: #1F2937 !important; }
 body.dark-mode .sam-review-row span { color: #94A3B8 !important; }
 body.dark-mode .sam-review-row strong { color: #F1F5F9 !important; }
 body.dark-mode .sam-review-empty { color: #64748B !important; }
-body.dark-mode .sam-actions { background: #111827 !important; border-top-color: #1F2937 !important; }
-body.dark-mode .sam-btn--secondary { background: #1F2937 !important; color: #CBD5E1 !important; border-color: #334155 !important; }
-body.dark-mode .sam-btn--secondary:hover { background: #334155 !important; color: #F1F5F9 !important; }
-body.dark-mode .sam-btn--ghost { background: transparent !important; color: #CBD5E1 !important; border-color: #334155 !important; }
+body.dark-mode .sam-actions {
+  background: rgba(17, 24, 39, 0.92) !important;
+  border-top-color: #1F2937 !important;
+}
+body.dark-mode .sam-btn--secondary { background: #1F2937 !important; color: #CBD5E1 !important; border-color: #475569 !important; }
+body.dark-mode .sam-btn--secondary:hover { background: #475569 !important; color: #F1F5F9 !important; }
+body.dark-mode .sam-btn--ghost { background: transparent !important; color: #CBD5E1 !important; border-color: #475569 !important; }
 body.dark-mode .sam-btn--ghost:hover { background: #1F2937 !important; color: #F1F5F9 !important; }
-/* ===== Page « Ajouter / Modifier une structure » (sf-*) — mode nuit ===== */
+body.dark-mode .sam-heading-overline { color: #93C5FD !important; }
+body.dark-mode .sam-header-icon {
+  filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.45)) !important;
+}
+/* ===== Page Â« Ajouter / Modifier une structure Â» (sf-*) â€” mode nuit ===== */
 body.dark-mode app-structure-form {
   background: #0B1220 !important;
   color: #E2E8F0 !important;
