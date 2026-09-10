@@ -10,7 +10,8 @@ import {
   BatteryHistoryEntry,
   LocationHistoryEntry
 } from '../../services/equipment.service';
-import { MaintenanceService } from '../../services/maintenance.service';
+import { MaintenanceItem, MaintenanceService } from '../../services/maintenance.service';
+import { UsersService } from '../../services/users.service';
 import { AuthService } from '../../auth/auth.service';
 import { BatteryHistoryChartsComponent } from '../../components/battery-history-charts/battery-history-charts';
 import { BatteryExportService } from '../../services/battery-export.service';
@@ -457,6 +458,93 @@ import { BatteryExportService } from '../../services/battery-export.service';
             }
           }
         </section>
+
+        <!-- ===== Intervention & affectations (visible uniquement depuis /maintenance) ===== -->
+        @if (source === 'maintenance') {
+          <section class="eqd-interv">
+            <header class="eqd-bdiag-head">
+              <span class="eqd-chip eqd-chip-blue eqd-chip-lg"><i class="fa-solid fa-user-gear"></i></span>
+              <div class="eqd-bdiag-head-text">
+                <h3 class="eqd-bdiag-title">Intervention de maintenance</h3>
+                <p class="eqd-bdiag-sub">Techniciens affectés et planification liés à cet équipement.</p>
+              </div>
+            </header>
+
+            <div class="eqd-interv-block">
+              <h4 class="eqd-interv-block-title">
+                <i class="fa-solid fa-users-gear"></i>
+                <span>Techniciens affectés</span>
+              </h4>
+              @if (techniciensAffectes.length > 0) {
+                <ul class="eqd-interv-tech-list">
+                  @for (tech of techniciensAffectes; track $index) {
+                    <li class="eqd-interv-tech-item">
+                      <span class="eqd-interv-tech-avatar"><i class="fa-solid fa-user"></i></span>
+                      <span class="eqd-interv-tech-name">{{ tech.nom }}</span>
+                      @if (tech.telephone) {
+                        <a class="eqd-interv-tech-tel" [href]="'tel:' + tech.telephone">
+                          <i class="fa-solid fa-phone"></i> {{ tech.telephone }}
+                        </a>
+                      } @else {
+                        <span class="eqd-interv-tech-tel eqd-interv-tech-tel--muted">
+                          <i class="fa-solid fa-phone-slash"></i> N° non renseigné
+                        </span>
+                      }
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="eqd-interv-empty">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Aucun technicien n'a été affecté à cet équipement.
+                </p>
+              }
+            </div>
+
+            <div class="eqd-interv-block">
+              <h4 class="eqd-interv-block-title">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Planification d'intervention</span>
+              </h4>
+              @if (maintenanceItem) {
+                <div class="eqd-interv-plan-card">
+                  <div class="eqd-interv-plan-row">
+                    <span class="eqd-interv-plan-key">Objet</span>
+                    <span class="eqd-interv-plan-val">{{ maintenanceItem.type }}</span>
+                  </div>
+                  <div class="eqd-interv-plan-row">
+                    <span class="eqd-interv-plan-key">Statut</span>
+                    <span class="eqd-interv-plan-badge">{{ maintenanceItem.statut }}</span>
+                  </div>
+                  @if (maintenanceItem.natures?.length) {
+                    <div class="eqd-interv-plan-row">
+                      <span class="eqd-interv-plan-key">Natures</span>
+                      <span class="eqd-interv-plan-val">
+                        @for (n of maintenanceItem.natures; track $index) {
+                          <span class="eqd-interv-plan-tag">{{ n }}</span>
+                        }
+                      </span>
+                    </div>
+                  }
+                  @if (maintenanceItem.datePrevueISO || maintenanceItem.datePrevue) {
+                    <div class="eqd-interv-plan-row">
+                      <span class="eqd-interv-plan-key">Date prévue</span>
+                      <span class="eqd-interv-plan-val">
+                        <i class="fa-regular fa-clock"></i>
+                        {{ datePrevueDisplay }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="eqd-interv-empty">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Aucune planification d'intervention n'est prévue sur cet équipement.
+                </p>
+              }
+            </div>
+          </section>
+        }
       }
     </div>
 
@@ -1750,6 +1838,176 @@ import { BatteryExportService } from '../../services/battery-export.service';
 
       .eqd-battery-diag { padding: 18px; }
     }
+
+    /* ===== Intervention & affectations (vue depuis /maintenance) ===== */
+    .eqd-interv {
+      background: #FFFFFF;
+      border: 1px solid rgba(23, 32, 51, 0.06);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 12px 40px rgba(65, 78, 120, 0.10);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .eqd-interv-block {
+      background: linear-gradient(160deg, #F8F9FF 0%, #F3F5FE 100%);
+      border: 1px solid rgba(79, 124, 255, 0.10);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .eqd-interv-block-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #172033;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eqd-interv-block-title i {
+      color: #4F7CFF;
+    }
+
+    .eqd-interv-tech-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .eqd-interv-tech-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #FFFFFF;
+      border: 1px solid rgba(23, 32, 51, 0.08);
+      min-width: 0;
+    }
+
+    .eqd-interv-tech-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(79, 124, 255, 0.12);
+      color: #4F7CFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .eqd-interv-tech-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #172033;
+      min-width: 0;
+    }
+
+    .eqd-interv-tech-tel {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #4F7CFF;
+      text-decoration: none;
+      margin-left: auto;
+    }
+
+    .eqd-interv-tech-tel:hover {
+      text-decoration: underline;
+    }
+
+    .eqd-interv-tech-tel--muted {
+      color: #94A3B8;
+      margin-left: auto;
+    }
+
+    .eqd-interv-empty {
+      margin: 0;
+      font-size: 13px;
+      color: #7A8499;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eqd-interv-empty i {
+      color: #94A3B8;
+    }
+
+    .eqd-interv-plan-card {
+      border: 1px solid rgba(23, 32, 51, 0.08);
+      border-radius: 12px;
+      background: #FFFFFF;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .eqd-interv-plan-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .eqd-interv-plan-key {
+      flex-shrink: 0;
+      width: 110px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #8A93A8;
+    }
+
+    .eqd-interv-plan-val {
+      font-size: 14px;
+      color: #172033;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .eqd-interv-plan-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(79, 124, 255, 0.12);
+      color: #4F7CFF;
+    }
+
+    .eqd-interv-plan-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #10B981;
+    }
   `]
 })
 export class EquipmentDetailPageComponent implements OnInit {
@@ -1796,6 +2054,7 @@ export class EquipmentDetailPageComponent implements OnInit {
     private router: Router,
     private equipmentService: EquipmentService,
     private maintenanceService: MaintenanceService,
+    private usersService: UsersService,
     private authService: AuthService,
     private batteryExportService: BatteryExportService
   ) {}
@@ -2270,6 +2529,39 @@ export class EquipmentDetailPageComponent implements OnInit {
       console.error('Export PDF batterie', err);
       this.exportError.set('Le rapport PDF n\'a pas pu être généré. Réessayez plus tard.');
     }
+  }
+
+  /**
+   * Intervention de maintenance associée à cet équipement (si elle existe).
+   * Utilisée par la vue détail ouverte depuis /maintenance pour afficher
+   * les techniciens affectés et la planification prévue.
+   */
+  get maintenanceItem(): MaintenanceItem | null {
+    if (!this.equipment) return null;
+    return this.maintenanceService.getItems().find(i => i.equipment === this.equipment!.nom) ?? null;
+  }
+
+  /** Techniciens affectés à l'intervention de cet équipement (nom + téléphone). */
+  get techniciensAffectes(): { nom: string; telephone: string }[] {
+    const item = this.maintenanceItem;
+    if (!item?.affectes) return [];
+    return item.affectes.map(a => {
+      const user =
+        this.usersService.getAllUsers().find(u => u.name === a.nom) ??
+        this.authService.getAllUsers().find(u => u.name === a.nom);
+      return { nom: a.nom, telephone: user?.telephone ?? '' };
+    });
+  }
+
+  /** Date prévue de l'intervention, formatée en français si lisible. */
+  get datePrevueDisplay(): string {
+    const item = this.maintenanceItem;
+    const raw = item?.datePrevueISO || item?.datePrevue;
+    if (!raw) return '—';
+    const iso = item?.datePrevueISO ? `${raw}T00:00:00` : raw;
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   retour(): void {
