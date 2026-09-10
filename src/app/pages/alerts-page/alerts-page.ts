@@ -383,10 +383,13 @@ export class AlertsPageComponent {
   }
 
   get techniciensDisponibles(): User[] {
-    // Tous les techniciens actifs de la PLATEFORME ENTIÈRE (toutes structures).
+    // Un admin de structure ne voit que les techniciens DE SA PROPRE STRUCTURE.
+    // Seul le SuperAdmin (qui n'a pas de structureId) voit toute la plateforme.
+    const maStructureId = this.authService.getUser()?.structureId;
     return this.usersService
       .getAllUsers()
       .filter(u => u.role === 'USER' && (u.statut ?? 'ACTIVE') === 'ACTIVE')
+      .filter(u => !maStructureId || u.structureId === maStructureId)
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 

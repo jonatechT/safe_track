@@ -76,6 +76,92 @@ import { BatteryExportService } from '../../services/battery-export.service';
           </button>
         </section>
       } @else {
+        <!-- ===== Intervention & affectations (visible uniquement depuis /maintenance) ===== -->
+        @if (source === 'maintenance') {
+          <section class="eqd-interv">
+            <header class="eqd-bdiag-head">
+              <span class="eqd-chip eqd-chip-blue eqd-chip-lg"><i class="fa-solid fa-user-gear"></i></span>
+              <div class="eqd-bdiag-head-text">
+                <h3 class="eqd-bdiag-title">Intervention de maintenance</h3>
+                <p class="eqd-bdiag-sub">Techniciens affectés et planification liés à cet équipement.</p>
+              </div>
+            </header>
+
+            <div class="eqd-interv-block">
+              <h4 class="eqd-interv-block-title">
+                <i class="fa-solid fa-users-gear"></i>
+                <span>Techniciens affectés</span>
+              </h4>
+              @if (techniciensAffectes.length > 0) {
+                <ul class="eqd-interv-tech-list">
+                  @for (tech of techniciensAffectes; track $index) {
+                    <li class="eqd-interv-tech-item">
+                      <span class="eqd-interv-tech-avatar"><i class="fa-solid fa-user"></i></span>
+                      <span class="eqd-interv-tech-name">{{ tech.nom }}</span>
+                      @if (tech.telephone) {
+                        <a class="eqd-interv-tech-tel" [href]="'tel:' + tech.telephone">
+                          <i class="fa-solid fa-phone"></i> {{ tech.telephone }}
+                        </a>
+                      } @else {
+                        <span class="eqd-interv-tech-tel eqd-interv-tech-tel--muted">
+                          <i class="fa-solid fa-phone-slash"></i> N° non renseigné
+                        </span>
+                      }
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="eqd-interv-empty">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Aucun technicien n'a été affecté à cet équipement.
+                </p>
+              }
+            </div>
+
+            <div class="eqd-interv-block">
+              <h4 class="eqd-interv-block-title">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Planification d'intervention</span>
+              </h4>
+              @if (maintenanceItem) {
+                <div class="eqd-interv-plan-card">
+                  <div class="eqd-interv-plan-row">
+                    <span class="eqd-interv-plan-key">Objet</span>
+                    <span class="eqd-interv-plan-val">{{ maintenanceItem.type }}</span>
+                  </div>
+                  <div class="eqd-interv-plan-row">
+                    <span class="eqd-interv-plan-key">Statut</span>
+                    <span class="eqd-interv-plan-badge">{{ maintenanceItem.statut }}</span>
+                  </div>
+                  @if (maintenanceItem.natures?.length) {
+                    <div class="eqd-interv-plan-row">
+                      <span class="eqd-interv-plan-key">Natures</span>
+                      <span class="eqd-interv-plan-val">
+                        @for (n of maintenanceItem.natures; track $index) {
+                          <span class="eqd-interv-plan-tag">{{ n }}</span>
+                        }
+                      </span>
+                    </div>
+                  }
+                  @if (maintenanceItem.datePrevueISO || maintenanceItem.datePrevue) {
+                    <div class="eqd-interv-plan-row">
+                      <span class="eqd-interv-plan-key">Date prévue</span>
+                      <span class="eqd-interv-plan-val">
+                        <i class="fa-regular fa-clock"></i>
+                        {{ datePrevueDisplay }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="eqd-interv-empty">
+                  <i class="fa-solid fa-circle-info"></i>
+                  Aucune planification d'intervention n'est prévue sur cet équipement.
+                </p>
+              }
+            </div>
+          </section>
+        }
         <!-- ===== Carte résumé de l'équipement ===== -->
         <section class="eqd-summary">
           <div class="eqd-summary-main">
@@ -459,92 +545,6 @@ import { BatteryExportService } from '../../services/battery-export.service';
           }
         </section>
 
-        <!-- ===== Intervention & affectations (visible uniquement depuis /maintenance) ===== -->
-        @if (source === 'maintenance') {
-          <section class="eqd-interv">
-            <header class="eqd-bdiag-head">
-              <span class="eqd-chip eqd-chip-blue eqd-chip-lg"><i class="fa-solid fa-user-gear"></i></span>
-              <div class="eqd-bdiag-head-text">
-                <h3 class="eqd-bdiag-title">Intervention de maintenance</h3>
-                <p class="eqd-bdiag-sub">Techniciens affectés et planification liés à cet équipement.</p>
-              </div>
-            </header>
-
-            <div class="eqd-interv-block">
-              <h4 class="eqd-interv-block-title">
-                <i class="fa-solid fa-users-gear"></i>
-                <span>Techniciens affectés</span>
-              </h4>
-              @if (techniciensAffectes.length > 0) {
-                <ul class="eqd-interv-tech-list">
-                  @for (tech of techniciensAffectes; track $index) {
-                    <li class="eqd-interv-tech-item">
-                      <span class="eqd-interv-tech-avatar"><i class="fa-solid fa-user"></i></span>
-                      <span class="eqd-interv-tech-name">{{ tech.nom }}</span>
-                      @if (tech.telephone) {
-                        <a class="eqd-interv-tech-tel" [href]="'tel:' + tech.telephone">
-                          <i class="fa-solid fa-phone"></i> {{ tech.telephone }}
-                        </a>
-                      } @else {
-                        <span class="eqd-interv-tech-tel eqd-interv-tech-tel--muted">
-                          <i class="fa-solid fa-phone-slash"></i> N° non renseigné
-                        </span>
-                      }
-                    </li>
-                  }
-                </ul>
-              } @else {
-                <p class="eqd-interv-empty">
-                  <i class="fa-solid fa-circle-info"></i>
-                  Aucun technicien n'a été affecté à cet équipement.
-                </p>
-              }
-            </div>
-
-            <div class="eqd-interv-block">
-              <h4 class="eqd-interv-block-title">
-                <i class="fa-solid fa-calendar-days"></i>
-                <span>Planification d'intervention</span>
-              </h4>
-              @if (maintenanceItem) {
-                <div class="eqd-interv-plan-card">
-                  <div class="eqd-interv-plan-row">
-                    <span class="eqd-interv-plan-key">Objet</span>
-                    <span class="eqd-interv-plan-val">{{ maintenanceItem.type }}</span>
-                  </div>
-                  <div class="eqd-interv-plan-row">
-                    <span class="eqd-interv-plan-key">Statut</span>
-                    <span class="eqd-interv-plan-badge">{{ maintenanceItem.statut }}</span>
-                  </div>
-                  @if (maintenanceItem.natures?.length) {
-                    <div class="eqd-interv-plan-row">
-                      <span class="eqd-interv-plan-key">Natures</span>
-                      <span class="eqd-interv-plan-val">
-                        @for (n of maintenanceItem.natures; track $index) {
-                          <span class="eqd-interv-plan-tag">{{ n }}</span>
-                        }
-                      </span>
-                    </div>
-                  }
-                  @if (maintenanceItem.datePrevueISO || maintenanceItem.datePrevue) {
-                    <div class="eqd-interv-plan-row">
-                      <span class="eqd-interv-plan-key">Date prévue</span>
-                      <span class="eqd-interv-plan-val">
-                        <i class="fa-regular fa-clock"></i>
-                        {{ datePrevueDisplay }}
-                      </span>
-                    </div>
-                  }
-                </div>
-              } @else {
-                <p class="eqd-interv-empty">
-                  <i class="fa-solid fa-circle-info"></i>
-                  Aucune planification d'intervention n'est prévue sur cet équipement.
-                </p>
-              }
-            </div>
-          </section>
-        }
       }
     </div>
 
