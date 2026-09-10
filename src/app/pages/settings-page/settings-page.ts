@@ -33,7 +33,7 @@ import { ThemeService } from '../../services/theme.service';
 
           <div class="stg-row">
             <div class="stg-row-info">
-              <span class="stg-row-title">Prise en charge multiple</span>
+              <span class="stg-row-title">Affectation multi-techniciens</span>
               <span class="stg-row-desc">Permettre à l'admin d'affecter plusieurs techniciens à une même alerte.</span>
             </div>
             <label class="stg-switch">
@@ -59,7 +59,7 @@ import { ThemeService } from '../../services/theme.service';
 
           <div class="stg-row">
             <div class="stg-row-info">
-              <span class="stg-row-title">Prise en charge globale</span>
+              <span class="stg-row-title">Auto-prise en charge des alertes</span>
               <span class="stg-row-desc">Les techniciens peuvent prendre eux-mêmes une alerte sans attendre une affectation de l'admin.</span>
             </div>
             <label class="stg-switch">
@@ -72,7 +72,7 @@ import { ThemeService } from '../../services/theme.service';
 
           <div class="stg-row">
             <div class="stg-row-info">
-              <span class="stg-row-title">Planifier une maintenance</span>
+              <span class="stg-row-title">Planification d'une intervention de maintenance</span>
               <span class="stg-row-desc">Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance.</span>
             </div>
             <label class="stg-switch">
