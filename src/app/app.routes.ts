@@ -113,9 +113,7 @@ export const routes: Route[] = [
   { path: 'location/en-ligne', redirectTo: '/equipements/en-ligne', pathMatch: 'full' },
   { path: 'equipements/nouveau', loadComponent: () => import('./pages/equipment-form-page/equipment-form-page').then(m => m.EquipmentFormPageComponent), canActivate: [authGuard] },
   { path: 'equipements/:id', loadComponent: () => import('./pages/equipment-detail-page/equipment-detail-page').then(m => m.EquipmentDetailPageComponent), canActivate: [authGuard] },
-  // Ancienne route Maintenance : la maintenance est désormais intégrée au cycle de vie des alertes.
-  // L'ancien lien redirige vers la page Alertes pour préserver les bookmarks existants.
-  { path: 'maintenance', redirectTo: '/alerts', pathMatch: 'full' },
+  { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
   { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },
   { path: 'parametres', loadComponent: () => import('./pages/settings-page/settings-page').then(m => m.SettingsPageComponent), canActivate: [authGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/generic-page/generic-page').then(m => m.GenericPageComponent), data: pageData['alerts'], canActivate: [authGuard] },
