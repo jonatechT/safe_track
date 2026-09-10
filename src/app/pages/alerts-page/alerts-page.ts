@@ -1,16 +1,18 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { BasePageComponent } from '../base-page/base-page';
 import { MaintenanceService, MaintenanceItem } from '../../services/maintenance.service';
 import { EquipmentService } from '../../services/equipment.service';
 import { UsersService } from '../../services/users.service';
 import { AuthService, User } from '../../auth/auth.service';
 import { SettingsService } from '../../services/settings.service';
+import { StructureService } from '../../superadmin/services/structure.service';
 
 @Component({
   selector: 'app-alerts-page',
   standalone: true,
-  imports: [BasePageComponent],
+  imports: [BasePageComponent, FormsModule],
   template: `
     <app-base-page title="Alertes" subtitle="Alertes non prises en charge sur votre parc." icon="fa-solid fa-triangle-exclamation">
       <div class="alerts-content">
@@ -80,13 +82,15 @@ import { SettingsService } from '../../services/settings.service';
                             <i class="fa-solid fa-user-clock"></i>
                             {{ planifMode ? 'Planifier' : 'Affecter' }}
                           </button>
-                        } @else if (canTakeAlerts) {
+                        } @else if (peutPrendre(item)) {
                           <button class="btn-take" (click)="prendreAlerte(item); $event.stopPropagation()">
-                            <i class="fa-solid" [class.fa-hand]="!inspectionMode" [class.fa-magnifying-glass]="inspectionMode"></i>
-                            {{ inspectionMode ? 'Inspecter' : 'Prendre' }}
+                            <i class="fa-solid fa-hand"></i>
+                            Prendre
                           </button>
                         } @else {
-                          <span class="locked-label"><i class="fa-solid fa-lock"></i> En attente</span>
+                          <span class="locked-label" title="Auto-prise désactivée : attendez l'affectation de l'admin">
+                            <i class="fa-solid fa-lock"></i> En attente
+                          </span>
                         }
                       </td>
                     </tr>
@@ -98,7 +102,7 @@ import { SettingsService } from '../../services/settings.service';
         }
       </div>
 
-      <!-- Modale d'affectation d'une alerte à un ou plusieurs techniciens -->
+      <!-- Modale d'affectation / planification d'une alerte -->
       @if (showAffectModal && selectedItem) {
         <div class="affect-overlay" (click)="closeAffectModal()">
           <div class="affect-modal" role="dialog" aria-modal="true" aria-label="Affecter une intervention" (click)="$event.stopPropagation()">
@@ -110,41 +114,81 @@ import { SettingsService } from '../../services/settings.service';
               </div>
               <button type="button" class="affect-modal-close" aria-label="Fermer" (click)="closeAffectModal()"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            @if (affectModeMulti) {
-              <div class="affect-multi-note">
-                <i class="fa-solid fa-users"></i>
-                Sélectionnez un ou plusieurs techniciens (max {{ maxTechniciens }}).
-              </div>
-            }
+
             <div class="affect-modal-body">
-              @if (techniciensDisponibles.length) {
-                <div class="affect-list">
-                  @for (tech of techniciensDisponibles; track tech.id) {
-                    <button type="button" class="affect-item" [class.selected]="isTechnicienSelected(tech.id)" (click)="toggleTechnicien(tech.id)">
-                      <span class="affect-avatar">{{ tech.name.charAt(0) }}</span>
-                      <span class="affect-item-info">
-                        <span class="affect-item-name">{{ tech.name }}</span>
-                        <span class="affect-item-email">{{ tech.telephone || tech.email }}</span>
-                      </span>
-                      <i class="fa-solid fa-circle-check affect-check"></i>
-                    </button>
-                  }
+              @if (planifMode) {
+                <div class="planif-fields">
+                  <div class="planif-field">
+                    <label class="planif-label" for="planif-date">Date de l'intervention</label>
+                    <input id="planif-date" type="date" class="planif-input" [(ngModel)]="planifDate" [min]="today()" />
+                  </div>
+                  <div class="planif-field">
+                    <label class="planif-label" for="planif-nature">Nature de l'intervention</label>
+                    <select id="planif-nature" class="planif-input" [(ngModel)]="planifNature">
+                      @for (n of naturesDisponibles; track n) {
+                        <option [value]="n">{{ n }}</option>
+                      }
+                      @if (!naturesDisponibles.length) {
+                        <option value="Préventive">Préventive</option>
+                      }
+                    </select>
+                  </div>
                 </div>
-              } @else {
-                <p class="affect-empty">Aucun technicien actif disponible dans votre structure pour le moment.</p>
               }
-              <button type="button" class="affect-item affect-self" [class.selected]="isTechnicienSelected(-1)" (click)="toggleTechnicien(-1)">
-                <span class="affect-avatar">Moi</span>
-                <span class="affect-item-info">
-                  <span class="affect-item-name">M'affecter cette intervention</span>
-                  <span class="affect-item-email">{{ currentUserName }}</span>
-                </span>
-                <i class="fa-solid fa-circle-check affect-check"></i>
-              </button>
+
+              @if (affectModeMulti) {
+                <div class="affect-multi-note">
+                  <i class="fa-solid fa-users"></i>
+                  Sélectionnez un ou plusieurs techniciens (max {{ maxTechniciens }}).
+                  <span class="affect-counter" [class.at-max]="selectedTechnicienIds.length >= maxTechniciens">
+                    {{ selectedTechnicienIds.length }} / {{ maxTechniciens }}
+                  </span>
+                </div>
+              }
+
+              <div class="affect-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input
+                  type="text"
+                  placeholder="Rechercher un technicien..."
+                  [(ngModel)]="rechercheTechnicien"
+                  class="affect-search-input"
+                />
+              </div>
+
+              <div class="affect-list">
+                @for (tech of techniciensFiltres; track tech.id) {
+                  <button
+                    type="button"
+                    class="affect-item"
+                    [class.selected]="isTechnicienSelected(tech.id)"
+                    [class.disabled]="!isTechnicienSelected(tech.id) && !peutAjouterTechnicien()"
+                    (click)="toggleTechnicien(tech.id)"
+                  >
+                    <span class="affect-avatar">{{ tech.name.charAt(0) }}</span>
+                    <span class="affect-item-info">
+                      <span class="affect-item-name">
+                        {{ tech.name }}
+                        <span class="affect-item-structure">{{ structureLibelle(tech.structureId) }}</span>
+                      </span>
+                      <span class="affect-item-email">{{ tech.email }}</span>
+                    </span>
+                    <i class="fa-solid fa-circle-check affect-check"></i>
+                  </button>
+                }
+                @if (techniciensFiltres.length === 0) {
+                  <p class="affect-empty">Aucun technicien actif ne correspond à votre recherche.</p>
+                }
+              </div>
             </div>
             <div class="affect-modal-footer">
               <button type="button" class="affect-btn-cancel" (click)="closeAffectModal()">Annuler</button>
-              <button type="button" class="affect-btn-confirm" [disabled]="!selectedTechnicienIds.length" (click)="confirmerAffectation()">
+              <button
+                type="button"
+                class="affect-btn-confirm"
+                [disabled]="!selectedTechnicienIds.length || (planifMode && !planifDate)"
+                (click)="confirmerAffectation()"
+              >
                 <i class="fa-solid fa-user-check"></i>
                 {{ planifMode ? 'Planifier' : 'Affecter' }}
               </button>
@@ -232,6 +276,21 @@ import { SettingsService } from '../../services/settings.service';
     .affect-item.selected .affect-check, .affect-self.selected .affect-check { opacity: 1; }
     .affect-empty { font-size: 13px; color: #64748B; text-align: center; padding: 12px 0; }
     .affect-multi-note { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #64748B; padding: 10px 20px 4px; }
+    .affect-counter { margin-left: auto; font-weight: 700; color: #2563EB; background: #EFF6FF; border-radius: 12px; padding: 2px 8px; font-size: 11px; }
+    .affect-counter.at-max { color: #DC2626; background: #FEE2E2; }
+    /* Recherche dans la liste des techniciens (plateforme entière) */
+    .affect-search { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid #E2E8F0; border-radius: 10px; background: #F8FAFC; }
+    .affect-search i { color: #94A3B8; font-size: 13px; }
+    .affect-search-input { border: none; outline: none; background: transparent; font-size: 13px; color: #0F172A; width: 100%; font-family: inherit; }
+    /* Champs date + nature pour la planification */
+    .planif-fields { display: flex; flex-direction: column; gap: 10px; padding: 10px 20px 4px; }
+    .planif-field { display: flex; flex-direction: column; gap: 4px; }
+    .planif-label { font-size: 11.5px; font-weight: 700; color: #475569; }
+    .planif-input { padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 9px; font-size: 13px; color: #0F172A; outline: none; font-family: inherit; background: #FFFFFF; }
+    .planif-input:focus { border-color: #2563EB; }
+    .affect-item.disabled { opacity: 0.5; cursor: not-allowed; }
+    .affect-item.disabled:hover { border-color: #E2E8F0; background: #FFFFFF; }
+    .affect-item-structure { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 600; color: #64748B; background: #F1F5F9; border-radius: 8px; padding: 1px 6px; vertical-align: middle; }
     .affect-modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid #E2E8F0; }
     .affect-btn-cancel { padding: 8px 16px; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
     .affect-btn-cancel:hover { background: #F1F5F9; }
@@ -244,6 +303,11 @@ export class AlertsPageComponent {
   showAffectModal = false;
   selectedItem: MaintenanceItem | null = null;
   selectedTechnicienIds: number[] = [];
+  /** Recherche libre dans la liste des techniciens (plateforme entière). */
+  rechercheTechnicien = '';
+  /** Date choisie pour une intervention planifiée (format ISO yyyy-mm-dd). */
+  planifDate = '';
+  planifNature = '';
 
   constructor(
     private maintenanceService: MaintenanceService,
@@ -251,6 +315,7 @@ export class AlertsPageComponent {
     private usersService: UsersService,
     private authService: AuthService,
     private settingsService: SettingsService,
+    private structureService: StructureService,
     private router: Router
   ) {}
 
@@ -279,19 +344,38 @@ export class AlertsPageComponent {
   }
 
   get maxTechniciens(): number {
-    return this.settingsService.settings().maxTechniciens;
+    const max = this.settingsService.settings().maxTechniciens;
+    return Math.max(1, max || 1);
   }
 
   get canTakeAlerts(): boolean {
     return this.settingsService.settings().priseEnChargeGlobale;
   }
 
+  /**
+   * Un technicien peut prendre une alerte si l'auto-prise globale est active,
+   * OU s'il a été explicitement affecté à cette alerte par l'admin.
+   */
+  peutPrendre(item: MaintenanceItem): boolean {
+    if (this.canTakeAlerts) return true;
+    const moi = this.currentUserName;
+    return !!item.affectes?.some(a => a.nom === moi);
+  }
+
   get planifMode(): boolean {
     return this.settingsService.settings().planifierMaintenance;
   }
 
-  get inspectionMode(): boolean {
-    return this.settingsService.settings().inspectionTechniciens;
+  get naturesDisponibles(): string[] {
+    const natures = this.settingsService.settings().naturesIntervention;
+    return natures && natures.length ? natures : ['Préventive'];
+  }
+
+  /** Date du jour au format ISO (pour l'attribut min des champs date). */
+  today(): string {
+    const d = new Date();
+    const p = (v: number) => v.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
   }
 
   get currentUserName(): string {
@@ -299,12 +383,30 @@ export class AlertsPageComponent {
   }
 
   get techniciensDisponibles(): User[] {
-    const structureId = this.authService.getUser()?.structureId;
-    if (!structureId) return [];
+    // Tous les techniciens actifs de la PLATEFORME ENTIÈRE (toutes structures).
     return this.usersService
-      .getUsersByStructure(structureId)
+      .getAllUsers()
       .filter(u => u.role === 'USER' && (u.statut ?? 'ACTIVE') === 'ACTIVE')
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  get techniciensFiltres(): User[] {
+    const q = this.rechercheTechnicien.trim().toLowerCase();
+    if (!q) return this.techniciensDisponibles;
+    return this.techniciensDisponibles.filter(
+      t => t.name.toLowerCase().includes(q) || t.email.toLowerCase().includes(q)
+    );
+  }
+
+  /** Le quota de techniciens (défini dans /parametres) est-il atteint ? */
+  peutAjouterTechnicien(): boolean {
+    return this.selectedTechnicienIds.length < this.maxTechniciens;
+  }
+
+  /** Affiche le nom de la structure d'un technicien (ou son id). */
+  structureLibelle(structureId?: string): string {
+    if (!structureId) return '';
+    return this.structureService.getStructure(structureId)?.nom || structureId;
   }
 
   prendreAlerte(item: MaintenanceItem): void {
@@ -317,6 +419,9 @@ export class AlertsPageComponent {
   ouvrirAffectation(item: MaintenanceItem): void {
     this.selectedItem = item;
     this.selectedTechnicienIds = [];
+    this.rechercheTechnicien = '';
+    this.planifDate = '';
+    this.planifNature = this.naturesDisponibles[0] || 'Préventive';
     this.showAffectModal = true;
   }
 
@@ -324,6 +429,7 @@ export class AlertsPageComponent {
     this.showAffectModal = false;
     this.selectedItem = null;
     this.selectedTechnicienIds = [];
+    this.rechercheTechnicien = '';
   }
 
   isTechnicienSelected(id: number): boolean {
@@ -331,17 +437,14 @@ export class AlertsPageComponent {
   }
 
   toggleTechnicien(id: number): void {
-    if (id === -1) {
-      this.selectedTechnicienIds = this.selectedTechnicienIds.includes(-1) ? [] : [-1];
-      return;
-    }
     if (!this.affectModeMulti) {
-      this.selectedTechnicienIds = [id];
+      // Mono-affectation : la sélection remplace.
+      this.selectedTechnicienIds = this.selectedTechnicienIds.includes(id) ? [] : [id];
       return;
     }
     if (this.selectedTechnicienIds.includes(id)) {
       this.selectedTechnicienIds = this.selectedTechnicienIds.filter(x => x !== id);
-    } else if (this.selectedTechnicienIds.length < this.maxTechniciens) {
+    } else if (this.peutAjouterTechnicien()) {
       this.selectedTechnicienIds = [...this.selectedTechnicienIds, id];
     }
   }
@@ -349,15 +452,27 @@ export class AlertsPageComponent {
   confirmerAffectation(): void {
     if (!this.selectedItem || this.selectedTechnicienIds.length === 0) return;
     const item = this.selectedItem;
-    const names = this.selectedTechnicienIds
-      .filter(id => id !== -1)
-      .map(id => this.techniciensDisponibles.find(t => t.id === id)?.name)
-      .filter((n): n is string => !!n);
-    if (this.selectedTechnicienIds.includes(-1)) names.unshift(this.currentUserName);
-    const technicienName = names.length ? names.join(' & ') : this.currentUserName;
-    this.maintenanceService.prendreAlerte(item.id, technicienName);
+    const techniciens = this.selectedTechnicienIds
+      .map(id => this.techniciensDisponibles.find(t => t.id === id))
+      .filter((t): t is User => !!t)
+      .map(t => ({ id: t.id, nom: t.name }));
+
+    if (this.planifMode) {
+      if (!this.planifDate) return;
+      this.maintenanceService.planifierIntervention(item.id, {
+        nature: this.planifNature || 'Préventive',
+        natures: this.planifNature ? [this.planifNature] : [],
+        date: this.planifDate,
+        techniciens
+      });
+      this.closeAffectModal();
+      this.router.navigate(['/maintenance'], { queryParams: { planifie: '1' } });
+      return;
+    }
+
+    this.maintenanceService.affecterAlerte(item.id, techniciens);
     this.closeAffectModal();
-    this.router.navigate(['/maintenance'], { queryParams: { taken: '1' } });
+    this.router.navigate(['/maintenance'], { queryParams: { affecte: '1' } });
   }
 
   ouvrirDetail(item: MaintenanceItem): void {

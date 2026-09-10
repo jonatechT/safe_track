@@ -1,17 +1,31 @@
 import { Component, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { BasePageComponent } from '../base-page/base-page';
 import { MaintenanceService, MaintenanceItem } from '../../services/maintenance.service';
 import { EquipmentService } from '../../services/equipment.service';
-import { AuthService } from '../../auth/auth.service';
+import { UsersService } from '../../services/users.service';
+import { SettingsService } from '../../services/settings.service';
+import { AuthService, User } from '../../auth/auth.service';
+import { StructureService } from '../../superadmin/services/structure.service';
 
 @Component({
   selector: 'app-maintenance-page',
   standalone: true,
-  imports: [BasePageComponent],
+  imports: [BasePageComponent, FormsModule],
   template: `
     <app-base-page title="Maintenance" subtitle="Planification et suivi des interventions de maintenance." icon="fa-solid fa-wrench">
       <div class="maintenance-content">
+        <!-- Barre d'actions : bouton Planifier (admin, si l'option est active dans /parametres) -->
+        <div class="maintenance-actions-bar">
+          <div></div>
+          @if (canPlanifier) {
+            <button class="btn-planifier-top" (click)="ouvrirPlanification()">
+              <i class="fa-solid fa-calendar-plus"></i> Planifier une intervention
+            </button>
+          }
+        </div>
+
         <!-- KPI Cards -->
         <div class="stat-grid">
           <div class="stat-card stat-card--blue">
@@ -117,6 +131,62 @@ import { AuthService } from '../../auth/auth.service';
           </div>
         </div>
       </div>
+
+      <!-- Modale de planification d'une nouvelle intervention -->
+      @if (showPlanifModal) {
+        <div class="planif-overlay" (click)="fermerPlanification()">
+          <div class="planif-modal" role="dialog" aria-modal="true" aria-label="Planifier une intervention" (click)="$event.stopPropagation()">
+            <div class="planif-modal-header">
+              <div class="planif-modal-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+              <div class="planif-modal-title-block">
+                <h3 class="planif-modal-title">Planifier une intervention</h3>
+                <span class="planif-modal-subtitle">Créer une nouvelle intervention de maintenance</span>
+              </div>
+              <button type="button" class="planif-modal-close" aria-label="Fermer" (click)="fermerPlanification()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="planif-modal-body">
+              <div class="planif-modal-field">
+                <label class="planif-modal-label" for="pf-equipement">Équipement</label>
+                <select id="pf-equipement" class="planif-modal-input" [(ngModel)]="planifEquipement">
+                  @for (eq of equipementsList; track eq.nom) {
+                    <option [value]="eq.nom">{{ eq.nom }}</option>
+                  }
+                </select>
+              </div>
+              <div class="planif-modal-field">
+                <label class="planif-modal-label" for="pf-nature">Nature de l'intervention</label>
+                <select id="pf-nature" class="planif-modal-input" [(ngModel)]="planifNature">
+                  @for (n of naturesDisponibles; track n) {
+                    <option [value]="n">{{ n }}</option>
+                  }
+                  @if (!naturesDisponibles.length) {
+                    <option value="Préventive">Préventive</option>
+                  }
+                </select>
+              </div>
+              <div class="planif-modal-field">
+                <label class="planif-modal-label" for="pf-date">Date de l'intervention</label>
+                <input id="pf-date" type="date" class="planif-modal-input" [(ngModel)]="planifDate" [min]="today()" />
+              </div>
+              <div class="planif-modal-field">
+                <label class="planif-modal-label" for="pf-tech">Techniciens affectés</label>
+                <select id="pf-tech" class="planif-modal-input" [(ngModel)]="planifTechniciensIds" multiple size="4">
+                  @for (t of techniciensDisponibles; track t.id) {
+                    <option [ngValue]="t.id">{{ t.name }} ({{ structureLibelle(t.structureId) }})</option>
+                  }
+                </select>
+                <span class="planif-modal-hint">CTRL+clic pour en sélectionner plusieurs (max {{ maxTechniciens }}).</span>
+              </div>
+            </div>
+            <div class="planif-modal-footer">
+              <button type="button" class="planif-btn-cancel" (click)="fermerPlanification()">Annuler</button>
+              <button type="button" class="planif-btn-confirm" [disabled]="!canConfirmPlanif" (click)="confirmerPlanification()">
+                <i class="fa-solid fa-calendar-check"></i> Planifier
+              </button>
+            </div>
+          </div>
+        </div>
+      }
     </app-base-page>
   `,
   styles: [`
@@ -223,6 +293,34 @@ import { AuthService } from '../../auth/auth.service';
     .data-table tbody td:last-child { text-align: right; }
     .actions-cell { text-align: right; }
 
+    /* ===== Bouton Planifier (visible si l'option est active dans /parametres) ===== */
+    .btn-planifier-top { background: #2563EB; color: #FFFFFF; border: none; border-radius: 8px; padding: 10px 18px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+    .btn-planifier-top i { color: #FFFFFF; }
+    .btn-planifier-top:hover { background: #1D4ED8; transform: translateY(-1px); }
+    .maintenance-actions-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+    /* ===== Modale de planification ===== */
+    .planif-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+    .planif-modal { background: #FFFFFF; border-radius: 16px; width: 100%; max-width: 440px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28); }
+    .planif-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid #E2E8F0; }
+    .planif-modal-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #EFF6FF; color: #2563EB; font-size: 18px; flex-shrink: 0; }
+    .planif-modal-title-block { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .planif-modal-title { margin: 0; font-size: 15px; font-weight: 700; color: #0F172A; }
+    .planif-modal-subtitle { font-size: 11.5px; color: #64748B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .planif-modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent; color: #64748B; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+    .planif-modal-close:hover { background: #F1F5F9; color: #0F172A; }
+    .planif-modal-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+    .planif-modal-field { display: flex; flex-direction: column; gap: 4px; }
+    .planif-modal-label { font-size: 12px; font-weight: 600; color: #475569; }
+    .planif-modal-input { padding: 9px 12px; border: 1px solid #E2E8F0; border-radius: 9px; font-size: 13px; color: #0F172A; outline: none; font-family: inherit; background: #FFFFFF; }
+    .planif-modal-input:focus { border-color: #2563EB; }
+    .planif-modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid #E2E8F0; }
+    .planif-btn-cancel { padding: 8px 16px; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
+    .planif-btn-cancel:hover { background: #F1F5F9; }
+    .planif-btn-confirm { padding: 8px 18px; border-radius: 8px; border: none; background: #2563EB; color: #FFFFFF; font-size: 12.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .planif-btn-confirm:hover { background: #1D4ED8; }
+    .planif-btn-confirm:disabled { background: #CBD5E1; cursor: not-allowed; }
+
     .equipment-cell { display: flex; align-items: center; gap: 10px; }
     .equipment-name { font-weight: 600; color: #0F172A; font-size: 13px; }
     .location-link-page { display: inline-flex; align-items: center; gap: 6px; color: #2563EB; text-decoration: none; font-weight: 500; font-size: 12px; transition: all 0.2s ease; }
@@ -313,7 +411,10 @@ export class MaintenancePageComponent {
   constructor(
     private maintenanceService: MaintenanceService,
     private equipmentService: EquipmentService,
+    private usersService: UsersService,
+    private settingsService: SettingsService,
     private authService: AuthService,
+    private structureService: StructureService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -321,9 +422,95 @@ export class MaintenancePageComponent {
     const params = this.route.snapshot.queryParamMap;
     if (params.get('taken') === '1') {
       this.showFeedback('Alerte prise en charge avec succès : elle apparaît maintenant ici.', 'success');
+    } else if (params.get('planifie') === '1') {
+      this.showFeedback('Intervention planifiée avec succès. Les techniciens affectés ont été notifiés.', 'success');
+    } else if (params.get('affecte') === '1') {
+      this.showFeedback('Alerte affectée avec succès. Les techniciens ont été notifiés.', 'success');
     } else if (params.get('denied') === '1') {
       this.showFeedback("Accès refusé : cette intervention est assignée à un autre technicien.", 'error');
     }
+  }
+
+  /** Nombre max de techniciens (défini dans /parametres). */
+  get maxTechniciens(): number {
+    return Math.max(1, this.settingsService.settings().maxTechniciens || 1);
+  }
+
+  /** Le bouton Planifier est visible pour l'admin si l'option est active. */
+  get canPlanifier(): boolean {
+    return this.isAdmin() && this.settingsService.settings().planifierMaintenance;
+  }
+
+  get naturesDisponibles(): string[] {
+    const n = this.settingsService.settings().naturesIntervention;
+    return n && n.length ? n : ['Préventive'];
+  }
+
+  get techniciensDisponibles(): User[] {
+    return this.usersService
+      .getAllUsers()
+      .filter(u => u.role === 'USER' && (u.statut ?? 'ACTIVE') === 'ACTIVE')
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  get equipementsList(): { nom: string }[] {
+    return this.equipmentService.getAll();
+  }
+
+  today(): string {
+    const d = new Date();
+    const p = (v: number) => v.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  structureLibelle(id?: string): string {
+    if (!id) return '';
+    return this.structureService.getStructure(id)?.nom || id;
+  }
+
+  // ===== Modale de planification =====
+  showPlanifModal = false;
+  planifEquipement = '';
+  planifNature = '';
+  planifDate = '';
+  planifTechniciensIds: number[] = [];
+
+  get canConfirmPlanif(): boolean {
+    return !!this.planifEquipement && !!this.planifDate && this.planifTechniciensIds.length > 0;
+  }
+
+  ouvrirPlanification(): void {
+    const eqs = this.equipementsList;
+    this.planifEquipement = eqs.length ? eqs[0].nom : '';
+    this.planifNature = this.naturesDisponibles[0] || 'Préventive';
+    this.planifDate = '';
+    this.planifTechniciensIds = [];
+    this.showPlanifModal = true;
+  }
+
+  fermerPlanification(): void {
+    this.showPlanifModal = false;
+  }
+
+  confirmerPlanification(): void {
+    if (!this.canConfirmPlanif) return;
+    const techniciens = this.techniciensDisponibles
+      .filter(t => this.planifTechniciensIds.includes(t.id))
+      .slice(0, this.maxTechniciens)
+      .map(t => ({ id: t.id, nom: t.name }));
+
+    this.maintenanceService.planifierNouvelleIntervention({
+      equipment: this.planifEquipement,
+      nature: this.planifNature,
+      natures: this.naturesDisponibles,
+      date: this.planifDate,
+      techniciens
+    });
+    this.fermerPlanification();
+    this.showFeedback(
+      `Intervention « ${this.planifNature} » sur ${this.planifEquipement} planifiée (${techniciens.length} techniciens affectés).`,
+      'success'
+    );
   }
 
   /**
@@ -346,11 +533,13 @@ export class MaintenancePageComponent {
 
   /**
    * Un technicien ne peut ouvrir le détail que d'une intervention non prise,
-   * ou de celle qui lui est assignée. L'admin voit toujours tout.
+   * de celle qui lui est assignée (affectation multi), ou de celle qu'il a prise.
+   * L'admin voit toujours tout.
    */
   peutOuvrirDetail(item: MaintenanceItem): boolean {
     if (this.isAdmin()) return true;
-    return !item.prisPar || item.prisPar === this.getCurrentUserName();
+    const estAffecte = !!item.affectes?.some(a => a.nom === this.getCurrentUserName());
+    return !item.prisPar || item.prisPar === this.getCurrentUserName() || estAffecte;
   }
 
   getEnCours(): number {

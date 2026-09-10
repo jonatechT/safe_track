@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { SettingsService } from './settings.service';
 
 export interface MaintenanceItem {
   id: string;
@@ -9,11 +10,17 @@ export interface MaintenanceItem {
   /** Sévérité de l'alerte d'origine — absente pour une maintenance planifiée directement. */
   severite?: 'Critique' | 'Avertissement';
   datePrevue: string;
+  /** Date strictement comparable (ISO yyyy-MM-dd) pour la logique de rappel. */
+  datePrevueISO?: string;
   technicien: string;
   statut: 'Planifiée' | 'En attente' | 'En cours' | 'Terminée';
   alertes: number;
   prisPar?: string;
   datePrise?: string;
+  /** Techniciens affectés à l'intervention par l'admin (plateforme entière). */
+  affectes?: { id: number; nom: string }[];
+  /** Nature(s) de l'intervention planifiée (multi-nature). */
+  natures?: string[];
   localisation?: string;
   lienLocalisation?: string;
   rapport?: RapportIntervention;
@@ -28,6 +35,8 @@ export interface NotificationItem {
   message: string;
   date: string;
   read: boolean;
+  /** Technicien destinataire (nom). Absent → notification globale visible par tout le monde. */
+  destinataire?: string;
 }
 
 export interface RapportIntervention {
@@ -55,7 +64,7 @@ export class MaintenanceService {
   readonly maintenanceItems = signal<MaintenanceItem[]>(this.loadInitialData());
   readonly notifications = signal<NotificationItem[]>([]);
 
-  constructor() {
+  constructor(private settingsService: SettingsService) {
     // Synchronisation multi-onglets : si un autre onglet (autre technicien)
     // prend une alerte, cet onglet se met à jour immédiatement afin d'éviter
     // que deux techniciens se dirigent vers le même équipement en même temps.
@@ -70,6 +79,9 @@ export class MaintenanceService {
         }
       });
     }
+    // Notifications automatiques : signaler aux techniciens affectés les
+    // interventions planifiées dont la date approche (réglé dans /parametres).
+    this.verifierProchainesInterventions();
   }
 
   private loadInitialData(): MaintenanceItem[] {
@@ -205,6 +217,186 @@ export class MaintenanceService {
     this.notifications.set([...this.notifications(), notif]);
 
     return true;
+  }
+
+  /**
+   * Affecter une alerte à un ou plusieurs techniciens (plateforme entière).
+   * Chaque technicien affecté reçoit une notification individuelle.
+   */
+  affecterAlerte(id: string, techniciens: { id: number; nom: string }[]): void {
+    const items = this.maintenanceItems().map(item =>
+      item.id === id ? { ...item, affectes: techniciens } : item
+    );
+    this.maintenanceItems.set(items);
+    this.save(items);
+
+    const target = this.maintenanceItems().find(i => i.id === id);
+    if (!target) return;
+    const date = this.maintenanceDate();
+    techniciens.forEach(t => {
+      this.pushNotification({
+        itemId: id,
+        equipment: target.equipment,
+        type: target.type,
+        technicien: t.nom,
+        message: `Vous avez été affecté à l'alerte « ${target.type} » sur ${target.equipment}.`,
+        date,
+        destinataire: t.nom
+      });
+    });
+  }
+
+  /**
+   * Planifier une intervention de maintenance depuis une alerte existante :
+   * la date et la/les nature(s) sont définies, les techniciens affectés notifiés.
+   */
+  planifierIntervention(
+    id: string,
+    data: { nature: string; natures: string[]; date: string; techniciens: { id: number; nom: string }[] }
+  ): void {
+    const items = this.maintenanceItems().map(item =>
+      item.id === id
+        ? {
+            ...item,
+            type: data.nature,
+            natures: data.natures,
+            datePrevue: data.date,
+            datePrevueISO: data.date,
+            statut: 'Planifiée' as const,
+            alertes: 0,
+            prisPar: undefined,
+            datePrise: undefined,
+            affectes: data.techniciens
+          }
+        : item
+    );
+    this.maintenanceItems.set(items);
+    this.save(items);
+
+    const target = items.find(i => i.id === id) ?? this.maintenanceItems().find(i => i.id === id);
+    const date = this.maintenanceDate();
+    data.techniciens.forEach(t => {
+      this.pushNotification({
+        itemId: id,
+        equipment: (target as MaintenanceItem | undefined)?.equipment ?? '',
+        type: data.nature,
+        technicien: t.nom,
+        message: `Vous avez été affecté à l'intervention « ${data.nature} » sur ${(target as MaintenanceItem | undefined)?.equipment ?? ''} prévue le ${data.date}.`,
+        date,
+        destinataire: t.nom
+      });
+    });
+  }
+
+  /**
+   * Planifier une nouvelle intervention de maintenance directement
+   * (utilisée depuis la page Maintenance, si l'option est active).
+   */
+  planifierNouvelleIntervention(
+    data: {
+      equipment: string;
+      nature: string;
+      natures: string[];
+      date: string;
+      techniciens: { id: number; nom: string }[];
+    }
+  ): void {
+    const newItem: MaintenanceItem = {
+      id: 'm' + Date.now(),
+      numero: this.nextNumero(),
+      equipment: data.equipment,
+      type: data.nature,
+      natures: data.natures,
+      datePrevue: data.date,
+      datePrevueISO: data.date,
+      technicien: data.techniciens.map(t => t.nom).join(', '),
+      statut: 'Planifiée',
+      alertes: 0,
+      affectes: data.techniciens,
+      localisation: '',
+      lienLocalisation: ''
+    };
+    const items = [...this.maintenanceItems(), newItem];
+    this.maintenanceItems.set(items);
+    this.save(items);
+
+    const date = this.maintenanceDate();
+    data.techniciens.forEach(t => {
+      this.pushNotification({
+        itemId: newItem.id,
+        equipment: data.equipment,
+        type: data.nature,
+        technicien: t.nom,
+        message: `Vous avez été affecté à l'intervention « ${data.nature} » sur ${data.equipment} prévue le ${data.date}.`,
+        date,
+        destinataire: t.nom
+      });
+    });
+  }
+
+  /**
+   * Génère automatiquement (au chargement) une notification de rappel pour
+   * chaque intervention planifiée dont la date approche, à destination des
+   * techniciens affectés. Le délai est paramétrable dans /parametres.
+   */
+  private verifierProchainesInterventions(): void {
+    const jours = Math.max(0, this.settingsService.settings().rappelAvantIntervention);
+    const limite = new Date();
+    limite.setDate(limite.getDate() + jours);
+    limite.setHours(23, 59, 59, 999);
+
+    const now = new Date().getTime();
+    this.maintenanceItems().forEach(item => {
+      if (item.statut !== 'Planifiée' || !item.datePrevueISO) return;
+      const datePrev = new Date(item.datePrevueISO);
+      if (Number.isNaN(datePrev.getTime())) return;
+      if (datePrev.getTime() < now || datePrev.getTime() > limite.getTime()) return;
+
+      const dejaNotifie = this.notifications().some(n => n.itemId === item.id && n.message.includes('approche'));
+      if (dejaNotifie) return;
+
+      const dateStr = this.formatDatePrevue(item.datePrevue);
+      (item.affectes ?? []).forEach(t => {
+        this.pushNotification({
+          itemId: item.id,
+          equipment: item.equipment,
+          type: item.type,
+          technicien: t.nom,
+          message: `L'intervention « ${item.type} » sur ${item.equipment} approche : prévue le ${dateStr}.`,
+          date: this.maintenanceDate(),
+          destinataire: t.nom
+        });
+      });
+    });
+  }
+
+  /** Formate une date d'affichage (ISO → texte français ; sinon retourne la valeur brute). */
+  formatDatePrevue(value: string): string {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      const d = new Date(value + 'T00:00:00');
+      if (!Number.isNaN(d.getTime())) {
+        return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+    }
+    return value;
+  }
+
+  private pushNotification(n: Omit<NotificationItem, 'id' | 'read'>): void {
+    const notif: NotificationItem = {
+      ...n,
+      id: 'n' + Date.now() + Math.random().toString(36).slice(2, 7),
+      read: false
+    };
+    this.notifications.set([...this.notifications(), notif]);
+  }
+
+  private maintenanceDate(): string {
+    return new Date().toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
   /**

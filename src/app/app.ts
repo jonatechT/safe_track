@@ -93,15 +93,15 @@ export class App {
     return url.startsWith('/superadmin');
   }
 
-  /** Tableau de bord + pages métier toujours visibles */
+  /** Tableau de bord + pages métier toujours visibles ; pages d'administration réservées à l'admin. */
   protected get visibleMenuItems(): MenuItem[] {
     const role = this.authService.getUser()?.role;
-    // ADMIN_STRUCTURE a accès aux techniciens de sa structure
+    // ADMIN_STRUCTURE a accès aux techniciens de sa structure et aux paramètres globaux
     if (role === 'ADMIN_STRUCTURE') {
       return this.menuItems;
     }
-    // TECHNICIEN/USER ne voit jamais "Techniciens"
-    return this.menuItems.filter(item => item.route !== '/users');
+    // TECHNICIEN/USER ne voit jamais "Techniciens" ni "Paramètres"
+    return this.menuItems.filter(item => item.route !== '/users' && item.route !== '/parametres');
   }
 
   protected get currentUser(): User | null {
@@ -236,12 +236,20 @@ export class App {
     }
   }
 
+  /**
+   * Notifications visibles pour l'utilisateur courant.
+   * Un technicien ne reçoit que les notifications qui le concernent
+   * (affectation, rappel d'intervention). L'admin voit tout.
+   */
   protected get notifications(): NotificationItem[] {
-    return this.maintenanceService.notifications();
+    const all = this.maintenanceService.notifications();
+    if (this.isAdmin()) return all;
+    const moi = this.currentUserName;
+    return all.filter(n => !n.destinataire || n.destinataire === moi);
   }
 
   protected get unreadNotificationsCount(): number {
-    return this.maintenanceService.notifications().filter(n => !n.read).length;
+    return this.notifications.filter(n => !n.read).length;
   }
 
   protected isAdmin(): boolean {
@@ -267,7 +275,12 @@ export class App {
   }
 
   protected markAllNotificationsRead(): void {
-    const notifs = this.maintenanceService.notifications().map(n => ({ ...n, read: true }));
+    const isAdmin = this.isAdmin();
+    const moi = this.currentUserName;
+    const notifs = this.maintenanceService.notifications().map(n => {
+      const visible = isAdmin || !n.destinataire || n.destinataire === moi;
+      return visible ? { ...n, read: true } : n;
+    });
     this.maintenanceService.notifications.set(notifs);
   }
 

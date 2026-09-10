@@ -28,7 +28,7 @@ export const routes: Route[] = [
   },
   { path: 'maintenance', loadComponent: () => import('./pages/maintenance-page/maintenance-page').then(m => m.MaintenancePageComponent), canActivate: [authGuard] },
   { path: 'rapports', loadComponent: () => import('./pages/rapports-page/rapports-page').then(m => m.RapportsPageComponent), canActivate: [authGuard] },
-  { path: 'parametres', loadComponent: () => import('./pages/settings-page/settings-page').then(m => m.SettingsPageComponent), canActivate: [authGuard] },
+  { path: 'parametres', loadComponent: () => import('./pages/settings-page/settings-page').then(m => m.SettingsPageComponent), canActivate: [authGuard, structureAdminGuard] },
   { path: 'alerts', loadComponent: () => import('./pages/alerts-page/alerts-page').then(m => m.AlertsPageComponent), canActivate: [authGuard] },
   { path: 'users', loadComponent: () => import('./features/users/users-list').then(m => m.UsersListComponent), canActivate: [structureAdminGuard] },
   {

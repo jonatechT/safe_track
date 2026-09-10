@@ -33,7 +33,8 @@ export const interventionAccessGuard: CanActivateFn = (route) => {
 
   const item = maintenanceService.getItems().find(i => i.equipment === equipment.nom);
   const currentName = authService.getUser()?.name;
-  if (item?.prisPar && item.prisPar !== currentName) {
+  const estAffecte = !!item?.affectes?.some(a => a.nom === currentName);
+  if (item?.prisPar && item.prisPar !== currentName && !estAffecte) {
     router.navigate(['/maintenance'], { queryParams: { denied: '1' } });
     return false;
   }

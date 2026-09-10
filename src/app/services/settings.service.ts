@@ -1,17 +1,19 @@
 import { Injectable, signal } from '@angular/core';
 
-/** Préférences métier stockées dans la page Paramètres */
+/** Préférences métier stockées dans la page Paramètres — elles pilotent tout le trafic de la plateforme. */
 export interface AppSettings {
   /** L'admin peut affecter plusieurs techniciens à une même alerte */
   multiTechniciens: boolean;
-  /** Nombre maximal de techniciens par intervention (si multi activé) */
+  /** Nombre maximal de techniciens par intervention (valeur libre définie par l'admin) */
   maxTechniciens: number;
-  /** Les techniciens peuvent prendre une alerte sans affectation admin préalable */
+  /** Les techniciens peuvent prendre une alerte sans attendre une affectation de l'admin */
   priseEnChargeGlobale: boolean;
-  /** Le bouton d'affectation agit comme une planification de maintenance */
+  /** Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance */
   planifierMaintenance: boolean;
-  /** Les techniciens inspectent d'abord les alertes avant de les prendre */
-  inspectionTechniciens: boolean;
+  /** Jours avant la date d'une intervention planifiée : les techniciens affectés reçoivent une notification */
+  rappelAvantIntervention: number;
+  /** Natures possibles d'une intervention planifiée (une par ligne dans les paramètres) */
+  naturesIntervention: string[];
 }
 
 @Injectable({
@@ -28,7 +30,8 @@ export class SettingsService {
       maxTechniciens: 2,
       priseEnChargeGlobale: true,
       planifierMaintenance: false,
-      inspectionTechniciens: false
+      rappelAvantIntervention: 2,
+      naturesIntervention: ['Préventive', 'Corrective', 'Inspection', 'Nettoyage', 'Réparation', 'Mise à jour']
     };
   }
 

@@ -39,12 +39,9 @@ import { ThemeService } from '../../services/theme.service';
             <div class="stg-row stg-row--sub">
               <div class="stg-row-info">
                 <span class="stg-row-title">Nombre maximal de techniciens</span>
-                <span class="stg-row-desc">Limite du nombre de techniciens pouvant être affectés à une même intervention.</span>
+                <span class="stg-row-desc">Limite du nombre de techniciens pouvant être affectés à une même intervention. Vous pouvez saisir le nombre de votre choix.</span>
               </div>
-              <select class="stg-select" [value]="settings.maxTechniciens" (change)="setMax($any($event.target).value)" aria-label="Nombre maximal de techniciens">
-                <option [value]="2">2 techniciens</option>
-                <option [value]="3">3 techniciens</option>
-              </select>
+              <input type="number" class="stg-select stg-number" [value]="settings.maxTechniciens" (change)="setMax($any($event.target).value)" min="1" max="50" aria-label="Nombre maximal de techniciens" />
             </div>
           }
         </div>
@@ -70,28 +67,43 @@ import { ThemeService } from '../../services/theme.service';
             <div class="stg-card-icon stg-card-icon--blue"><i class="fa-solid fa-calendar-check"></i></div>
             <div>
               <h3 class="stg-card-title">Planification d'une intervention de maintenance</h3>
-              <p class="stg-card-subtitle">Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance.</p>
+              <p class="stg-card-subtitle">Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance (date + nature).</p>
             </div>
             <label class="stg-switch stg-card-switch">
               <input type="checkbox" [checked]="settings.planifierMaintenance" (change)="toggle('planifierMaintenance', $any($event.target).checked)" />
               <span class="stg-slider"></span>
             </label>
           </div>
-        </div>
 
-        <!-- ===== Inspection avant prise en charge ===== -->
-        <div class="stg-card">
-          <div class="stg-card-header">
-            <div class="stg-card-icon stg-card-icon--red"><i class="fa-solid fa-magnifying-glass"></i></div>
-            <div>
-              <h3 class="stg-card-title">Inspection avant prise en charge</h3>
-              <p class="stg-card-subtitle">Le technicien doit d'abord inspecter l'alerte avant de la prendre en charge (le bouton devient « Inspecter »).</p>
+          @if (settings.planifierMaintenance) {
+            <div class="stg-row stg-row--sub">
+              <div class="stg-row-info">
+                <span class="stg-row-title">Rappel avant la date limite</span>
+                <span class="stg-row-desc">Jours avant la date d'une intervention planifiée : les techniciens affectés reçoivent une notification automatique.</span>
+              </div>
+              <input type="number" class="stg-select stg-number" [value]="settings.rappelAvantIntervention" (change)="setRappel($any($event.target).value)" min="0" max="30" aria-label="Jours de rappel" />
             </div>
-            <label class="stg-switch stg-card-switch">
-              <input type="checkbox" [checked]="settings.inspectionTechniciens" (change)="toggle('inspectionTechniciens', $any($event.target).checked)" />
-              <span class="stg-slider"></span>
-            </label>
-          </div>
+
+            <div class="stg-row stg-row--sub stg-row--stack">
+              <div class="stg-row-info">
+                <span class="stg-row-title">Natures d'intervention disponibles</span>
+                <span class="stg-row-desc">Liste des natures proposées lors de la planification (une par ligne).</span>
+              </div>
+            </div>
+            <div class="stg-natures">
+              @for (nature of naturesList; track nature; let i = $index) {
+                <div class="stg-nature-row">
+                  <input type="text" class="stg-select stg-nature-input" [value]="nature" (change)="setNature(i, $any($event.target).value)" aria-label="Nature d'intervention" />
+                  <button type="button" class="stg-nature-remove" (click)="removeNature(i)" aria-label="Supprimer cette nature" title="Supprimer">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              }
+              <button type="button" class="stg-nature-add" (click)="addNature()">
+                <i class="fa-solid fa-plus"></i> Ajouter une nature
+              </button>
+            </div>
+          }
         </div>
 
         <!-- ===== Apparence ===== -->
@@ -224,6 +236,15 @@ import { ThemeService } from '../../services/theme.service';
       transition: border-color 0.15s ease;
     }
     .stg-select:focus { border-color: #2563EB; }
+    .stg-number { width: 92px; text-align: center; }
+    .stg-row--stack { flex-direction: column; align-items: flex-start; gap: 4px; padding-bottom: 2px; }
+    .stg-natures { display: flex; flex-direction: column; gap: 8px; padding-left: 16px; }
+    .stg-nature-row { display: flex; align-items: center; gap: 8px; }
+    .stg-nature-input { width: 100%; }
+    .stg-nature-remove { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease; }
+    .stg-nature-remove:hover { background: #FEE2E2; }
+    .stg-nature-add { align-self: flex-start; background: transparent; color: #2563EB; border: 1px dashed #93C5FD; border-radius: 9px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .stg-nature-add:hover { background: #EFF6FF; border-style: solid; }
 
     @media (max-width: 640px) {
       .stg-row { flex-direction: column; align-items: flex-start; }
@@ -253,7 +274,35 @@ export class SettingsPageComponent {
   }
 
   protected setMax(value: string): void {
-    this.settingsService.update({ maxTechniciens: Number(value) });
+    const n = Math.min(50, Math.max(1, Number(value) || 1));
+    this.settingsService.update({ maxTechniciens: n });
+  }
+
+  protected setRappel(value: string): void {
+    const n = Math.min(30, Math.max(0, Number(value) || 0));
+    this.settingsService.update({ rappelAvantIntervention: n });
+  }
+
+  /** Liste éditable des natures (copie réactive depuis les réglages). */
+  get naturesList(): string[] {
+    const n = this.settingsService.settings().naturesIntervention;
+    return n && n.length ? n : ['Préventive'];
+  }
+
+  protected setNature(index: number, value: string): void {
+    const list = [...this.naturesList];
+    list[index] = value;
+    this.settingsService.update({ naturesIntervention: list });
+  }
+
+  protected addNature(): void {
+    this.settingsService.update({ naturesIntervention: [...this.naturesList, 'Nouvelle nature'] });
+  }
+
+  protected removeNature(index: number): void {
+    const list = [...this.naturesList];
+    list.splice(index, 1);
+    this.settingsService.update({ naturesIntervention: list.length ? list : ['Préventive'] });
   }
 
   protected toggleTheme(): void {
