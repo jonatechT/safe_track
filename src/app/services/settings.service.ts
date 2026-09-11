@@ -1,5 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 
+/** Action que l'admin effectue sur une alerte depuis /alerts — un seul mode actif à la fois. */
+export type ActionAdminAlerte = 'affecter' | 'planifier' | 'prendre';
+
 /** Préférences métier stockées dans la page Paramètres — elles pilotent tout le trafic de la plateforme. */
 export interface AppSettings {
   /** L'admin peut affecter plusieurs techniciens à une même alerte */
@@ -8,12 +11,14 @@ export interface AppSettings {
   maxTechniciens: number;
   /** Les techniciens peuvent prendre une alerte sans attendre une affectation de l'admin */
   priseEnChargeGlobale: boolean;
-  /** Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance */
-  planifierMaintenance: boolean;
+  /**
+   * Action proposée à l'admin sur une alerte (une seule à la fois, choisie ici) :
+   * 'affecter' un technicien, 'planifier' une intervention (date + nature), ou
+   * 'prendre' l'alerte lui-même sans passer par un technicien.
+   */
+  actionAdmin: ActionAdminAlerte;
   /** Jours avant la date d'une intervention planifiée : les techniciens affectés reçoivent une notification */
   rappelAvantIntervention: number;
-  /** Natures possibles d'une intervention planifiée (une par ligne dans les paramètres) */
-  naturesIntervention: string[];
 }
 
 @Injectable({
@@ -29,9 +34,8 @@ export class SettingsService {
       multiTechniciens: false,
       maxTechniciens: 2,
       priseEnChargeGlobale: true,
-      planifierMaintenance: false,
-      rappelAvantIntervention: 2,
-      naturesIntervention: ['Préventive', 'Corrective', 'Inspection', 'Nettoyage', 'Réparation', 'Mise à jour']
+      actionAdmin: 'affecter',
+      rappelAvantIntervention: 2
     };
   }
 

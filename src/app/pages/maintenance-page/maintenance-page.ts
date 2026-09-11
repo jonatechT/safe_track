@@ -89,7 +89,11 @@ import { StructureService } from '../../superadmin/services/structure.service';
                     <td>{{ item.type }}</td>
                     <td>{{ item.datePrevue }}</td>
                     <td>
-                      @if (item.prisPar) {
+                      @if (afficherVoirTechniciens(item)) {
+                        <span class="tech-multi" [title]="techniciensAvecContacts(item)">
+                          <i class="fa-solid fa-users"></i> Voir techniciens
+                        </span>
+                      } @else if (item.prisPar) {
                         <span
                           class="tech-badge"
                           [class.tech-mine]="item.prisPar === getCurrentUserName()"
@@ -100,11 +104,23 @@ import { StructureService } from '../../superadmin/services/structure.service';
                             <span class="tech-date">· {{ item.datePrise }}</span>
                           }
                         </span>
+                      } @else if (item.affectes && item.affectes.length > 0) {
+                        <span class="tech-badge" [class.tech-mine]="item.affectes[0].nom === getCurrentUserName()">
+                          <i class="fa-solid fa-user-gear"></i> {{ item.affectes[0].nom }}
+                        </span>
                       } @else {
                         <span class="tech-none">—</span>
                       }
                     </td>
-                    <td><span class="numero-code">N°{{ item.numero.toString().padStart(3, '0') }}</span></td>
+                    <td>
+                      @if (telephoneTechnicienPrincipal(item)) {
+                        <a class="numero-code" [href]="'tel:' + telephoneTechnicienPrincipal(item)" title="Appeler le technicien">
+                          <i class="fa-solid fa-phone"></i> {{ telephoneTechnicienPrincipal(item) }}
+                        </a>
+                      } @else {
+                        <span class="numero-code">—</span>
+                      }
+                    </td>
                     <td class="actions-cell">
                       @if (!peutOuvrirDetail(item)) {
                         <span class="locked-label" title="Intervention assignée à un autre technicien">
@@ -114,7 +130,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
                         <button class="btn-terminer" (click)="terminerMaintenance(item); $event.stopPropagation()">
                           <i class="fa-solid fa-flag-checkered"></i> Terminer
                         </button>
-                      } @else if (item.statut === 'Planifiée' && item.alertes === 0) {
+                      } @else if (item.statut !== 'Terminée' && item.alertes === 0 && !item.prisPar) {
                         <button class="btn-prendre" (click)="prendreAlerte(item); $event.stopPropagation()">
                           Prendre en charge
                         </button>
@@ -155,14 +171,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
               </div>
               <div class="planif-modal-field">
                 <label class="planif-modal-label" for="pf-nature">Nature de l'intervention</label>
-                <select id="pf-nature" class="planif-modal-input" [(ngModel)]="planifNature">
-                  @for (n of naturesDisponibles; track n) {
-                    <option [value]="n">{{ n }}</option>
-                  }
-                  @if (!naturesDisponibles.length) {
-                    <option value="Préventive">Préventive</option>
-                  }
-                </select>
+                <input id="pf-nature" type="text" class="planif-modal-input" [(ngModel)]="planifNature" placeholder="Ex : Préventive, Réparation moteur..." />
               </div>
               <div class="planif-modal-field">
                 <label class="planif-modal-label" for="pf-date">Date de l'intervention</label>
@@ -348,6 +357,9 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .tech-badge.tech-mine { background: #DBEAFE; color: #1D4ED8; border-color: #BFDBFE; }
     .tech-date { font-weight: 400; opacity: 0.85; font-size: 10px; }
     .tech-none { color: #94A3B8; font-size: 12px; }
+    .tech-multi { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #EFF6FF; color: #2563EB; border: 1px solid #BFDBFE; cursor: help; white-space: nowrap; }
+    .tech-multi i { font-size: 11px; }
+    .numero-code { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2563EB; text-decoration: none; }
 
     /* Numéro d'intervention (remplace la colonne Statut) */
     .numero-code { font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace; font-size: 12px; font-weight: 600; color: #475569; }
@@ -438,12 +450,7 @@ export class MaintenancePageComponent {
 
   /** Le bouton Planifier est visible pour l'admin si l'option est active. */
   get canPlanifier(): boolean {
-    return this.isAdmin() && this.settingsService.settings().planifierMaintenance;
-  }
-
-  get naturesDisponibles(): string[] {
-    const n = this.settingsService.settings().naturesIntervention;
-    return n && n.length ? n : ['Préventive'];
+    return this.isAdmin() && this.settingsService.settings().actionAdmin === 'planifier';
   }
 
   get techniciensDisponibles(): User[] {
@@ -486,7 +493,7 @@ export class MaintenancePageComponent {
   ouvrirPlanification(): void {
     const eqs = this.equipementsList;
     this.planifEquipement = eqs.length ? eqs[0].nom : '';
-    this.planifNature = this.naturesDisponibles[0] || 'Préventive';
+    this.planifNature = 'Préventive';
     this.planifDate = '';
     this.planifTechniciensIds = [];
     this.showPlanifModal = true;
@@ -506,7 +513,7 @@ export class MaintenancePageComponent {
     this.maintenanceService.planifierNouvelleIntervention({
       equipment: this.planifEquipement,
       nature: this.planifNature,
-      natures: this.naturesDisponibles,
+      natures: [this.planifNature],
       date: this.planifDate,
       techniciens
     });
@@ -524,11 +531,60 @@ export class MaintenancePageComponent {
    * Ne contient plus les alertes non prises (visibles uniquement sur /alerts).
    */
   get items(): MaintenanceItem[] {
-    return this.maintenanceService.getItems().filter(i => i.prisPar || i.alertes === 0);
+    const sid = this.authService.getUser()?.structureId || null;
+    // Chaque structure ne voit que SES interventions ; un technicien voit aussi
+    // celles auxquelles il a été explicitement affecté. Le SuperAdmin voit tout.
+    return this.maintenanceService.getItems().filter(i =>
+      (i.prisPar || i.alertes === 0) &&
+      (!sid || i.structureId === sid || i.affectes?.some(a => a.nom === this.getCurrentUserName()))
+    );
   }
 
   getCurrentUserName(): string {
     return this.authService.getUser()?.name || 'Utilisateur';
+  }
+
+  /**
+   * Afficher « Voir techniciens » dans la colonne Technicien :
+   * dès qu'il y a plusieurs techniciens affectés (ou qu'un autre technicien
+   * a déjà pris l'intervention), on préfère ouvrir la liste complète.
+   */
+  afficherVoirTechniciens(item: MaintenanceItem): boolean {
+    if (!item.affectes || item.affectes.length === 0) return false;
+    if (item.affectes.length > 1) return true;
+    return !!item.prisPar && item.prisPar !== item.affectes[0].nom;
+  }
+
+  /** Nom du technicien principal d'une intervention (celui qui a pris, sinon le premier affecté). */
+  technicienPrincipalNom(item: MaintenanceItem): string {
+    if (item.prisPar) return item.prisPar;
+    if (item.affectes && item.affectes.length > 0) return item.affectes[0].nom;
+    return item.technicien || '';
+  }
+
+  /** Téléphone du technicien principal (recherché dans les comptes enregistrés). */
+  telephoneTechnicienPrincipal(item: MaintenanceItem): string {
+    const nom = this.technicienPrincipalNom(item);
+    return nom ? this.telephoneTechnicien(nom) : '';
+  }
+
+  telephoneTechnicien(nom: string): string {
+    const u = this.usersService.getAllUsers().find(x => x.name === nom);
+    return u?.telephone ?? '';
+  }
+
+  /** Résumé « Nom — téléphone » des techniciens d'une intervention (pour l'infobulle). */
+  techniciensAvecContacts(item: MaintenanceItem): string {
+    const noms = new Set<string>();
+    if (item.prisPar) noms.add(item.prisPar);
+    item.affectes?.forEach(a => noms.add(a.nom));
+    if (noms.size === 0 && item.technicien) noms.add(item.technicien);
+    return Array.from(noms)
+      .map(n => {
+        const tel = this.telephoneTechnicien(n);
+        return n + (tel ? ' — ' + tel : '');
+      })
+      .join('\n');
   }
 
   isAdmin(): boolean {

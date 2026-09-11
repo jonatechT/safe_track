@@ -90,6 +90,10 @@ body.dark-mode .page-content {
   background: #0B1220;
 }
 
+body.dark-mode .topbar-divider {
+  background: #1F2937;
+}
+
 body.dark-mode .mobile-menu-toggle {
   background: #1E293B;
   color: #94A3B8;
@@ -303,6 +307,126 @@ body.dark-mode .users-cell-sub {
 body.dark-mode .users-cell-avatar {
   background: rgba(37, 99, 235, 0.25) !important;
   color: #93C5FD !important;
+}
+
+/* --- Modales Techniciens (.users-modal / dÃ©tail / confirmation) --- */
+body.dark-mode .users-modal {
+  background: #111827;
+  border-color: #1F2937;
+}
+body.dark-mode .users-modal-header {
+  border-bottom-color: #1F2937;
+}
+body.dark-mode .users-modal-title {
+  color: #F1F5F9;
+}
+body.dark-mode .users-modal-body {
+  color: #CBD5E1;
+}
+body.dark-mode .users-modal-close {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94A3B8;
+}
+body.dark-mode .users-modal-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #E2E8F0;
+}
+body.dark-mode .users-modal-icon {
+  background: rgba(37, 99, 235, 0.18);
+  color: #93C5FD;
+}
+body.dark-mode .users-modal-icon--info {
+  background: rgba(37, 99, 235, 0.18);
+  color: #93C5FD;
+}
+body.dark-mode .users-modal-icon-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #FBBF24;
+}
+body.dark-mode .users-form-label {
+  color: #CBD5E1;
+}
+body.dark-mode .users-form-input,
+body.dark-mode .users-form-select {
+  background: #1E293B;
+  border-color: #334155;
+  color: #E2E8F0;
+}
+body.dark-mode .users-form-info {
+  color: #64748B;
+}
+body.dark-mode .users-card {
+  background: #111827;
+  border-color: #1F2937;
+}
+body.dark-mode .users-card-title {
+  color: #F1F5F9;
+}
+body.dark-mode .users-detail-header {
+  border-bottom-color: #1F2937;
+}
+body.dark-mode .users-detail-name {
+  color: #F1F5F9;
+}
+body.dark-mode .users-detail-sub,
+body.dark-mode .users-detail-label {
+  color: #94A3B8;
+}
+body.dark-mode .users-detail-value {
+  color: #E2E8F0;
+}
+body.dark-mode .users-detail-value a {
+  color: #60A5FA;
+}
+body.dark-mode .users-empty {
+  color: #64748B;
+}
+body.dark-mode .users-empty-icon {
+  color: #334155;
+}
+body.dark-mode .users-alert-success {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #6EE7B7;
+}
+body.dark-mode .users-alert-error {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #FCA5A5;
+}
+body.dark-mode .users-btn-secondary {
+  background: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+}
+body.dark-mode .users-btn-secondary:hover {
+  background: #334155;
+}
+body.dark-mode .users-btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #FCA5A5;
+}
+body.dark-mode .users-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+body.dark-mode .users-btn-icon {
+  color: #94A3B8;
+}
+body.dark-mode .users-btn-icon:hover {
+  background: rgba(37, 99, 235, 0.18);
+  color: #93C5FD;
+}
+body.dark-mode .users-badge-active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6EE7B7;
+}
+body.dark-mode .users-badge-inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: #FCA5A5;
+}
+body.dark-mode .users-modal-overlay {
+  background: rgba(0, 0, 0, 0.6);
 }
 
 /* --- Formulaires --- */
@@ -742,15 +866,60 @@ body.dark-mode app-profile-page .profile-empty-icon {
   background: #1F2937 !important;
 }
 
-body.dark-mode app-profile-page .profile-logout-btn {
-  background: rgba(239, 68, 68, 0.12) !important;
-  border-color: rgba(248, 113, 113, 0.35) !important;
-  color: #FCA5A5 !important;
+body.dark-mode app-profile-page .profile-hero-btn--ghost {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #FFFFFF !important;
 }
 
-body.dark-mode app-profile-page .profile-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.22) !important;
-  border-color: rgba(248, 113, 113, 0.5) !important;
+body.dark-mode app-profile-page .profile-hero-btn--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+body.dark-mode app-profile-page .profile-hero-btn--danger {
+  background: rgba(239, 68, 68, 0.18) !important;
+  border-color: rgba(248, 113, 113, 0.4) !important;
+  color: #FECACA !important;
+}
+
+body.dark-mode app-profile-page .profile-hero-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.28) !important;
+  border-color: rgba(248, 113, 113, 0.55) !important;
+}
+
+body.dark-mode app-profile-page .profile-edit-overlay {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+body.dark-mode app-profile-page .profile-edit-card {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+}
+
+body.dark-mode app-profile-page .profile-edit-label {
+  color: #CBD5E1 !important;
+}
+
+body.dark-mode app-profile-page .profile-edit-input {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #E2E8F0 !important;
+}
+
+body.dark-mode app-profile-page .profile-edit-close {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #94A3B8 !important;
+}
+
+body.dark-mode app-profile-page .profile-edit-close:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #E2E8F0 !important;
+}
+
+body.dark-mode app-profile-page .profile-edit-btn--secondary {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #CBD5E1 !important;
 }
 
 /* ===== FenÃªtre Â« Ajouter un Ã©quipement Â» (equipment-form-page) ===== */
@@ -1241,6 +1410,43 @@ body.dark-mode .affect-item-email {
 body.dark-mode .affect-empty {
   color: #94A3B8 !important;
 }
+body.dark-mode .affect-search {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+}
+body.dark-mode .affect-search:focus-within {
+  border-color: #2563EB !important;
+}
+body.dark-mode .affect-search i {
+  color: #64748B !important;
+}
+body.dark-mode .affect-search-input {
+  color: #E2E8F0 !important;
+}
+body.dark-mode .affect-search-input::placeholder {
+  color: #64748B !important;
+}
+body.dark-mode .planif-label {
+  color: #CBD5E1 !important;
+}
+body.dark-mode .planif-input {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+  color: #E2E8F0 !important;
+}
+body.dark-mode .planif-input:focus {
+  border-color: #2563EB !important;
+}
+body.dark-mode .planif-optional {
+  color: #64748B !important;
+}
+body.dark-mode .affect-multi-note {
+  color: #94A3B8 !important;
+}
+body.dark-mode .affect-item-structure {
+  background: #1F2937 !important;
+  color: #94A3B8 !important;
+}
 body.dark-mode .affect-modal-footer {
   border-top-color: #1F2937 !important;
 }
@@ -1333,6 +1539,33 @@ body.dark-mode app-settings-page .stg-select {
   background: #0B1220 !important;
   border-color: #1F2937 !important;
   color: #E2E8F0 !important;
+}
+body.dark-mode app-settings-page .stg-choice {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+}
+body.dark-mode app-settings-page .stg-choice:hover {
+  border-color: #3B82F6 !important;
+  background: rgba(37, 99, 235, 0.1) !important;
+}
+body.dark-mode app-settings-page .stg-choice-icon {
+  color: #94A3B8 !important;
+}
+body.dark-mode app-settings-page .stg-choice-label {
+  color: #F1F5F9 !important;
+}
+body.dark-mode app-settings-page .stg-choice-desc {
+  color: #94A3B8 !important;
+}
+body.dark-mode app-settings-page .stg-choice--active {
+  background: rgba(37, 99, 235, 0.16) !important;
+  border-color: #3B82F6 !important;
+}
+body.dark-mode app-settings-page .stg-choice--active .stg-choice-icon {
+  color: #93C5FD !important;
+}
+body.dark-mode app-settings-page .stg-choice--active .stg-choice-label {
+  color: #93C5FD !important;
 }
 body.dark-mode app-settings-page .stg-alert--success {
   background: rgba(16, 185, 129, 0.14) !important;

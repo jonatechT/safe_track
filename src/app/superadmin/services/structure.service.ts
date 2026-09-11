@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Structure, StructureStats } from '../models/structure.model';
+import { MaintenanceService } from '../../services/maintenance.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class StructureService {
 
   structures = signal<Structure[]>(this.loadStructures());
 
-  constructor() {
+  constructor(private maintenanceService: MaintenanceService) {
     const version = typeof window !== 'undefined' ? localStorage.getItem(this.STORAGE_VERSION_KEY) : null;
     if (version !== this.CURRENT_VERSION) {
       this.seedStructures();
@@ -136,6 +137,9 @@ export class StructureService {
       dateModification: now
     };
     this.saveStructures([...this.structures(), newStructure]);
+    // Amorce 2 alertes de démonstration pour que l'admin de cette nouvelle
+    // structure puisse tester l'affectation / la planification dès sa 1ère connexion.
+    this.maintenanceService.seedAlertsForStructure(newStructure.id, newStructure.code || newStructure.nom);
     return newStructure;
   }
 

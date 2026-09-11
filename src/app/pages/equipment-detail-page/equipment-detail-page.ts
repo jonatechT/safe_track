@@ -152,6 +152,24 @@ import { BatteryExportService } from '../../services/battery-export.service';
                       </span>
                     </div>
                   }
+                  @if (maintenanceItem.dateAffectation) {
+                    <div class="eqd-interv-plan-row">
+                      <span class="eqd-interv-plan-key">Affecté le</span>
+                      <span class="eqd-interv-plan-val">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        {{ maintenanceItem.dateAffectation }}
+                      </span>
+                    </div>
+                  }
+                  @if (maintenanceItem.delaiAffectation) {
+                    <div class="eqd-interv-plan-row">
+                      <span class="eqd-interv-plan-key">Délai</span>
+                      <span class="eqd-interv-plan-val">
+                        <i class="fa-regular fa-hourglass"></i>
+                        {{ maintenanceItem.delaiAffectation }}
+                      </span>
+                    </div>
+                  }
                 </div>
               } @else {
                 <p class="eqd-interv-empty">

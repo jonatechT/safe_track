@@ -4,6 +4,7 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { Structure, StructureStatus } from '../../models/structure.model';
 import { StructureService } from '../../services/structure.service';
 import { AuthService, User } from '../../../auth/auth.service';
+import { UsersService } from '../../../services/users.service';
 
 @Component({
   selector: 'app-structure-form',
@@ -208,10 +209,30 @@ import { AuthService, User } from '../../../auth/auth.service';
     .sf-select {
       appearance: none;
       cursor: pointer;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-color: #FFFFFF;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%233B82F6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 14px center;
-      padding-right: 38px;
+      padding-right: 42px;
+      font-weight: 500;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+    .sf-select:hover {
+      border-color: var(--accent);
+      background-color: #F8FAFC;
+    }
+    .sf-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      background-color: #FFFFFF;
+    }
+    /* Liste déroulante : options plus lisibles et espacées */
+    .sf-select option {
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: #FFFFFF;
     }
     .sf-textarea {
       height: auto;
@@ -238,13 +259,14 @@ import { AuthService, User } from '../../../auth/auth.service';
     .sf-note i { color: var(--primary); margin-top: 2px; font-size: 13px; }
 
     /* ===== Actions ===== */
+    /* Zone « footer » du formulaire : compactée (elle occupait trop d'espace) */
     .sf-actions {
       display: flex;
       justify-content: flex-end;
       align-items: center;
       gap: 12px;
-      margin-top: 32px;
-      padding-top: 24px;
+      margin-top: 14px;
+      padding-top: 10px;
       border-top: 1px solid var(--border-color);
     }
 
@@ -329,6 +351,8 @@ export class StructureFormComponent implements OnInit {
   protected isSaving = signal(false);
   protected message = signal('');
   protected messageType = signal<'success' | 'error'>('success');
+  /** Email de l'admin AVANT modification (permet de retrouver son compte même si l'email change). */
+  private originalAdminEmail = '';
 
   protected formData: {
     nom: string;
@@ -363,6 +387,7 @@ export class StructureFormComponent implements OnInit {
   constructor(
     private structureService: StructureService,
     private authService: AuthService,
+    private usersService: UsersService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -389,6 +414,7 @@ export class StructureFormComponent implements OnInit {
           adminTelephone: s.adminTelephone || '',
           adminMotDePasse: ''
         };
+        this.originalAdminEmail = s.adminEmail || '';
       } else {
         this.message.set('Structure introuvable.');
         this.messageType.set('error');
@@ -423,10 +449,29 @@ export class StructureFormComponent implements OnInit {
     }
 
     if (this.formData.adminMotDePasse && this.formData.adminMotDePasse.length < 8) {
-      this.message.set('Le mot de passe temporaire doit contenir au moins 8 caractères.');
+      this.message.set('Le mot de passe doit contenir au moins 8 caractères.');
       this.messageType.set('error');
       this.isSaving.set(false);
       return;
+    }
+
+    // Création : un administrateur avec mot de passe est obligatoire (sinon
+    // personne ne peut se connecter à la structure). Édition : si aucun admin
+    // n'existait encore, les 3 champs sont requis ensemble pour en créer un.
+    const adminCompletable = !this.originalAdminEmail && (this.formData.adminNom.trim() || this.formData.adminEmail.trim() || this.formData.adminMotDePasse.trim());
+    if (!this.isEditMode || adminCompletable) {
+      if (!this.formData.adminNom.trim() || !this.formData.adminEmail.trim() || !this.formData.adminMotDePasse.trim()) {
+        this.message.set("Nom, email et mot de passe de l'administrateur sont obligatoires.");
+        this.messageType.set('error');
+        this.isSaving.set(false);
+        return;
+      }
+      if (this.formData.adminMotDePasse.length < 8) {
+        this.message.set('Le mot de passe doit contenir au moins 8 caractères.');
+        this.messageType.set('error');
+        this.isSaving.set(false);
+        return;
+      }
     }
 
     setTimeout(() => {
@@ -440,9 +485,13 @@ export class StructureFormComponent implements OnInit {
           adresse: this.formData.adresse,
           ville: this.formData.ville,
           pays: this.formData.pays,
-          statut: this.formData.statut
+          statut: this.formData.statut,
+          adminNom: this.formData.adminNom.trim() || undefined,
+          adminEmail: this.formData.adminEmail.trim().toLowerCase() || undefined,
+          adminTelephone: this.formData.adminTelephone.trim() || undefined
         });
         if (updated) {
+          this.syncAdminAccount(updated.id);
           this.message.set(`La structure « ${updated.nom} » a été modifiée avec succès.`);
           this.messageType.set('success');
           setTimeout(() => {
@@ -463,26 +512,23 @@ export class StructureFormComponent implements OnInit {
           ville: this.formData.ville,
           pays: this.formData.pays,
           statut: this.formData.statut,
-          adminNom: this.formData.adminNom || undefined,
-          adminEmail: this.formData.adminEmail || undefined,
-          adminTelephone: this.formData.adminTelephone || undefined
+          adminNom: this.formData.adminNom.trim(),
+          adminEmail: this.formData.adminEmail.trim().toLowerCase(),
+          adminTelephone: this.formData.adminTelephone.trim() || undefined
         });
 
-        // Créer l'administrateur de structure si renseigné
-        if (this.formData.adminNom && this.formData.adminEmail && this.formData.adminMotDePasse) {
-          const adminUser: User = {
-            id: Date.now(),
-            name: this.formData.adminNom,
-            email: this.formData.adminEmail.toLowerCase(),
-            role: 'ADMIN_STRUCTURE',
-            structureId: created.id,
-            statut: 'ACTIVE',
-            telephone: this.formData.adminTelephone || undefined,
-            dateCreation: new Date().toISOString(),
-            motDePasse: this.formData.adminMotDePasse
-          };
-          this.authService.registerUser(adminUser);
-        }
+        const adminUser: User = {
+          id: Date.now(),
+          name: this.formData.adminNom.trim(),
+          email: this.formData.adminEmail.trim().toLowerCase(),
+          role: 'ADMIN_STRUCTURE',
+          structureId: created.id,
+          statut: 'ACTIVE',
+          telephone: this.formData.adminTelephone.trim() || undefined,
+          dateCreation: new Date().toISOString(),
+          motDePasse: this.formData.adminMotDePasse.trim()
+        };
+        this.authService.registerUser(adminUser);
 
         this.message.set(`La structure « ${created.nom} » a été créée avec succès.`);
         this.messageType.set('success');
@@ -492,6 +538,49 @@ export class StructureFormComponent implements OnInit {
       }
       this.isSaving.set(false);
     }, 500);
+  }
+
+  /**
+   * Synchronise le compte de l'administrateur de structure après édition :
+   * retrouve le compte existant via son email D'AVANT modification (au cas où
+   * l'email aurait changé) et met à jour ses infos ; le mot de passe n'est
+   * modifié que si un nouveau a été saisi (vide = conserver l'actuel). Si
+   * aucun admin n'existait encore et que les 3 champs sont renseignés, un
+   * nouveau compte est créé.
+   */
+  private syncAdminAccount(structureId: string): void {
+    const nom = this.formData.adminNom.trim();
+    const email = this.formData.adminEmail.trim().toLowerCase();
+    const telephone = this.formData.adminTelephone.trim();
+    const motDePasse = this.formData.adminMotDePasse.trim();
+    if (!nom && !email) return;
+
+    const existing = this.originalAdminEmail
+      ? this.usersService.getAllUsers().find(
+          u => u.role === 'ADMIN_STRUCTURE' && u.email.toLowerCase() === this.originalAdminEmail.toLowerCase()
+        )
+      : undefined;
+
+    if (existing) {
+      this.usersService.updateUser(existing.id, {
+        name: nom || existing.name,
+        email: email || existing.email,
+        telephone: telephone || existing.telephone,
+        ...(motDePasse ? { motDePasse } : {})
+      });
+      this.originalAdminEmail = email || existing.email;
+    } else if (nom && email && motDePasse) {
+      this.usersService.createUser({
+        name: nom,
+        email,
+        role: 'ADMIN_STRUCTURE',
+        structureId,
+        statut: 'ACTIVE',
+        telephone: telephone || undefined,
+        motDePasse
+      });
+      this.originalAdminEmail = email;
+    }
   }
 
   private isValidEmail(email: string): boolean {

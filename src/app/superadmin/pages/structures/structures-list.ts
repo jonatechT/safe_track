@@ -160,16 +160,14 @@ protected confirmToggleStatus(structure: Structure): void {
       this.step.set(3);
     } else if (s === 3) {
       const f = this.form;
-      const adminStarted = f.adminNom.trim() || f.adminEmail.trim() || f.adminTelephone.trim() || f.adminMotDePasse.trim();
-      if (adminStarted) {
-        if (f.adminEmail && !this.isValidEmail(f.adminEmail)) {
-          this.stepError.set("Veuillez saisir un email valide pour l'administrateur.");
-          return;
-        }
-        if (f.adminMotDePasse && f.adminMotDePasse.length < 8) {
-          this.stepError.set('Le mot de passe temporaire doit contenir au moins 8 caractères.');
-          return;
-        }
+      if (!f.adminNom.trim()) { this.stepError.set("Le nom complet de l'administrateur est obligatoire."); return; }
+      if (!f.adminEmail.trim() || !this.isValidEmail(f.adminEmail)) {
+        this.stepError.set("Veuillez saisir un email valide pour l'administrateur.");
+        return;
+      }
+      if (!f.adminMotDePasse || f.adminMotDePasse.length < 8) {
+        this.stepError.set('Le mot de passe est obligatoire (8 caractères minimum) : sans lui, personne ne pourra se connecter à cette structure.');
+        return;
       }
       this.step.set(4);
     }

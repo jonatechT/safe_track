@@ -21,10 +21,13 @@ export interface User {
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'safe_track_token';
+  private readonly USERS_CURRENT_VERSION = '4';
+
+  /** Profil personnalisé du SuperAdmin (nom/email/téléphone/mot de passe modifiés depuis son profil) */
+  private readonly SUPER_PROFILE_KEY = 'safe_track_superadmin_profile';
   private readonly USER_KEY = 'safe_track_user';
   private readonly USERS_REGISTRY_KEY = 'safe_track_users';
   private readonly USERS_VERSION_KEY = 'safe_track_users_version';
-  private readonly USERS_CURRENT_VERSION = '3';
 
   /** Version de la session de connexion (clé séparée du registre des comptes) */
   private readonly SESSION_VERSION_KEY = 'safe_track_session_version';
@@ -129,6 +132,17 @@ export class AuthService {
         telephone: '+226 76 88 99 00',
         dateCreation: '2024-08-14T10:00:00.000Z',
         motDePasse: 'technicien123'
+      },
+      {
+        id: 8,
+        name: 'OUEDRAOGO Ali',
+        email: 'ali@shango.com',
+        role: 'USER',
+        structureId: 'STR-001',
+        statut: 'ACTIVE',
+        telephone: '+226 70 00 00 00',
+        dateCreation: '2024-02-10T10:00:00.000Z',
+        motDePasse: 'ali2024'
       }
     ];
 
@@ -210,13 +224,17 @@ export class AuthService {
    */
   login(email: string, password: string): { success: boolean; pending: boolean } {
     if (email && password) {
-      // Compte SuperAdmin de démonstration
-      if (email.trim().toLowerCase() === this.SUPER_ADMIN_EMAIL && password === this.SUPER_ADMIN_PASSWORD) {
+      // Compte SuperAdmin de démonstration (email d'origine OU email modifié depuis le profil)
+      const superProfile = this.getSuperAdminProfile();
+      const superEmails = [this.SUPER_ADMIN_EMAIL, ...(superProfile?.email ? [superProfile.email.toLowerCase()] : [])];
+      if (superEmails.includes(email.trim().toLowerCase()) && password === this.SUPER_ADMIN_PASSWORD) {
         const user: User = {
           id: 0,
-          name: 'SUPER ADMIN',
-          email: email.trim().toLowerCase(),
-          role: 'SUPERADMIN'
+          name: superProfile?.name || 'SUPER ADMIN',
+          email: (superProfile?.email || email.trim().toLowerCase()),
+          role: 'SUPERADMIN',
+          telephone: superProfile?.telephone,
+          motDePasse: superProfile?.motDePasse || this.SUPER_ADMIN_PASSWORD
         };
         localStorage.setItem(this.TOKEN_KEY, 'mock-jwt-token-superadmin');
         localStorage.setItem(this.USER_KEY, JSON.stringify(user));
@@ -251,19 +269,11 @@ export class AuthService {
         }
       }
 
-      // Fallback: utilisateur générique (compte actif)
-      const user: User = {
-        id: Date.now(),
-        name: 'OUEDRAOGO Ali',
-        email: email.trim().toLowerCase(),
-        role: 'USER',
-        statut: 'ACTIVE',
-        dateCreation: new Date().toISOString()
-      };
-      localStorage.setItem(this.TOKEN_KEY, 'mock-jwt-token');
-      localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-      this.isLoggedIn.set(true);
-      return { success: true, pending: false };
+      // Aucun compte enregistré (ni SuperAdmin, ni structure, ni technicien) pour cet
+      // e-mail : accès refusé. Seuls les comptes déjà présents sur la plateforme
+      // (comptes de démonstration, ou créés par le SuperAdmin/un admin de structure)
+      // peuvent se connecter — il n'y a plus de compte « passe-partout ».
+      return { success: false, pending: false };
     }
     return { success: false, pending: false };
   }
@@ -326,6 +336,59 @@ export class AuthService {
   /** Récupérer les utilisateurs d'une structure donnée */
   getUsersByStructure(structureId: string): User[] {
     return this.getAllUsers().filter(u => u.structureId === structureId);
+  }
+
+  /** Profil personnalisé persisté du SuperAdmin (informations modifiées depuis son profil) */
+  getSuperAdminProfile(): Partial<User> | null {
+    if (typeof window === 'undefined') return null;
+    const raw = localStorage.getItem(this.SUPER_PROFILE_KEY);
+    return raw ? (JSON.parse(raw) as Partial<User>) : null;
+  }
+
+  /** Modifier les informations du SuperAdmin (persistées + session rafraîchie immédiatement) */
+  updateSuperAdminProfile(data: { name?: string; email?: string; telephone?: string; motDePasse?: string }): void {
+    if (typeof window === 'undefined') return;
+    const clean: Partial<User> = {};
+    if (data.name && data.name.trim()) clean.name = data.name.trim();
+    if (data.email && data.email.trim()) clean.email = data.email.trim().toLowerCase();
+    if (data.telephone !== undefined) clean.telephone = data.telephone.trim();
+    if (data.motDePasse && data.motDePasse.trim()) clean.motDePasse = data.motDePasse;
+    localStorage.setItem(this.SUPER_PROFILE_KEY, JSON.stringify(clean));
+    // La session en cours est rafraîchie sans déconnexion
+    const current = this.getUser();
+    if (current?.role === 'SUPERADMIN') {
+      localStorage.setItem(this.USER_KEY, JSON.stringify({ ...current, ...clean }));
+    }
+  }
+
+  /**
+   * Modifier les informations de l'utilisateur connecté (admin ou technicien).
+   * Met à jour le registre des comptes ET la session courante.
+   */
+  updateCurrentUser(data: Partial<User>): boolean {
+    if (typeof window === 'undefined') return false;
+    const current = this.getUser();
+    if (!current) return false;
+    const updated: User = { ...current, ...data };
+    if (current.role !== 'SUPERADMIN') {
+      const raw = localStorage.getItem(this.USERS_REGISTRY_KEY);
+      const registered: User[] = raw ? JSON.parse(raw) : [];
+      const currentEmail = current.email.toLowerCase();
+      let found = false;
+      for (let i = 0; i < registered.length; i++) {
+        if (registered[i].email.toLowerCase() === currentEmail) {
+          registered[i] = { ...registered[i], ...updated };
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        registered.push(updated);
+      }
+      localStorage.setItem(this.USERS_REGISTRY_KEY, JSON.stringify(registered));
+    }
+    localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
+    return true;
   }
 
   hasRole(role: UserRole): boolean {

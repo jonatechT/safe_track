@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { BasePageComponent } from '../base-page/base-page';
 import { AuthService } from '../../auth/auth.service';
 import { StructureService } from '../../superadmin/services/structure.service';
@@ -16,7 +17,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
 @Component({
   selector: 'app-profile-page',
   standalone: true,
-  imports: [BasePageComponent, DatePipe],
+  imports: [BasePageComponent, DatePipe, FormsModule],
   templateUrl: './profile-page.html',
   styleUrl: './profile-page.scss'
 })
@@ -102,5 +103,64 @@ export class ProfilePageComponent {
   protected logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  // ================== Édition des informations du compte ==================
+
+  /** Mode édition activé ? */
+  protected readonly isEditing = signal(false);
+
+  /** Message de retour (succès / erreur) après une tentative de sauvegarde. */
+  protected readonly feedback = signal('');
+  protected readonly feedbackType = signal<'success' | 'error'>('success');
+
+  /** Champs du formulaire d'édition (mot de passe vide = conserver l'actuel). */
+  protected editForm = { name: '', email: '', telephone: '', motDePasse: '' };
+
+  /** Passer en mode édition, pré-rempli avec les valeurs courantes. */
+  protected startEdit(): void {
+    const u = this.user;
+    this.editForm = {
+      name: u?.name || '',
+      email: u?.email || '',
+      telephone: u?.telephone || '',
+      motDePasse: ''
+    };
+    this.feedback.set('');
+    this.isEditing.set(true);
+  }
+
+  /** Annuler l'édition. */
+  protected cancelEdit(): void {
+    this.isEditing.set(false);
+    this.feedback.set('');
+  }
+
+  /** Sauvegarder les modifications via AuthService (registre + session). */
+  protected saveEdit(): void {
+    if (!this.editForm.name.trim() || !this.editForm.email.trim()) {
+      this.feedbackType.set('error');
+      this.feedback.set('Le nom complet et l\u2019adresse e-mail sont requis.');
+      return;
+    }
+    if (this.editForm.motDePasse && this.editForm.motDePasse.trim().length < 8) {
+      this.feedbackType.set('error');
+      this.feedback.set('Le mot de passe doit contenir au moins 8 caractères.');
+      return;
+    }
+    const ok = this.authService.updateCurrentUser({
+      name: this.editForm.name.trim(),
+      email: this.editForm.email.trim().toLowerCase(),
+      telephone: this.editForm.telephone.trim(),
+      ...(this.editForm.motDePasse.trim() ? { motDePasse: this.editForm.motDePasse.trim() } : {})
+    });
+    if (ok) {
+      this.isEditing.set(false);
+      this.feedbackType.set('success');
+      this.feedback.set('Informations mises à jour avec succès.');
+    } else {
+      this.feedbackType.set('error');
+      this.feedback.set('Impossible de mettre à jour le compte (aucune session active).');
+    }
   }
 }

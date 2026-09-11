@@ -257,15 +257,14 @@
             <div class="sam-step-head">
               <h4 class="sam-step-title">Administrateur de la structure</h4>
               <p class="sam-step-sub">Créez le compte administrateur associé à cette structure.</p>
-              <span class="sam-optional">Optionnel</span>
             </div>
             <div class="sam-grid">
               <div class="sam-field">
-                <label class="sam-label">Nom complet</label>
+                <label class="sam-label">Nom complet <span class="sam-required">*</span></label>
                 <input type="text" class="sam-input" [(ngModel)]="form.adminNom" placeholder="Ex : M. Ouedraoge" />
               </div>
               <div class="sam-field">
-                <label class="sam-label">Email</label>
+                <label class="sam-label">Email <span class="sam-required">*</span></label>
                 <input type="email" class="sam-input" [(ngModel)]="form.adminEmail" placeholder="admin@structure.com" />
               </div>
               <div class="sam-field">
@@ -273,13 +272,13 @@
                 <input type="tel" class="sam-input" [(ngModel)]="form.adminTelephone" placeholder="+226 XX XX XX XX" />
               </div>
               <div class="sam-field">
-                <label class="sam-label">Mot de passe temporaire</label>
+                <label class="sam-label">Mot de passe temporaire <span class="sam-required">*</span></label>
                 <input type="text" class="sam-input" [(ngModel)]="form.adminMotDePasse" placeholder="8 caractères minimum" />
               </div>
             </div>
             <p class="sam-note">
               <i class="fa-solid fa-circle-info"></i>
-              L'administrateur aura le rôle <strong>ADMIN_STRUCTURE</strong> et sera associé uniquement à cette structure.
+              L'administrateur aura le rôle <strong>ADMIN_STRUCTURE</strong> et sera associé uniquement à cette structure. Sans mot de passe, personne ne pourra se connecter à cette structure.
             </p>
           </div>
         }

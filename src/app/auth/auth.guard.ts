@@ -19,5 +19,13 @@ export const authGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
+  // Le SuperAdmin possède son espace isolé (/superadmin) : il n'accède
+  // pas aux pages de l'application (dashboard, équipements, alertes,
+  // maintenance, rapports, profil...) ni au menu associé.
+  if (user?.role === 'SUPERADMIN') {
+    router.navigate(['/superadmin']);
+    return false;
+  }
+
   return true;
 };

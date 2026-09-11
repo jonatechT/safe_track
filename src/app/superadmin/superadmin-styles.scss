@@ -4,8 +4,8 @@
 .sa-title { font-size: 24px; font-weight: 800; color: #0F172A; letter-spacing: -0.5px; }
 .sa-subtitle { font-size: 14px; color: #64748B; margin-top: 4px; }
 /* Buttons */
-.sa-btn-primary { background: linear-gradient(135deg, #1E3A8A, #1E40AF); color: #FFF; border: none; padding: 11px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25); }
-.sa-btn-primary:hover { background: linear-gradient(135deg, #0B1A2E, #1E3A8A); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30, 58, 138, 0.35); }
+.sa-btn-primary { background: #2563EB; color: #FFF; border: none; padding: 11px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+.sa-btn-primary:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35); }
 .sa-btn-primary:active { transform: translateY(0); }
 .sa-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 .sa-btn-secondary { background: #FFF; color: #334155; border: 1px solid #E2E8F0; padding: 11px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); }
@@ -355,7 +355,7 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !i
 /* ===== Modale « Ajouter une structure » — panneau latéral premium ===== */
 .sam-overlay {
   position: fixed; inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.14), rgba(15, 23, 42, 0.55) 65%);
+  background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(10px) saturate(1.3);
   -webkit-backdrop-filter: blur(10px) saturate(1.3);
   display: flex; align-items: center; justify-content: center;
@@ -395,15 +395,11 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !i
   display: flex; flex-direction: column;
   flex-shrink: 0;
   padding: 18px 30px;
-  background: linear-gradient(120deg, #1D4ED8 0%, #2563EB 55%, #1E3A8A 100%);
+  background: #2563EB;
   overflow: hidden;
 }
 .sam-rail-glow {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(160px 140px at 8% -60%, rgba(255, 255, 255, 0.28), transparent 70%),
-    radial-gradient(220px 180px at 110% 140%, rgba(255, 255, 255, 0.16), transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 .sam-rail-steps { position: relative; z-index: 1; display: flex; flex-direction: row; align-items: flex-start; }
 .sam-rail-step { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; flex: 1; min-width: 0; }
@@ -476,7 +472,7 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !i
   content: '';
   position: absolute; left: 0; top: 50%; transform: translateY(-50%);
   width: 4px; height: 24px; border-radius: 999px;
-  background: linear-gradient(180deg, #3B82F6, #1D4ED8);
+  background: #2563EB;
 }
 .sam-step-title { font-size: 16px; font-weight: 700; color: #0F172A; margin: 0; letter-spacing: -0.2px; }
 .sam-step-sub { font-size: 12.5px; color: #64748B; margin: 0; }
@@ -562,21 +558,23 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !i
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease; white-space: nowrap;
 }
 .sam-btn--primary {
-  background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+  background: #2563EB;
   color: #FFF;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
 }
 .sam-btn--primary:hover:not(:disabled) {
+  background: #1D4ED8;
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(37, 99, 235, 0.42);
 }
 .sam-btn--primary:active:not(:disabled) { transform: translateY(0); }
 .sam-btn--success {
-  background: linear-gradient(135deg, #22C55E, #16A34A);
+  background: #16A34A;
   color: #FFF;
   box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
 }
 .sam-btn--success:hover:not(:disabled) {
+  background: #15803D;
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(22, 163, 74, 0.42);
 }
@@ -599,13 +597,13 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !i
   .sam-btn { width: 100%; }
 }
 /* ===== Modale sam-* — mode nuit ===== */
-body.dark-mode .sam-overlay { background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1), rgba(0, 0, 0, 0.62) 65%) !important; backdrop-filter: blur(10px) saturate(1.3) !important; -webkit-backdrop-filter: blur(10px) saturate(1.3) !important; }
+body.dark-mode .sam-overlay { background: rgba(0, 0, 0, 0.65) !important; backdrop-filter: blur(10px) saturate(1.3) !important; -webkit-backdrop-filter: blur(10px) saturate(1.3) !important; }
 body.dark-mode .sam-modal {
   background: #111827 !important;
   border-color: #1F2937 !important;
   box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1), 0 24px 48px -14px rgba(0, 0, 0, 0.6), 0 10px 22px -10px rgba(0, 0, 0, 0.4) !important;
 }
-body.dark-mode .sam-rail { background: linear-gradient(160deg, #1E3A8A 0%, #1E40AF 45%, #172554 100%) !important; }
+body.dark-mode .sam-rail { background: #1E3A8A !important; }
 body.dark-mode .sam-main-scroll { background: #0B1220 !important; scrollbar-color: #334155 transparent !important; }
 body.dark-mode .sam-main-scroll::-webkit-scrollbar-thumb { background: #334155 !important; border: 3px solid transparent !important; background-clip: content-box !important; }
 body.dark-mode .sam-main-scroll::-webkit-scrollbar-thumb:hover { background: #475569 !important; }

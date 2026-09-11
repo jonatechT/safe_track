@@ -33,6 +33,18 @@ import { StructureService } from '../../superadmin/services/structure.service';
     /* Carte contenant un tableau : apparence de carte supprimée */
     .users-card--table { background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; }
     .users-card-title { font-size: 16px; font-weight: 700; color: #0F172A; margin-bottom: 16px; }
+    .users-detail-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #E2E8F0; }
+    .users-detail-avatar { width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #1E3A8A, #3B5BDB); color: #FFF; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .users-detail-name { font-size: 17px; font-weight: 700; color: #0F172A; }
+    .users-detail-sub { font-size: 12px; color: #64748B; }
+    .users-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .users-detail-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .users-detail-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: #94A3B8; }
+    .users-detail-value { font-size: 14px; font-weight: 600; color: #0F172A; word-break: break-word; }
+    .users-detail-value a { color: #2563EB; text-decoration: none; }
+    .users-detail-value a:hover { text-decoration: underline; }
+    .users-modal--detail { max-width: 520px; }
+    .users-modal-icon--info { background: #EFF6FF; color: #2563EB; }
     .users-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
     .users-form-group { display: flex; flex-direction: column; gap: 6px; }
     .users-form-label { font-size: 12px; font-weight: 600; color: #475569; }
@@ -135,6 +147,8 @@ export class UsersListComponent {
   protected messageType = signal<'success' | 'error'>('success');
   protected showConfirmModal = signal(false);
   protected selectedUser = signal<User | null>(null);
+  protected showDetailModal = signal(false);
+  protected selectedTech = signal<User | null>(null);
 
   protected formData: {
     nom: string;
@@ -218,7 +232,8 @@ export class UsersListComponent {
       structureId,
       statut: this.formData.statut,
       telephone: this.formData.telephone || undefined,
-      dateCreation: new Date().toISOString()
+      dateCreation: new Date().toISOString(),
+      motDePasse: this.formData.motDePasse
     };
     this.usersService.createUser(newUser);
     this.message.set(`Le technicien « ${fullName} » a été créé avec succès.`);
@@ -230,6 +245,17 @@ export class UsersListComponent {
   protected confirmToggleStatus(user: User): void {
     this.selectedUser.set(user);
     this.showConfirmModal.set(true);
+  }
+
+  /** Ouvre la modale de détail d'un technicien. */
+  protected openDetail(tech: User): void {
+    this.selectedTech.set(tech);
+    this.showDetailModal.set(true);
+  }
+
+  protected closeDetail(): void {
+    this.showDetailModal.set(false);
+    this.selectedTech.set(null);
   }
 
   protected cancelModal(): void {

@@ -3,8 +3,8 @@
   <!-- ===== Titre de la page (identique aux autres pages superadmin) ===== -->
   <div class="sa-page-header">
     <div>
-      <h1 class="sa-title">Ajouter une structure</h1>
-      <p class="sa-subtitle">Renseignez les informations principales de la structure.</p>
+      <h1 class="sa-title">{{ isEditMode ? 'Modifier la structure' : 'Ajouter une structure' }}</h1>
+      <p class="sa-subtitle">{{ isEditMode ? 'Modifiez les informations de la structure et de son administrateur.' : 'Renseignez les informations principales de la structure.' }}</p>
     </div>
   </div>
 
@@ -71,51 +71,62 @@
         </div>
       </section>
 
-      @if (!isEditMode) {
-        <div class="sf-divider"></div>
+      <div class="sf-divider"></div>
 
-        <!-- ===== Carte : Administrateur ===== -->
-        <div class="sf-card">
-          <!-- ===== Section 2 : Administrateur ===== -->
-          <section class="sf-section">
-          <div class="sf-section-head">
-            <span class="sf-icon sf-icon-blue"><i class="fa-solid fa-user"></i></span>
-            <div>
-              <h2 class="sf-section-title">Administrateur de la structure</h2>
-              <p class="sf-section-sub">Créez le compte administrateur associé à cette structure.</p>
-            </div>
-            <span class="sf-tag">Optionnel</span>
+      <!-- ===== Carte : Administrateur ===== -->
+      <div class="sf-card">
+        <!-- ===== Section 2 : Administrateur ===== -->
+        <section class="sf-section">
+        <div class="sf-section-head">
+          <span class="sf-icon sf-icon-blue"><i class="fa-solid fa-user"></i></span>
+          <div>
+            <h2 class="sf-section-title">Administrateur de la structure</h2>
+            <p class="sf-section-sub">
+              {{ isEditMode ? "Modifiez les informations (ou le mot de passe) du compte administrateur." : "Créez le compte administrateur associé à cette structure." }}
+            </p>
           </div>
-
-          <div class="sf-grid">
-            <div class="sf-field">
-              <label class="sf-label" for="adminNom">Nom complet</label>
-              <input id="adminNom" type="text" class="sf-input" name="adminNom" [(ngModel)]="formData.adminNom" placeholder="Ex : M. Ouedraoge" />
-            </div>
-            <div class="sf-field">
-              <label class="sf-label" for="adminEmail">Email</label>
-              <input id="adminEmail" type="email" class="sf-input" name="adminEmail" [(ngModel)]="formData.adminEmail" placeholder="admin@structure.com" />
-            </div>
-          </div>
-
-          <div class="sf-grid">
-            <div class="sf-field">
-              <label class="sf-label" for="adminTelephone">Téléphone</label>
-              <input id="adminTelephone" type="tel" class="sf-input" name="adminTelephone" [(ngModel)]="formData.adminTelephone" placeholder="+226 XX XX XX XX" />
-            </div>
-            <div class="sf-field">
-              <label class="sf-label" for="adminMotDePasse">Mot de passe temporaire</label>
-              <input id="adminMotDePasse" type="text" class="sf-input" name="adminMotDePasse" [(ngModel)]="formData.adminMotDePasse" placeholder="8 caractères minimum" />
-            </div>
-          </div>
-
-          <div class="sf-note">
-            <i class="fa-solid fa-circle-info"></i>
-            <span>L'administrateur aura le rôle <strong>ADMIN_STRUCTURE</strong> et sera associé uniquement à cette structure.</span>
-          </div>
-        </section>
+          @if (!isEditMode) {
+            <span class="sf-tag">Requis</span>
+          }
         </div>
-      }
+
+        <div class="sf-grid">
+          <div class="sf-field">
+            <label class="sf-label" for="adminNom">Nom complet <span class="sf-required">*</span></label>
+            <input id="adminNom" type="text" class="sf-input" name="adminNom" [(ngModel)]="formData.adminNom" placeholder="Ex : M. Ouedraoge" />
+          </div>
+          <div class="sf-field">
+            <label class="sf-label" for="adminEmail">Email <span class="sf-required">*</span></label>
+            <input id="adminEmail" type="email" class="sf-input" name="adminEmail" [(ngModel)]="formData.adminEmail" placeholder="admin@structure.com" />
+          </div>
+        </div>
+
+        <div class="sf-grid">
+          <div class="sf-field">
+            <label class="sf-label" for="adminTelephone">Téléphone</label>
+            <input id="adminTelephone" type="tel" class="sf-input" name="adminTelephone" [(ngModel)]="formData.adminTelephone" placeholder="+226 XX XX XX XX" />
+          </div>
+          <div class="sf-field">
+            <label class="sf-label" for="adminMotDePasse">
+              {{ isEditMode ? 'Nouveau mot de passe' : 'Mot de passe' }}
+              @if (!isEditMode) { <span class="sf-required">*</span> }
+            </label>
+            <input id="adminMotDePasse" type="text" class="sf-input" name="adminMotDePasse" [(ngModel)]="formData.adminMotDePasse" [placeholder]="isEditMode ? 'Laisser vide pour conserver le mot de passe actuel' : '8 caractères minimum'" />
+          </div>
+        </div>
+
+        <div class="sf-note">
+          <i class="fa-solid fa-circle-info"></i>
+          <span>
+            @if (isEditMode) {
+              L'administrateur garde le rôle <strong>ADMIN_STRUCTURE</strong>. Laissez le mot de passe vide pour ne pas le changer.
+            } @else {
+              L'administrateur aura le rôle <strong>ADMIN_STRUCTURE</strong> et sera associé uniquement à cette structure. Un mot de passe est obligatoire : sans lui, personne ne pourra se connecter.
+            }
+          </span>
+        </div>
+      </section>
+      </div>
 
     <!-- ===== Actions ===== -->
     <div class="sf-actions">

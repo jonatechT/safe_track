@@ -29,9 +29,15 @@ export class LoginComponent {
       this.errorMessage.set('Veuillez remplir tous les champs.');
       return;
     }
+    // Validation du format e-mail : doit contenir « @ » puis un domaine se terminant par « .com ».
+    const id = this.identifier().trim();
+    if (!/^[^@\s]+@[^@\s]*\.com$/i.test(id)) {
+      this.errorMessage.set('Veuillez saisir une adresse e-mail valide (ex. nom@domaine.com).');
+      return;
+    }
     this.isLoading.set(true);
     setTimeout(() => {
-      const result = this.authService.login(this.identifier(), this.password());
+      const result = this.authService.login(id, this.password());
       this.isLoading.set(false);
       if (result.success) {
         const user = this.authService.getUser();

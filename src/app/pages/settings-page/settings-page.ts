@@ -61,47 +61,62 @@ import { ThemeService } from '../../services/theme.service';
           </div>
         </div>
 
-        <!-- ===== Planification d'une intervention de maintenance ===== -->
+        <!-- ===== Action de l'admin sur une alerte ===== -->
         <div class="stg-card">
           <div class="stg-card-header">
             <div class="stg-card-icon stg-card-icon--blue"><i class="fa-solid fa-calendar-check"></i></div>
             <div>
-              <h3 class="stg-card-title">Planification d'une intervention de maintenance</h3>
-              <p class="stg-card-subtitle">Le bouton d'affectation de l'admin devient une planification d'intervention de maintenance (date + nature).</p>
+              <h3 class="stg-card-title">Action de l'admin sur une alerte</h3>
+              <p class="stg-card-subtitle">Choisissez l'unique action proposée à l'admin sur la page Alertes.</p>
             </div>
-            <label class="stg-switch stg-card-switch">
-              <input type="checkbox" [checked]="settings.planifierMaintenance" (change)="toggle('planifierMaintenance', $any($event.target).checked)" />
-              <span class="stg-slider"></span>
-            </label>
           </div>
 
-          @if (settings.planifierMaintenance) {
+          <div class="stg-choice-group" role="radiogroup" aria-label="Action de l'admin sur une alerte">
+            <button
+              type="button"
+              class="stg-choice"
+              [class.stg-choice--active]="settings.actionAdmin === 'affecter'"
+              role="radio"
+              [attr.aria-checked]="settings.actionAdmin === 'affecter'"
+              (click)="setActionAdmin('affecter')"
+            >
+              <i class="fa-solid fa-user-clock stg-choice-icon"></i>
+              <span class="stg-choice-label">Affecter</span>
+              <span class="stg-choice-desc">à un ou plusieurs techniciens</span>
+            </button>
+            <button
+              type="button"
+              class="stg-choice"
+              [class.stg-choice--active]="settings.actionAdmin === 'planifier'"
+              role="radio"
+              [attr.aria-checked]="settings.actionAdmin === 'planifier'"
+              (click)="setActionAdmin('planifier')"
+            >
+              <i class="fa-solid fa-calendar-check stg-choice-icon"></i>
+              <span class="stg-choice-label">Planifier</span>
+              <span class="stg-choice-desc">une intervention (date + nature)</span>
+            </button>
+            <button
+              type="button"
+              class="stg-choice"
+              [class.stg-choice--active]="settings.actionAdmin === 'prendre'"
+              role="radio"
+              [attr.aria-checked]="settings.actionAdmin === 'prendre'"
+              (click)="setActionAdmin('prendre')"
+            >
+              <i class="fa-solid fa-hand stg-choice-icon"></i>
+              <span class="stg-choice-label">Prendre</span>
+              <span class="stg-choice-desc">l'alerte lui-même</span>
+            </button>
+          </div>
+
+          @if (settings.actionAdmin === 'planifier') {
             <div class="stg-row stg-row--sub">
               <div class="stg-row-info">
                 <span class="stg-row-title">Rappel avant la date limite</span>
                 <span class="stg-row-desc">Jours avant la date d'une intervention planifiée : les techniciens affectés reçoivent une notification automatique.</span>
               </div>
               <input type="number" class="stg-select stg-number" [value]="settings.rappelAvantIntervention" (change)="setRappel($any($event.target).value)" min="0" max="30" aria-label="Jours de rappel" />
-            </div>
-
-            <div class="stg-row stg-row--sub stg-row--stack">
-              <div class="stg-row-info">
-                <span class="stg-row-title">Natures d'intervention disponibles</span>
-                <span class="stg-row-desc">Liste des natures proposées lors de la planification (une par ligne).</span>
-              </div>
-            </div>
-            <div class="stg-natures">
-              @for (nature of naturesList; track nature; let i = $index) {
-                <div class="stg-nature-row">
-                  <input type="text" class="stg-select stg-nature-input" [value]="nature" (change)="setNature(i, $any($event.target).value)" aria-label="Nature d'intervention" />
-                  <button type="button" class="stg-nature-remove" (click)="removeNature(i)" aria-label="Supprimer cette nature" title="Supprimer">
-                    <i class="fa-solid fa-xmark"></i>
-                  </button>
-                </div>
-              }
-              <button type="button" class="stg-nature-add" (click)="addNature()">
-                <i class="fa-solid fa-plus"></i> Ajouter une nature
-              </button>
             </div>
           }
         </div>
@@ -238,13 +253,22 @@ import { ThemeService } from '../../services/theme.service';
     .stg-select:focus { border-color: #2563EB; }
     .stg-number { width: 92px; text-align: center; }
     .stg-row--stack { flex-direction: column; align-items: flex-start; gap: 4px; padding-bottom: 2px; }
-    .stg-natures { display: flex; flex-direction: column; gap: 8px; padding-left: 16px; }
-    .stg-nature-row { display: flex; align-items: center; gap: 8px; }
-    .stg-nature-input { width: 100%; }
-    .stg-nature-remove { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #FECACA; background: #FEF2F2; color: #DC2626; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s ease; }
-    .stg-nature-remove:hover { background: #FEE2E2; }
-    .stg-nature-add { align-self: flex-start; background: transparent; color: #2563EB; border: 1px dashed #93C5FD; border-radius: 9px; padding: 7px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
-    .stg-nature-add:hover { background: #EFF6FF; border-style: solid; }
+
+    /* ===== Sélecteur à 3 choix exclusifs (action de l'admin) ===== */
+    .stg-choice-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .stg-choice {
+      display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
+      padding: 16px 12px; border-radius: 12px; border: 1.5px solid #E2E8F0; background: #F8FAFC;
+      cursor: pointer; transition: all 0.18s ease; font-family: inherit;
+    }
+    .stg-choice:hover { border-color: #93C5FD; background: #F0F7FF; }
+    .stg-choice-icon { font-size: 18px; color: #64748B; transition: color 0.18s ease; }
+    .stg-choice-label { font-size: 13px; font-weight: 700; color: #0F172A; }
+    .stg-choice-desc { font-size: 11px; color: #64748B; line-height: 1.3; }
+    .stg-choice--active { border-color: #2563EB; background: #EFF6FF; box-shadow: 0 0 0 1px #2563EB; }
+    .stg-choice--active .stg-choice-icon { color: #2563EB; }
+    .stg-choice--active .stg-choice-label { color: #1D4ED8; }
+    @media (max-width: 560px) { .stg-choice-group { grid-template-columns: 1fr; } }
 
     @media (max-width: 640px) {
       .stg-row { flex-direction: column; align-items: flex-start; }
@@ -283,26 +307,8 @@ export class SettingsPageComponent {
     this.settingsService.update({ rappelAvantIntervention: n });
   }
 
-  /** Liste éditable des natures (copie réactive depuis les réglages). */
-  get naturesList(): string[] {
-    const n = this.settingsService.settings().naturesIntervention;
-    return n && n.length ? n : ['Préventive'];
-  }
-
-  protected setNature(index: number, value: string): void {
-    const list = [...this.naturesList];
-    list[index] = value;
-    this.settingsService.update({ naturesIntervention: list });
-  }
-
-  protected addNature(): void {
-    this.settingsService.update({ naturesIntervention: [...this.naturesList, 'Nouvelle nature'] });
-  }
-
-  protected removeNature(index: number): void {
-    const list = [...this.naturesList];
-    list.splice(index, 1);
-    this.settingsService.update({ naturesIntervention: list.length ? list : ['Préventive'] });
+  protected setActionAdmin(value: AppSettings['actionAdmin']): void {
+    this.settingsService.update({ actionAdmin: value });
   }
 
   protected toggleTheme(): void {

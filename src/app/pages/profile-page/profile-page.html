@@ -5,17 +5,87 @@
 >
   @if (user; as u) {
     <div class="profile-content">
-      <!-- ===== En-tête profil ===== -->
+      <!-- ===== En-tête profil (identité + actions regroupées) ===== -->
       <div class="profile-hero">
-        <div class="profile-avatar">{{ initials() }}</div>
-        <div class="profile-hero-info">
-          <h2 class="profile-name">{{ u.name }}</h2>
-          <span class="profile-role-badge" [class]="roleClass()">
-            <i class="fa-solid fa-user-shield"></i>
-            {{ roleLabel() }}
-          </span>
+        <div class="profile-hero-identity">
+          <div class="profile-avatar">{{ initials() }}</div>
+          <div class="profile-hero-info">
+            <h2 class="profile-name">{{ u.name }}</h2>
+            <span class="profile-role-badge" [class]="roleClass()">
+              <i class="fa-solid fa-user-shield"></i>
+              {{ roleLabel() }}
+            </span>
+          </div>
+        </div>
+        <div class="profile-hero-actions">
+          <button type="button" class="profile-hero-btn profile-hero-btn--ghost" (click)="startEdit()" [disabled]="isEditing()">
+            <i class="fa-solid fa-pen"></i>
+            <span>Modifier mes informations</span>
+          </button>
+          <button type="button" class="profile-hero-btn profile-hero-btn--danger" (click)="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Se déconnecter</span>
+          </button>
         </div>
       </div>
+
+      @if (feedback() && !isEditing()) {
+        <div class="profile-feedback" [class.profile-feedback--error]="feedbackType() === 'error'">
+          <i class="fa-solid" [class.fa-circle-check]="feedbackType() === 'success'" [class.fa-circle-exclamation]="feedbackType() === 'error'"></i>
+          {{ feedback() }}
+        </div>
+      }
+
+      @if (isEditing()) {
+        <!-- ===== Formulaire d'édition (modale) ===== -->
+        <div class="profile-edit-overlay" (click)="cancelEdit()">
+          <div class="profile-edit-card" role="dialog" aria-modal="true" aria-label="Modifier mes informations" (click)="$event.stopPropagation()">
+            <div class="profile-edit-card-header">
+              <h3 class="profile-card-title">
+                <span class="profile-card-icon profile-card-icon--blue"><i class="fa-solid fa-pen"></i></span>
+                Modifier mes informations
+              </h3>
+              <button type="button" class="profile-edit-close" (click)="cancelEdit()" aria-label="Fermer">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            @if (feedback() && feedbackType() === 'error') {
+              <div class="profile-feedback profile-feedback--error profile-feedback--in-modal">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                {{ feedback() }}
+              </div>
+            }
+
+            <div class="profile-edit-grid">
+              <div class="profile-edit-field">
+                <label class="profile-edit-label" for="edit-name">Nom complet</label>
+                <input id="edit-name" type="text" class="profile-edit-input" [(ngModel)]="editForm.name" placeholder="Ex : M. Ouedraogo" />
+              </div>
+              <div class="profile-edit-field">
+                <label class="profile-edit-label" for="edit-email">Adresse e-mail</label>
+                <input id="edit-email" type="email" class="profile-edit-input" [(ngModel)]="editForm.email" placeholder="exemple@structure.com" />
+              </div>
+              <div class="profile-edit-field">
+                <label class="profile-edit-label" for="edit-phone">Téléphone</label>
+                <input id="edit-phone" type="tel" class="profile-edit-input" [(ngModel)]="editForm.telephone" placeholder="+226 XX XX XX XX" />
+              </div>
+              <div class="profile-edit-field">
+                <label class="profile-edit-label" for="edit-pass">Nouveau mot de passe</label>
+                <input id="edit-pass" type="password" class="profile-edit-input" [(ngModel)]="editForm.motDePasse" placeholder="8 caractères minimum (vide = conserver l'actuel)" />
+              </div>
+            </div>
+            <div class="profile-edit-actions">
+              <button type="button" class="profile-edit-btn profile-edit-btn--secondary" (click)="cancelEdit()">
+                <i class="fa-solid fa-xmark"></i> Annuler
+              </button>
+              <button type="button" class="profile-edit-btn profile-edit-btn--primary" (click)="saveEdit()">
+                <i class="fa-solid fa-check"></i> Enregistrer
+              </button>
+            </div>
+          </div>
+        </div>
+      }
 
       <!-- ===== Cartes d'informations ===== -->
       <div class="profile-grid">
@@ -101,13 +171,6 @@
         </div>
       </div>
 
-      <!-- ===== Actions ===== -->
-      <div class="profile-actions">
-        <button type="button" class="profile-logout-btn" (click)="logout()">
-          <i class="fa-solid fa-right-from-bracket"></i>
-          Se déconnecter
-        </button>
-      </div>
     </div>
   } @else {
     <div class="profile-empty">

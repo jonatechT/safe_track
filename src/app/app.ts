@@ -207,7 +207,8 @@ export class App {
    * (« X a pris l'alerte Y ») ; cette icône signale les nouvelles alertes à traiter.
    */
   protected get openAlerts(): MaintenanceItem[] {
-    return this.maintenanceService.getItems().filter(i => !i.prisPar && i.alertes > 0);
+    const sid = this.authService.getUser()?.structureId || null;
+    return this.maintenanceService.getItems().filter(i => !i.prisPar && i.alertes > 0 && (!sid || i.structureId === sid));
   }
 
   protected get openAlertsCount(): number {
@@ -266,6 +267,24 @@ export class App {
 
   protected closeNotifications(): void {
     this.showNotifications = false;
+  }
+
+  /**
+   * Cliquer sur une notification : elle est marquée comme lue, puis redirige
+   * vers la page concernée (Alertes, Maintenance ou Rapports selon sa nature).
+   */
+  protected ouvrirNotification(notif: NotificationItem): void {
+    if (!notif) return;
+    this.maintenanceService.notifications.set(
+      this.maintenanceService.notifications().map(n => (n.id === notif.id ? { ...n, read: true } : n))
+    );
+    this.closeNotifications();
+    const cible = notif.cible
+      ?? (notif.message.includes('intervention') || notif.message.includes('approche')
+        ? 'maintenance'
+        : notif.message.includes('rapport') ? 'rapports' : 'alerts');
+    const route = cible === 'rapports' ? '/rapports' : cible === 'maintenance' ? '/maintenance' : '/alerts';
+    this.router.navigate([route]);
   }
 
   /** Redirige vers la page Alertes depuis la cloche de notification */

@@ -111,6 +111,9 @@
                 <td>{{ u.dateCreation | date:'dd/MM/yyyy' }}</td>
                 <td>
                   <div style="display: flex; gap: 6px;">
+                    <button class="users-btn-icon" (click)="openDetail(u)" title="Voir les détails">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
                     @if (u.statut === 'ACTIVE') {
                       <button class="users-btn-icon users-icon-warning" (click)="confirmToggleStatus(u)" title="Désactiver">
                         <i class="fa-solid fa-circle-pause"></i>
@@ -152,6 +155,80 @@
         <button class="users-btn-danger" (click)="confirmToggle()">
           {{ selectedUser()?.statut === 'ACTIVE' ? 'Oui, désactiver' : 'Oui, activer' }}
         </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showDetailModal()) {
+  <div class="users-modal-overlay" (click)="closeDetail()">
+    <div class="users-modal users-modal--detail" (click)="$event.stopPropagation()">
+      <div class="users-modal-header">
+        <div class="users-modal-icon users-modal-icon--info">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <h3 class="users-modal-title">Détail du technicien</h3>
+        <button type="button" class="users-modal-close" (click)="closeDetail()" aria-label="Fermer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="users-modal-body">
+        @if (selectedTech(); as tech) {
+          <div class="users-detail-header">
+            <div class="users-detail-avatar">{{ tech.name.charAt(0).toUpperCase() }}</div>
+            <div>
+              <div class="users-detail-name">{{ tech.name }}</div>
+              <div class="users-detail-sub">
+                @if (tech.role === 'ADMIN_STRUCTURE') { admin } @else { technicien }
+              </div>
+            </div>
+          </div>
+          <div class="users-detail-grid">
+            <div class="users-detail-field">
+              <span class="users-detail-label">Adresse e-mail</span>
+              <span class="users-detail-value">{{ tech.email }}</span>
+            </div>
+            <div class="users-detail-field">
+              <span class="users-detail-label">Téléphone</span>
+              <span class="users-detail-value">
+                @if (tech.telephone) {
+                  <a [href]="'tel:' + tech.telephone">{{ tech.telephone }}</a>
+                } @else {
+                  <span>—</span>
+                }
+              </span>
+            </div>
+            <div class="users-detail-field">
+              <span class="users-detail-label">Rôle</span>
+              <span class="users-detail-value">{{ tech.role === 'ADMIN_STRUCTURE' ? 'Administrateur de structure' : 'Technicien' }}</span>
+            </div>
+            <div class="users-detail-field">
+              <span class="users-detail-label">Statut</span>
+              <span class="users-detail-value">
+                @if (tech.statut === 'ACTIVE') {
+                  <span class="users-badge users-badge-active">Active</span>
+                } @else {
+                  <span class="users-badge users-badge-inactive">Inactive</span>
+                }
+              </span>
+            </div>
+            @if (tech.structureId) {
+              <div class="users-detail-field">
+                <span class="users-detail-label">Structure</span>
+                <span class="users-detail-value">{{ structureName() }}</span>
+              </div>
+            }
+            @if (tech.dateCreation) {
+              <div class="users-detail-field">
+                <span class="users-detail-label">Créé le</span>
+                <span class="users-detail-value">{{ tech.dateCreation | date:'dd/MM/yyyy' }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+      <div class="users-modal-actions">
+        <button class="users-btn-secondary" (click)="closeDetail()">Fermer</button>
       </div>
     </div>
   </div>

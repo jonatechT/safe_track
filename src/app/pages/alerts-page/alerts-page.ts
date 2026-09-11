@@ -78,10 +78,17 @@ import { StructureService } from '../../superadmin/services/structure.service';
                       <td><span class="numero-code">N°{{ padNumero(item.numero) }}</span></td>
                       <td class="actions-cell">
                         @if (isAdminUser()) {
-                          <button class="btn-take" (click)="ouvrirAffectation(item); $event.stopPropagation()">
-                            <i class="fa-solid fa-user-clock"></i>
-                            {{ planifMode ? 'Planifier' : 'Affecter' }}
-                          </button>
+                          @if (actionAdmin === 'prendre') {
+                            <button class="btn-take" (click)="prendreAlerte(item); $event.stopPropagation()">
+                              <i class="fa-solid fa-hand"></i>
+                              Prendre
+                            </button>
+                          } @else {
+                            <button class="btn-take" (click)="ouvrirAffectation(item); $event.stopPropagation()">
+                              <i class="fa-solid fa-user-clock"></i>
+                              {{ planifMode ? 'Planifier' : 'Affecter' }}
+                            </button>
+                          }
                         } @else if (peutPrendre(item)) {
                           <button class="btn-take" (click)="prendreAlerte(item); $event.stopPropagation()">
                             <i class="fa-solid fa-hand"></i>
@@ -124,17 +131,26 @@ import { StructureService } from '../../superadmin/services/structure.service';
                   </div>
                   <div class="planif-field">
                     <label class="planif-label" for="planif-nature">Nature de l'intervention</label>
-                    <select id="planif-nature" class="planif-input" [(ngModel)]="planifNature">
-                      @for (n of naturesDisponibles; track n) {
-                        <option [value]="n">{{ n }}</option>
-                      }
-                      @if (!naturesDisponibles.length) {
-                        <option value="Préventive">Préventive</option>
-                      }
-                    </select>
+                    <input id="planif-nature" type="text" class="planif-input" [(ngModel)]="planifNature" placeholder="Ex : Préventive, Réparation moteur..." />
+                  </div>
+                </div>
+              } @else {
+                <div class="planif-fields">
+                  <div class="planif-field">
+                    <label class="planif-label" for="affect-date">Date d'affectation</label>
+                    <input id="affect-date" type="date" class="planif-input" [(ngModel)]="affectDate" />
+                  </div>
+                  <div class="planif-field">
+                    <label class="planif-label" for="affect-delai">Délai</label>
+                    <input id="affect-delai" type="text" class="planif-input" [(ngModel)]="affectDelai" placeholder="ex. 48 h" />
                   </div>
                 </div>
               }
+
+              <div class="planif-field">
+                <label class="planif-label" for="intervention-description">Description <span class="planif-optional">(optionnel)</span></label>
+                <textarea id="intervention-description" class="planif-input planif-textarea" [(ngModel)]="interventionDescription" placeholder="Précisions pour le(s) technicien(s) affecté(s)..." rows="2"></textarea>
+              </div>
 
               @if (affectModeMulti) {
                 <div class="affect-multi-note">
@@ -246,7 +262,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .severite-critique { background: #FEE2E2; color: #DC2626; border: 1px solid #FCA5A5; }
     .severite-avertissement { background: #FEF3C7; color: #D97706; border: 1px solid #FCD39D; }
 
-    .btn-take { background: transparent; color: #2563EB; border: 1px solid #2563EB; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .btn-take { background: transparent; color: #2563EB; border: 1px solid #2563EB; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; white-space: nowrap; }
     .btn-take:hover { background: #2563EB; color: #FFFFFF; }
     .locked-label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #94A3B8; font-weight: 600; }
 
@@ -288,6 +304,8 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .planif-label { font-size: 11.5px; font-weight: 700; color: #475569; }
     .planif-input { padding: 8px 10px; border: 1px solid #E2E8F0; border-radius: 9px; font-size: 13px; color: #0F172A; outline: none; font-family: inherit; background: #FFFFFF; }
     .planif-input:focus { border-color: #2563EB; }
+    .planif-textarea { resize: vertical; min-height: 56px; line-height: 1.5; }
+    .planif-optional { font-weight: 500; color: #94A3B8; text-transform: none; letter-spacing: 0; }
     .affect-item.disabled { opacity: 0.5; cursor: not-allowed; }
     .affect-item.disabled:hover { border-color: #E2E8F0; background: #FFFFFF; }
     .affect-item-structure { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 600; color: #64748B; background: #F1F5F9; border-radius: 8px; padding: 1px 6px; vertical-align: middle; }
@@ -308,6 +326,11 @@ export class AlertsPageComponent {
   /** Date choisie pour une intervention planifiée (format ISO yyyy-mm-dd). */
   planifDate = '';
   planifNature = '';
+  /** Date d'affectation et délai saisis par l'admin lors d'une simple affectation. */
+  affectDate = '';
+  affectDelai = '';
+  /** Description libre (optionnelle) transmise aux techniciens affectés via la notification. */
+  interventionDescription = '';
 
   constructor(
     private maintenanceService: MaintenanceService,
@@ -320,7 +343,9 @@ export class AlertsPageComponent {
   ) {}
 
   get items(): MaintenanceItem[] {
-    return this.maintenanceService.getItems().filter(i => !i.prisPar && i.alertes > 0);
+    const sid = this.authService.getUser()?.structureId || null;
+    // Chaque structure ne voit que SES alertes (le SuperAdmin, sans structureId, voit tout).
+    return this.maintenanceService.getItems().filter(i => !i.prisPar && i.alertes > 0 && (!sid || i.structureId === sid));
   }
 
   getCritiques(): number {
@@ -362,13 +387,13 @@ export class AlertsPageComponent {
     return !!item.affectes?.some(a => a.nom === moi);
   }
 
-  get planifMode(): boolean {
-    return this.settingsService.settings().planifierMaintenance;
+  /** Action unique proposée à l'admin sur une alerte (choisie dans /parametres). */
+  get actionAdmin(): 'affecter' | 'planifier' | 'prendre' {
+    return this.settingsService.settings().actionAdmin;
   }
 
-  get naturesDisponibles(): string[] {
-    const natures = this.settingsService.settings().naturesIntervention;
-    return natures && natures.length ? natures : ['Préventive'];
+  get planifMode(): boolean {
+    return this.actionAdmin === 'planifier';
   }
 
   /** Date du jour au format ISO (pour l'attribut min des champs date). */
@@ -424,7 +449,10 @@ export class AlertsPageComponent {
     this.selectedTechnicienIds = [];
     this.rechercheTechnicien = '';
     this.planifDate = '';
-    this.planifNature = this.naturesDisponibles[0] || 'Préventive';
+    this.planifNature = 'Préventive';
+    this.affectDate = '';
+    this.affectDelai = '';
+    this.interventionDescription = '';
     this.showAffectModal = true;
   }
 
@@ -433,6 +461,7 @@ export class AlertsPageComponent {
     this.selectedItem = null;
     this.selectedTechnicienIds = [];
     this.rechercheTechnicien = '';
+    this.interventionDescription = '';
   }
 
   isTechnicienSelected(id: number): boolean {
@@ -460,20 +489,23 @@ export class AlertsPageComponent {
       .filter((t): t is User => !!t)
       .map(t => ({ id: t.id, nom: t.name }));
 
+    const description = this.interventionDescription.trim() || undefined;
+
     if (this.planifMode) {
       if (!this.planifDate) return;
       this.maintenanceService.planifierIntervention(item.id, {
         nature: this.planifNature || 'Préventive',
         natures: this.planifNature ? [this.planifNature] : [],
         date: this.planifDate,
-        techniciens
+        techniciens,
+        description
       });
       this.closeAffectModal();
       this.router.navigate(['/maintenance'], { queryParams: { planifie: '1' } });
       return;
     }
 
-    this.maintenanceService.affecterAlerte(item.id, techniciens);
+    this.maintenanceService.affecterAlerte(item.id, techniciens, this.affectDate || undefined, this.affectDelai || undefined, description);
     this.closeAffectModal();
     this.router.navigate(['/maintenance'], { queryParams: { affecte: '1' } });
   }

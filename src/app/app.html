@@ -93,7 +93,9 @@
           [attr.aria-label]="isDarkMode ? 'Passer en mode clair' : 'Passer en mode nuit'"
           [attr.title]="isDarkMode ? 'Mode clair' : 'Mode nuit'"
         >
-          <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+          <span class="tt-icon tt-icon-sun"><i class="fa-solid fa-sun"></i></span>
+          <span class="tt-icon tt-icon-moon"><i class="fa-solid fa-moon"></i></span>
+          <span class="tt-knob"></span>
         </button>
         <div class="alerts-bell-wrapper">
           <button
@@ -117,12 +119,13 @@
             [attr.aria-label]="showNotifications ? 'Fermer les notifications' : 'Afficher les notifications'"
             [attr.title]="showNotifications ? 'Fermer les notifications' : 'Notifications'"
           >
-            <i class="fa-solid fa-bell"></i>
+            <i class="fa-bell" [class.fa-regular]="unreadNotificationsCount === 0" [class.fa-solid]="unreadNotificationsCount > 0"></i>
             @if (unreadNotificationsCount > 0) {
               <span class="notification-badge">{{ unreadNotificationsCount }}</span>
             }
           </button>
         </div>
+        <span class="topbar-divider" aria-hidden="true"></span>
         <a class="profile-chip" routerLink="/profile" aria-label="Ouvrir le profil" title="Profil">
           <div class="profile-avatar">{{ currentUserName.charAt(0).toUpperCase() || 'U' }}</div>
           <span class="profile-name">{{ currentUserName }}</span>
@@ -314,7 +317,15 @@
         </div>
       } @else {
         @for (notif of notifications; track notif.id) {
-          <div class="notification-item" [class.unread]="!notif.read">
+          <div
+            class="notification-item"
+            [class.unread]="!notif.read"
+            role="button"
+            tabindex="0"
+            (click)="ouvrirNotification(notif)"
+            (keydown.enter)="ouvrirNotification(notif)"
+            aria-label="Ouvrir cette notification"
+          >
             <div class="notification-icon">
               <i class="fa-solid fa-wrench"></i>
             </div>
@@ -324,8 +335,11 @@
                 <i class="fa-solid fa-clock"></i> {{ notif.date }}
               </span>
             </div>
+            <span class="notification-go">
+              <i class="fa-solid fa-arrow-right"></i>
+            </span>
             @if (isAdmin() && !notif.read) {
-              <button class="notification-validate-btn" (click)="validerAlerte(notif)" aria-label="Valider l'alerte">
+              <button class="notification-validate-btn" (click)="validerAlerte(notif); $event.stopPropagation()" aria-label="Valider l'alerte">
                 <i class="fa-solid fa-check"></i> Valider
               </button>
             }

@@ -7,6 +7,8 @@ export interface MaintenanceItem {
   numero: number;
   equipment: string;
   type: string;
+  /** Structure propriétaire de l'intervention (filtrage multi-structures). */
+  structureId?: string;
   /** Sévérité de l'alerte d'origine — absente pour une maintenance planifiée directement. */
   severite?: 'Critique' | 'Avertissement';
   datePrevue: string;
@@ -19,8 +21,14 @@ export interface MaintenanceItem {
   datePrise?: string;
   /** Techniciens affectés à l'intervention par l'admin (plateforme entière). */
   affectes?: { id: number; nom: string }[];
+  /** Date à laquelle l'admin a affecté l'intervention aux techniciens. */
+  dateAffectation?: string;
+  /** Délai imparti pour l'intervention (saisi par l'admin, ex. « 48 h »). */
+  delaiAffectation?: string;
   /** Nature(s) de l'intervention planifiée (multi-nature). */
   natures?: string[];
+  /** Description libre (optionnelle) saisie par l'admin, transmise aux techniciens affectés. */
+  description?: string;
   localisation?: string;
   lienLocalisation?: string;
   rapport?: RapportIntervention;
@@ -37,6 +45,8 @@ export interface NotificationItem {
   read: boolean;
   /** Technicien destinataire (nom). Absent → notification globale visible par tout le monde. */
   destinataire?: string;
+  /** Page cible lorsqu'on clique sur la notification (redirection). */
+  cible?: 'alerts' | 'maintenance' | 'rapports';
 }
 
 export interface RapportIntervention {
@@ -59,7 +69,7 @@ export interface RapportIntervention {
   providedIn: 'root'
 })
 export class MaintenanceService {
-  private readonly STORAGE_KEY = 'safe_track_maintenance_v6';
+  private readonly STORAGE_KEY = 'safe_track_maintenance_v7';
 
   readonly maintenanceItems = signal<MaintenanceItem[]>(this.loadInitialData());
   readonly notifications = signal<NotificationItem[]>([]);
@@ -85,13 +95,14 @@ export class MaintenanceService {
   }
 
   private loadInitialData(): MaintenanceItem[] {
-    // Nettoyage des anciennes clés de stockage (migration v1 -> v2 -> v3 -> v4 -> v5 -> v6)
+    // Nettoyage des anciennes clés de stockage (migration v1 -> v2 -> v3 -> v4 -> v5 -> v6 -> v7)
     if (typeof window !== 'undefined') {
       localStorage.removeItem('safe_track_maintenance');
       localStorage.removeItem('safe_track_maintenance_v2');
       localStorage.removeItem('safe_track_maintenance_v3');
       localStorage.removeItem('safe_track_maintenance_v4');
       localStorage.removeItem('safe_track_maintenance_v5');
+      localStorage.removeItem('safe_track_maintenance_v6');
     }
     // Charger les données persistées : les prises d'alerte doivent survivre
     // à un rafraîchissement pour que tous les techniciens voient qui a pris quoi.
@@ -141,12 +152,82 @@ export class MaintenanceService {
       }
     ];
     this.save(items);
-    return items;
+
+    // ===== Isolation multi-structures =====
+    // Chaque intervention appartient à une structure. Les données anciennes
+    // (sans structureId) sont rattachées par leur équipement (défaut : STR-001).
+    const structureParEquipement: Record<string, string> = {
+      'Kit solaire #SK-045': 'STR-001',
+      'Kit solaire #SK-067': 'STR-001',
+      'Kit solaire #SK-089': 'STR-001',
+      'Kit solaire #SK-102': 'STR-001',
+      'Groupe électrogène #GE-021': 'STR-002',
+      'Engin minier #EM-045': 'STR-003'
+    };
+
+    let liste: MaintenanceItem[] = items.map(i => ({
+      ...i,
+      structureId: i.structureId || structureParEquipement[i.equipment] || 'STR-001'
+    }));
+
+    // Alertes par défaut des autres structures (bonne simulation du multi-tenants).
+    const ids = new Set(liste.map(i => i.id));
+    if (!ids.has('m5')) {
+      liste.push({
+        id: 'm5', numero: 5, equipment: 'Groupe électrogène #GE-021', type: 'Niveau carburant faible',
+        severite: 'Avertissement', structureId: 'STR-002', datePrevue: '10 septembre 2026',
+        technicien: '', statut: 'En attente', alertes: 1,
+        localisation: '12.4100°N, -1.5200°E', lienLocalisation: '12.41,-1.52'
+      });
+    }
+    if (!ids.has('m6')) {
+      liste.push({
+        id: 'm6', numero: 6, equipment: 'Engin minier #EM-045', type: 'Température moteur élevée',
+        severite: 'Critique', structureId: 'STR-003', datePrevue: '10 septembre 2026',
+        technicien: '', statut: 'En attente', alertes: 1,
+        localisation: '11.7800°N, -4.2100°E', lienLocalisation: '11.78,-4.21'
+      });
+    }
+
+    this.save(liste);
+    return liste;
   }
 
   /** Prochain numéro d'affichage disponible (monotone, jamais réutilisé). */
   private nextNumero(): number {
     return Math.max(0, ...this.maintenanceItems().map(i => i.numero ?? 0)) + 1;
+  }
+
+  /**
+   * Amorce 2 alertes de démonstration (1 Critique + 1 Avertissement) pour une
+   * structure qui vient d'être créée, afin qu'un admin nouvellement inscrit
+   * puisse immédiatement tester l'affectation / la planification d'intervention
+   * sans partir d'une page Alertes vide. N'ajoute rien si la structure possède
+   * déjà des interventions (évite les doublons si appelé plusieurs fois).
+   */
+  seedAlertsForStructure(structureId: string, structureLabel?: string): void {
+    if (this.maintenanceItems().some(i => i.structureId === structureId)) return;
+
+    const label = (structureLabel || structureId).replace(/\s+/g, '').slice(0, 6).toUpperCase();
+    const base = this.nextNumero();
+    const uid = () => 'm' + Date.now() + Math.random().toString(36).slice(2, 7);
+
+    const nouvellesAlertes: MaintenanceItem[] = [
+      {
+        id: uid(), numero: base, equipment: `Kit solaire #${label}-01`, type: 'Tension anormale',
+        severite: 'Critique', structureId, datePrevue: '10 septembre 2026', technicien: '', statut: 'En attente', alertes: 1,
+        localisation: '12.3714°N, -1.5197°E', lienLocalisation: '12.3714,-1.5197'
+      },
+      {
+        id: uid(), numero: base + 1, equipment: `Kit solaire #${label}-02`, type: 'Niveau batterie faible',
+        severite: 'Avertissement', structureId, datePrevue: '10 septembre 2026', technicien: '', statut: 'En attente', alertes: 1,
+        localisation: '11.1784°N, -4.2979°E', lienLocalisation: '11.1784,-4.2979'
+      }
+    ];
+
+    const items = [...this.maintenanceItems(), ...nouvellesAlertes];
+    this.maintenanceItems.set(items);
+    this.save(items);
   }
 
   private save(items: MaintenanceItem[]): void {
@@ -221,11 +302,27 @@ export class MaintenanceService {
 
   /**
    * Affecter une alerte à un ou plusieurs techniciens (plateforme entière).
-   * Chaque technicien affecté reçoit une notification individuelle.
+   * Chaque technicien affecté reçoit une notification individuelle. L'alerte
+   * est marquée comme prise en charge (alertes: 0) afin qu'elle disparaisse
+   * de la file des alertes non traitées (/alerts) et bascule sur /maintenance
+   * — sans quoi elle restait affichable et pouvait être affectée une 2e fois.
+   * @param dateAffectation Date de l'affectation (saisie par l'admin, affichée au technicien).
+   * @param delai Délai imparti pour l'intervention (saisi par l'admin).
+   * @param description Description libre optionnelle, transmise aux techniciens affectés.
    */
-  affecterAlerte(id: string, techniciens: { id: number; nom: string }[]): void {
+  affecterAlerte(id: string, techniciens: { id: number; nom: string }[], dateAffectation?: string, delai?: string, description?: string): void {
+    const now = this.maintenanceDate();
     const items = this.maintenanceItems().map(item =>
-      item.id === id ? { ...item, affectes: techniciens } : item
+      item.id === id
+        ? {
+            ...item,
+            affectes: techniciens,
+            dateAffectation: dateAffectation || now,
+            delaiAffectation: delai || undefined,
+            description: description || undefined,
+            alertes: 0
+          }
+        : item
     );
     this.maintenanceItems.set(items);
     this.save(items);
@@ -233,13 +330,14 @@ export class MaintenanceService {
     const target = this.maintenanceItems().find(i => i.id === id);
     if (!target) return;
     const date = this.maintenanceDate();
+    const dateSaisie = dateAffectation || date;
     techniciens.forEach(t => {
       this.pushNotification({
         itemId: id,
         equipment: target.equipment,
         type: target.type,
         technicien: t.nom,
-        message: `Vous avez été affecté à l'alerte « ${target.type} » sur ${target.equipment}.`,
+        message: `Vous avez été affecté à l'alerte « ${target.type} » sur ${target.equipment} (affecté le ${dateSaisie}${delai ? `, délai ${delai}` : ''}).${description ? ` ${description}` : ''}`,
         date,
         destinataire: t.nom
       });
@@ -252,21 +350,25 @@ export class MaintenanceService {
    */
   planifierIntervention(
     id: string,
-    data: { nature: string; natures: string[]; date: string; techniciens: { id: number; nom: string }[] }
+    data: { nature: string; natures: string[]; date: string; techniciens: { id: number; nom: string }[]; description?: string }
   ): void {
+    const dateAffect = this.maintenanceDate();
     const items = this.maintenanceItems().map(item =>
       item.id === id
         ? {
             ...item,
             type: data.nature,
             natures: data.natures,
+            description: data.description || undefined,
             datePrevue: data.date,
             datePrevueISO: data.date,
             statut: 'Planifiée' as const,
             alertes: 0,
             prisPar: undefined,
             datePrise: undefined,
-            affectes: data.techniciens
+            affectes: data.techniciens,
+            dateAffectation: dateAffect,
+            delaiAffectation: undefined
           }
         : item
     );
@@ -281,7 +383,7 @@ export class MaintenanceService {
         equipment: (target as MaintenanceItem | undefined)?.equipment ?? '',
         type: data.nature,
         technicien: t.nom,
-        message: `Vous avez été affecté à l'intervention « ${data.nature} » sur ${(target as MaintenanceItem | undefined)?.equipment ?? ''} prévue le ${data.date}.`,
+        message: `Vous avez été affecté à l'intervention « ${data.nature} » sur ${(target as MaintenanceItem | undefined)?.equipment ?? ''} prévue le ${data.date}.${data.description ? ` ${data.description}` : ''}`,
         date,
         destinataire: t.nom
       });
@@ -299,6 +401,8 @@ export class MaintenanceService {
       natures: string[];
       date: string;
       techniciens: { id: number; nom: string }[];
+      dateAffectation?: string;
+      delaiAffectation?: string;
     }
   ): void {
     const newItem: MaintenanceItem = {
@@ -313,6 +417,8 @@ export class MaintenanceService {
       statut: 'Planifiée',
       alertes: 0,
       affectes: data.techniciens,
+      dateAffectation: data.dateAffectation || this.maintenanceDate(),
+      delaiAffectation: data.delaiAffectation || undefined,
       localisation: '',
       lienLocalisation: ''
     };
@@ -382,8 +488,15 @@ export class MaintenanceService {
   }
 
   private pushNotification(n: Omit<NotificationItem, 'id' | 'read'>): void {
+    // Détermination automatique de la page cible (cliquer sur la notification y redirige).
+    const cible: NotificationItem['cible'] = (n.message.includes('intervention') || n.message.includes('approche'))
+      ? 'maintenance'
+      : n.message.includes('rapport')
+        ? 'rapports'
+        : 'alerts';
     const notif: NotificationItem = {
       ...n,
+      cible,
       id: 'n' + Date.now() + Math.random().toString(36).slice(2, 7),
       read: false
     };

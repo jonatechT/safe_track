@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../auth/auth.service';
 import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'app-superadmin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, DatePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, DatePipe, FormsModule],
   template: `
     <div class="sa-layout">
       <aside class="sa-sidebar" [class.collapsed]="isSidebarCollapsed">
@@ -43,7 +44,7 @@ import { ThemeService } from '../../../services/theme.service';
         </nav>
 
         <div class="sa-sidebar-footer">
-          <a class="sa-profile-btn" routerLink="/profile" title="Profil" aria-label="Profil">
+          <a class="sa-profile-btn" (click)="openProfile()" (keydown.enter)="openProfile()" tabindex="0" role="button" title="Profil" aria-label="Profil">
             <i class="fa-solid fa-user"></i>
             <span class="sa-profile-btn-label">Profil</span>
           </a>
@@ -64,7 +65,9 @@ import { ThemeService } from '../../../services/theme.service';
               [attr.aria-label]="isDarkMode ? 'Passer en mode clair' : 'Passer en mode nuit'"
               [attr.title]="isDarkMode ? 'Mode clair' : 'Mode nuit'"
             >
-              <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
+              <span class="sa-tt-icon sa-tt-icon-sun"><i class="fa-solid fa-sun"></i></span>
+              <span class="sa-tt-icon sa-tt-icon-moon"><i class="fa-solid fa-moon"></i></span>
+              <span class="sa-tt-knob"></span>
             </button>
             <div class="sa-profile" (click)="openProfile()" role="button" tabindex="0" (keydown.enter)="openProfile()" aria-label="Ouvrir le profil">
               <div class="sa-avatar">{{ currentUser?.name?.charAt(0)?.toUpperCase() || 'SA' }}</div>
@@ -91,36 +94,73 @@ import { ThemeService } from '../../../services/theme.service';
             <h3 class="sa-profile-panel-title">Profil</h3>
             <span class="sa-profile-panel-role">{{ currentUser?.role || 'SUPERADMIN' }}</span>
           </div>
+          <button class="sa-profile-panel-edit" (click)="startProfileEdit()" title="Modifier mes informations" aria-label="Modifier mes informations">
+            <i class="fa-solid fa-pen"></i>
+          </button>
           <button class="sa-profile-panel-close" (click)="closeProfile()" aria-label="Fermer le profil">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
         <div class="sa-profile-panel-body">
-          <div class="sa-profile-section">
-            <span class="sa-profile-section-title">Informations personnelles</span>
-            <div class="sa-profile-field">
-              <span class="sa-profile-field-icon"><i class="fa-solid fa-user"></i></span>
-              <div class="sa-profile-field-content">
-                <span class="sa-profile-field-label">Nom complet</span>
-                <span class="sa-profile-field-value">{{ currentUser?.name || 'Non renseigné' }}</span>
+          @if (!isEditingProfile) {
+            <div class="sa-profile-section">
+              <span class="sa-profile-section-title">Informations personnelles</span>
+              <div class="sa-profile-field">
+                <span class="sa-profile-field-icon"><i class="fa-solid fa-user"></i></span>
+                <div class="sa-profile-field-content">
+                  <span class="sa-profile-field-label">Nom complet</span>
+                  <span class="sa-profile-field-value">{{ currentUser?.name || 'Non renseigné' }}</span>
+                </div>
+              </div>
+              <div class="sa-profile-field">
+                <span class="sa-profile-field-icon"><i class="fa-solid fa-envelope"></i></span>
+                <div class="sa-profile-field-content">
+                  <span class="sa-profile-field-label">Adresse e-mail</span>
+                  <span class="sa-profile-field-value">{{ currentUser?.email || 'Non renseigné' }}</span>
+                </div>
+              </div>
+              <div class="sa-profile-field">
+                <span class="sa-profile-field-icon"><i class="fa-solid fa-phone"></i></span>
+                <div class="sa-profile-field-content">
+                  <span class="sa-profile-field-label">Téléphone</span>
+                  <span class="sa-profile-field-value">{{ currentUser?.telephone || 'Non renseigné' }}</span>
+                </div>
               </div>
             </div>
-            <div class="sa-profile-field">
-              <span class="sa-profile-field-icon"><i class="fa-solid fa-envelope"></i></span>
-              <div class="sa-profile-field-content">
-                <span class="sa-profile-field-label">Adresse e-mail</span>
-                <span class="sa-profile-field-value">{{ currentUser?.email || 'Non renseigné' }}</span>
+          } @else {
+            <div class="sa-profile-section">
+              <span class="sa-profile-section-title">Modifier mes informations</span>
+              @if (editFeedback) {
+                <div class="sa-edit-feedback" [class.sa-edit-feedback-error]="editFeedbackType === 'error'">
+                  <i class="fa-solid" [class.fa-circle-check]="editFeedbackType === 'success'" [class.fa-circle-exclamation]="editFeedbackType === 'error'"></i>
+                  {{ editFeedback }}
+                </div>
+              }
+              <div class="sa-edit-field">
+                <label class="sa-edit-label" for="sa-edit-name">Nom complet</label>
+                <input id="sa-edit-name" type="text" class="sa-edit-input" [(ngModel)]="editForm.name" placeholder="Ex : Super Admin" />
+              </div>
+              <div class="sa-edit-field">
+                <label class="sa-edit-label" for="sa-edit-email">Adresse e-mail</label>
+                <input id="sa-edit-email" type="email" class="sa-edit-input" [(ngModel)]="editForm.email" placeholder="superadmin@safetrack.com" />
+              </div>
+              <div class="sa-edit-field">
+                <label class="sa-edit-label" for="sa-edit-phone">Téléphone</label>
+                <input id="sa-edit-phone" type="tel" class="sa-edit-input" [(ngModel)]="editForm.telephone" placeholder="+226 XX XX XX XX" />
+              </div>
+              <div class="sa-edit-field">
+                <label class="sa-edit-label" for="sa-edit-pass">Nouveau mot de passe</label>
+                <input id="sa-edit-pass" type="password" class="sa-edit-input" [(ngModel)]="editForm.motDePasse" placeholder="8 caractères minimum (laisser vide pour conserver)" />
+              </div>
+              <div class="sa-edit-actions">
+                <button class="sa-edit-btn sa-edit-btn-secondary" (click)="cancelProfileEdit()" type="button">Annuler</button>
+                <button class="sa-edit-btn sa-edit-btn-primary" (click)="saveProfileEdit()" type="button">
+                  <i class="fa-solid fa-check"></i> Enregistrer
+                </button>
               </div>
             </div>
-            <div class="sa-profile-field">
-              <span class="sa-profile-field-icon"><i class="fa-solid fa-phone"></i></span>
-              <div class="sa-profile-field-content">
-                <span class="sa-profile-field-label">Téléphone</span>
-                <span class="sa-profile-field-value">{{ currentUser?.telephone || 'Non renseigné' }}</span>
-              </div>
-            </div>
-          </div>
+          }
 
           <div class="sa-profile-section">
             <span class="sa-profile-section-title">Compte</span>
@@ -298,6 +338,148 @@ import { ThemeService } from '../../../services/theme.service';
     .sa-btn-danger { background: #EF4444; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
     .sa-btn-danger:hover { background: #DC2626; }
 
+    /* ===== Bouton mode nuit / clair — toggle pill animé (identique au header admin) ===== */
+    .sa-theme-btn {
+      position: relative;
+      width: 58px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid #E2E8F0;
+      background: linear-gradient(135deg, #FDBA74, #FDE68A);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6px;
+      cursor: pointer;
+      transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.35s ease, box-shadow 0.35s ease;
+      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12);
+    }
+    .sa-theme-btn .sa-tt-icon {
+      position: relative;
+      z-index: 2;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      transition: color 0.3s ease;
+    }
+    .sa-theme-btn .sa-tt-icon-sun { color: #B45309; }
+    .sa-theme-btn .sa-tt-icon-moon { color: rgba(255, 255, 255, 0.9); }
+    .sa-theme-btn .sa-tt-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1;
+    }
+    .sa-theme-btn:hover {
+      border-color: #CBD5E1;
+      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 3px rgba(37, 99, 235, 0.10);
+    }
+    .sa-theme-btn.active {
+      background: linear-gradient(135deg, #1E3A8A, #312E81);
+      border-color: #1E293B;
+    }
+    .sa-theme-btn.active .sa-tt-knob { transform: translateX(28px); }
+    .sa-theme-btn.active .sa-tt-icon-sun { color: rgba(255, 255, 255, 0.55); }
+    .sa-theme-btn.active .sa-tt-icon-moon { color: #FBBF24; }
+    .sa-theme-btn:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
+
+    /* ===== Édition du profil SuperAdmin ===== */
+    .sa-profile-panel-edit {
+      margin-left: auto;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+      background: #F8FAFC;
+      color: #1E3A8A;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .sa-profile-panel-edit:hover { background: #EFF6FF; border-color: #BFDBFE; }
+    .sa-profile-panel-close { margin-left: 0; }
+
+    .sa-edit-feedback {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      background: #ECFDF5;
+      color: #047857;
+      border: 1px solid #A7F3D0;
+      margin-bottom: 12px;
+    }
+    .sa-edit-feedback-error {
+      background: #FEF2F2;
+      color: #B91C1C;
+      border-color: #FECACA;
+    }
+    .sa-edit-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .sa-edit-label { font-size: 12px; font-weight: 600; color: #334155; }
+    .sa-edit-input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #0F172A;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .sa-edit-input::placeholder { color: #94A3B8; }
+    .sa-edit-input:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .sa-edit-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .sa-edit-btn {
+      height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .sa-edit-btn-secondary {
+      background: #F1F5F9;
+      color: #334155;
+      border-color: #E2E8F0;
+    }
+    .sa-edit-btn-secondary:hover { background: #E2E8F0; }
+    .sa-edit-btn-primary {
+      background: linear-gradient(135deg, #1E3A8A, #3B5BDB);
+      color: #FFFFFF;
+    }
+    .sa-edit-btn-primary:hover { filter: brightness(1.08); }
+
     /* Responsive */
     @media (max-width: 768px) {
       .sa-sidebar { display: none; }
@@ -319,6 +501,12 @@ export class SuperAdminLayoutComponent {
   isMobileMenuOpen = false;
   showLogoutConfirm = false;
   showProfile = false;
+
+  /** Édition des informations du SuperAdmin dans le panneau profil */
+  isEditingProfile = false;
+  editFeedback = '';
+  editFeedbackType: 'success' | 'error' = 'success';
+  editForm = { name: '', email: '', telephone: '', motDePasse: '' };
 
   constructor(
     private authService: AuthService,
@@ -378,6 +566,49 @@ export class SuperAdminLayoutComponent {
 
   protected closeProfile(): void {
     this.showProfile = false;
+    this.isEditingProfile = false;
+    this.editFeedback = '';
+  }
+
+  /** Passer le panneau profil en mode édition (pré-rempli avec les valeurs courantes) */
+  protected startProfileEdit(): void {
+    const u = this.currentUser;
+    this.editForm = {
+      name: u?.name || '',
+      email: u?.email || '',
+      telephone: u?.telephone || '',
+      motDePasse: ''
+    };
+    this.editFeedback = '';
+    this.isEditingProfile = true;
+  }
+
+  protected cancelProfileEdit(): void {
+    this.isEditingProfile = false;
+    this.editFeedback = '';
+  }
+
+  /** Sauvegarder les informations modifiées du SuperAdmin */
+  protected saveProfileEdit(): void {
+    if (!this.editForm.name.trim() || !this.editForm.email.trim()) {
+      this.editFeedbackType = 'error';
+      this.editFeedback = 'Le nom complet et l\u2019adresse e-mail sont requis.';
+      return;
+    }
+    if (this.editForm.motDePasse && this.editForm.motDePasse.trim().length < 8) {
+      this.editFeedbackType = 'error';
+      this.editFeedback = 'Le mot de passe doit contenir au moins 8 caractères.';
+      return;
+    }
+    this.authService.updateSuperAdminProfile({
+      name: this.editForm.name,
+      email: this.editForm.email,
+      telephone: this.editForm.telephone,
+      motDePasse: this.editForm.motDePasse
+    });
+    this.isEditingProfile = false;
+    this.editFeedbackType = 'success';
+    this.editFeedback = 'Informations mises à jour avec succès.';
   }
 
   protected openLogoutConfirm(): void {
