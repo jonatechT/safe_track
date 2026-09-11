@@ -511,9 +511,10 @@ export class AlertsPageComponent {
   }
 
   ouvrirDetail(item: MaintenanceItem): void {
-    const equipment = this.equipmentService.getAll().find(e => e.nom === item.equipment);
-    if (equipment) {
-      this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'alerts' } });
-    }
+    const equipment = this.equipmentService.getOrCreateByName(item.equipment, {
+      localisation: item.localisation,
+      lienLocalisation: item.lienLocalisation
+    });
+    this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'alerts' } });
   }
 }

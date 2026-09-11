@@ -114,7 +114,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
                     </td>
                     <td>
                       @if (telephoneTechnicienPrincipal(item)) {
-                        <a class="numero-code" [href]="'tel:' + telephoneTechnicienPrincipal(item)" title="Appeler le technicien">
+                        <a class="numero-code" [href]="'tel:' + telephoneTechnicienPrincipal(item)" title="Appeler le technicien" (click)="$event.stopPropagation()">
                           <i class="fa-solid fa-phone"></i> {{ telephoneTechnicienPrincipal(item) }}
                         </a>
                       } @else {
@@ -673,10 +673,11 @@ export class MaintenancePageComponent {
   ouvrirDetail(id: string): void {
     const item = this.items.find(i => i.id === id);
     if (item) {
-      const equipment = this.equipmentService.getAll().find(e => e.nom === item.equipment);
-      if (equipment) {
-        this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'maintenance' } });
-      }
+      const equipment = this.equipmentService.getOrCreateByName(item.equipment, {
+        localisation: item.localisation,
+        lienLocalisation: item.lienLocalisation
+      });
+      this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'maintenance' } });
     }
   }
 }

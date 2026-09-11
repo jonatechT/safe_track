@@ -122,13 +122,42 @@ export class EquipmentService {
 
   constructor(private http: HttpClient) {}
 
+  private readonly STORAGE_KEY = 'safe_track_equipments';
+
   /** Données identiques à celles affichées jusqu'ici dans le tableau du parc */
-  private equipments: Equipment[] = [
+  private readonly defaultEquipments: Equipment[] = [
      { id: '354123456789012', nom: 'Kit solaire #SK-045', statut: 'En alerte', localisation: '12.3685°N, -1.5250°E', lienLocalisation: '12.3685,-1.5250', miseEnLigne: '14 mars 2024', type: 'Kit solaire', temperature: null, tension: null },
      { id: '354123456789014', nom: 'Kit solaire #SK-067', statut: 'En alerte', localisation: '11.1784°N, -4.2979°E', lienLocalisation: '11.1784,-4.2979', miseEnLigne: '22 janvier 2024', type: 'Kit solaire', temperature: null, tension: null },
      { id: '354123456789015', nom: 'Kit solaire #SK-089', statut: 'Inspection', localisation: '12.2513°N, -2.3510°E', lienLocalisation: '12.2513,-2.3510', miseEnLigne: '5 juin 2024', type: 'Kit solaire', temperature: null, tension: null },
      { id: '354123456789016', nom: 'Kit solaire #SK-102', statut: 'Inspection', localisation: '12.3714°N, -1.5197°E', lienLocalisation: '12.3714,-1.5197', miseEnLigne: '18 septembre 2023', type: 'Kit solaire', temperature: null, tension: null },
   ];
+
+  /**
+   * Liste du parc, persistée en localStorage (comme les autres registres
+   * frontend) afin que les équipements ajoutés/amorcés pour une structure
+   * (cf. `seedEquipment`) restent résolvables après un rechargement de page.
+   */
+  private equipments: Equipment[] = this.loadEquipments();
+
+  private loadEquipments(): Equipment[] {
+    if (typeof window === 'undefined') return [...this.defaultEquipments];
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Equipment[];
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      /* données corrompues → valeurs par défaut */
+    }
+    return [...this.defaultEquipments];
+  }
+
+  private saveEquipments(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.equipments));
+    }
+  }
 
   getAll(): Equipment[] {
     return this.equipments;
@@ -136,6 +165,35 @@ export class EquipmentService {
 
   getById(id: string): Equipment | undefined {
     return this.equipments.find(e => e.id === id);
+  }
+
+  /**
+   * Retrouve l'équipement portant ce nom, ou en crée un minimal à la volée
+   * (localement, sans appel backend) s'il n'existe pas encore.
+   *
+   * Certaines alertes/maintenances de démonstration (ex. celles amorcées
+   * automatiquement pour une nouvelle structure) référencent un équipement
+   * par son nom sans qu'il existe forcément dans le parc — sans ce filet,
+   * cliquer sur la ligne ne menait nulle part (aucune correspondance trouvée).
+   */
+  getOrCreateByName(nom: string, hints?: Partial<Pick<Equipment, 'localisation' | 'lienLocalisation' | 'type'>>): Equipment {
+    const existing = this.equipments.find(e => e.nom === nom);
+    if (existing) return existing;
+
+    const created: Equipment = {
+      id: 'EQ-' + nom.replace(/[^A-Za-z0-9]+/g, '-').replace(/^-+|-+$/g, '').toUpperCase() + '-' + Date.now().toString(36),
+      nom,
+      statut: 'En ligne',
+      localisation: hints?.localisation || '',
+      lienLocalisation: hints?.lienLocalisation || '',
+      miseEnLigne: new Date().toLocaleDateString('fr-FR'),
+      type: hints?.type || 'Kit solaire',
+      temperature: null,
+      tension: null
+    };
+    this.equipments = [...this.equipments, created];
+    this.saveEquipments();
+    return created;
   }
 
   /**
@@ -178,6 +236,7 @@ export class EquipmentService {
         bloque: false
       };
       this.equipments.push(created);
+      this.saveEquipments();
       return of(created);
     }
 
@@ -190,6 +249,7 @@ export class EquipmentService {
           tension: created.tension ?? null,
           bloque: created.bloque ?? false
         });
+        this.saveEquipments();
         return created;
       }),
       catchError((error: HttpErrorResponse) => {
@@ -251,6 +311,7 @@ export class EquipmentService {
     const equipment = this.equipments.find(e => e.id === id);
     if (equipment) {
       equipment.bloque = bloque;
+      this.saveEquipments();
     }
   }
 

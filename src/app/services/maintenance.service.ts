@@ -212,14 +212,17 @@ export class MaintenanceService {
     const base = this.nextNumero();
     const uid = () => 'm' + Date.now() + Math.random().toString(36).slice(2, 7);
 
+    const equip1Nom = `Kit solaire #${label}-01`;
+    const equip2Nom = `Kit solaire #${label}-02`;
+
     const nouvellesAlertes: MaintenanceItem[] = [
       {
-        id: uid(), numero: base, equipment: `Kit solaire #${label}-01`, type: 'Tension anormale',
+        id: uid(), numero: base, equipment: equip1Nom, type: 'Tension anormale',
         severite: 'Critique', structureId, datePrevue: '10 septembre 2026', technicien: '', statut: 'En attente', alertes: 1,
         localisation: '12.3714°N, -1.5197°E', lienLocalisation: '12.3714,-1.5197'
       },
       {
-        id: uid(), numero: base + 1, equipment: `Kit solaire #${label}-02`, type: 'Niveau batterie faible',
+        id: uid(), numero: base + 1, equipment: equip2Nom, type: 'Niveau batterie faible',
         severite: 'Avertissement', structureId, datePrevue: '10 septembre 2026', technicien: '', statut: 'En attente', alertes: 1,
         localisation: '11.1784°N, -4.2979°E', lienLocalisation: '11.1784,-4.2979'
       }

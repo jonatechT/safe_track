@@ -226,15 +226,14 @@ export class App {
     this.showAlertsPanel = false;
   }
 
-  /** Ouvre le détail de l'équipement concerné par l'alerte, sinon la liste complète. */
+  /** Ouvre le détail de l'équipement concerné par l'alerte. */
   protected openAlert(item: MaintenanceItem): void {
     this.closeAlertsPanel();
-    const equipment = this.equipmentService.getAll().find(e => e.nom === item.equipment);
-    if (equipment) {
-      this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'alerts' } });
-    } else {
-      this.router.navigate(['/alerts']);
-    }
+    const equipment = this.equipmentService.getOrCreateByName(item.equipment, {
+      localisation: item.localisation,
+      lienLocalisation: item.lienLocalisation
+    });
+    this.router.navigate(['/equipements', equipment.id], { queryParams: { source: 'alerts' } });
   }
 
   /**

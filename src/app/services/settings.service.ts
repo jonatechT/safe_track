@@ -34,7 +34,7 @@ export class SettingsService {
       multiTechniciens: false,
       maxTechniciens: 2,
       priseEnChargeGlobale: true,
-      actionAdmin: 'affecter',
+      actionAdmin: 'planifier',
       rappelAvantIntervention: 2
     };
   }
