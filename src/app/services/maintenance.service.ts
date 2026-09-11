@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import { SettingsService } from './settings.service';
 
 export interface MaintenanceItem {
@@ -70,9 +70,16 @@ export interface RapportIntervention {
 })
 export class MaintenanceService {
   private readonly STORAGE_KEY = 'safe_track_maintenance_v7';
+  private readonly NOTIFICATIONS_STORAGE_KEY = 'safe_track_notifications_v1';
 
   readonly maintenanceItems = signal<MaintenanceItem[]>(this.loadInitialData());
-  readonly notifications = signal<NotificationItem[]>([]);
+  /**
+   * Notifications persistées (localStorage) afin qu'un technicien affecté à une
+   * alerte par l'admin voie bien sa notification même après une déconnexion/
+   * reconnexion ou un rafraîchissement de page (auparavant perdues car
+   * uniquement conservées en mémoire).
+   */
+  readonly notifications = signal<NotificationItem[]>(this.loadNotifications());
 
   constructor(private settingsService: SettingsService) {
     // Synchronisation multi-onglets : si un autre onglet (autre technicien)
@@ -87,11 +94,41 @@ export class MaintenanceService {
             /* données invalides : on ignore */
           }
         }
+        if (event.key === this.NOTIFICATIONS_STORAGE_KEY && event.newValue) {
+          try {
+            this.notifications.set(JSON.parse(event.newValue));
+          } catch {
+            /* données invalides : on ignore */
+          }
+        }
       });
     }
+    // Persistance automatique : toute mise à jour du signal (quel que soit
+    // l'appelant) est immédiatement sauvegardée dans localStorage.
+    effect(() => this.saveNotifications(this.notifications()));
     // Notifications automatiques : signaler aux techniciens affectés les
     // interventions planifiées dont la date approche (réglé dans /parametres).
     this.verifierProchainesInterventions();
+  }
+
+  private loadNotifications(): NotificationItem[] {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = localStorage.getItem(this.NOTIFICATIONS_STORAGE_KEY);
+      if (raw) {
+        const stored = JSON.parse(raw) as NotificationItem[];
+        if (Array.isArray(stored)) return stored;
+      }
+    } catch {
+      /* données corrompues : on repart d'une liste vide */
+    }
+    return [];
+  }
+
+  private saveNotifications(notifs: NotificationItem[]): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.NOTIFICATIONS_STORAGE_KEY, JSON.stringify(notifs));
+    }
   }
 
   private loadInitialData(): MaintenanceItem[] {

@@ -187,7 +187,7 @@ import { EquipmentService, Equipment } from '../../services/equipment.service';
     .eqm-modal {
       background: #FFFFFF;
       border: 1px solid #E2E8F0;
-      border-radius: 20px;
+      border-radius: 12px;
       width: 100%; max-width: 500px;
       max-height: 92vh; overflow-y: auto;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2);

@@ -385,7 +385,7 @@ import { AuthService } from '../../auth/auth.service';
 
     /* Modal rapport */
     .rapport-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.35); z-index: 1500; backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); }
-    .rapport-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; max-width: 92vw; max-height: 90vh; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; z-index: 1501; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); display: flex; flex-direction: column; overflow: hidden; animation: rapportSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .rapport-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 520px; max-width: 92vw; max-height: 90vh; background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; z-index: 1501; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); display: flex; flex-direction: column; overflow: hidden; animation: rapportSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     @keyframes rapportSlideIn { from { opacity: 0; transform: translate(-50%, -48%); } to { opacity: 1; transform: translate(-50%, -50%); } }
     .rapport-modal-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #1E40AF; background: linear-gradient(180deg, #2563EB, #1D4ED8); }
     .rapport-modal-icon { width: 40px; height: 40px; border-radius: 12px; background: rgba(255, 255, 255, 0.18); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.25); }
@@ -580,51 +580,142 @@ export class RapportsPageComponent implements OnInit {
     this.fermerRapport();
   }
 
-  exporterRapport(item: MaintenanceItem): void {
-    if (!item?.rapport) return;
+/**
+   * Exporte le rapport en PDF (mise en page professionnelle : bandeau
+   * d'en-tête, fiche d'informations en tableau, section conformité le cas
+   * échéant, pièces remplacées, pied de page) plutôt qu'un simple fichier
+   * texte brut.
+   */
+  async exporterRapport(item: MaintenanceItem): Promise<void> {
+    if (!item?.rapport || typeof window === 'undefined') return;
     const r = item.rapport;
-    const contenu = [
-      '========================================',
-      "RAPPORT D'INTERVENTION — SHANGO",
-      '========================================',
-      '',
-      `Équipement : ${item.equipment}`,
-      `Type d'intervention : ${item.type}`,
-      `Date prévue : ${item.datePrevue}`,
-      `Technicien assigné : ${item.technicien}`,
-      '',
-      '----------------------------------------',
-      'DÉTAILS DU RAPPORT',
-      '----------------------------------------',
-      `Rédigé par : ${r.redacteur}`,
-      `Date de rédaction : ${r.dateRedaction}`,
-      r.dureeIntervention ? `Durée de l'intervention : ${r.dureeIntervention}` : '',
-      '',
-      "DESCRIPTION DE L'INTERVENTION :",
-      r.contenu,
-      '',
-      r.piecesRemplacees ? `PIÈCES REMPLACÉES : ${r.piecesRemplacees}` : '',
-      '',
-      '========================================',
-      'Document généré automatiquement par Shango'
-    ].filter(line => line !== '').join(String.fromCharCode(10));
 
     try {
-      const blob = new Blob([contenu], { type: 'text/plain;charset=utf-8' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `rapport-${item.equipment.replace(/[^a-zA-Z0-9]/g, '-')}-${r.dateRedaction.replace(/\//g, '-')}.txt`;
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      // Nettoyage différé pour laisser le navigateur démarrer le téléchargement
-      setTimeout(() => {
-        if (link.parentNode) {
-          document.body.removeChild(link);
+      const { jsPDF } = await import('jspdf');
+      const { default: autoTable } = await import('jspdf-autotable');
+
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 14;
+      const contentWidth = pageWidth - margin * 2;
+      const estConformite = r.typeRapport === 'conformite';
+
+      // ===== Bandeau d'en-tête =====
+      doc.setFillColor(30, 58, 138);
+      doc.rect(0, 0, pageWidth, 30, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text(estConformite ? 'RAPPORT DE CONFORMITÉ' : "RAPPORT D'INTERVENTION", margin, 12);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('SHANGO — plateforme de suivi et de télémaintenance des équipements', margin, 18);
+      doc.setFontSize(9);
+      doc.text(`Édité le ${new Date().toLocaleDateString('fr-FR')}`, pageWidth - margin, 18, { align: 'right' });
+      doc.setTextColor(20, 30, 50);
+
+      // ===== Fiche d'informations =====
+      const infoBody: string[][] = [
+        ['Équipement', item.equipment],
+        ["Type d'intervention", item.type],
+        ['Date prévue', item.datePrevue],
+        ['Technicien assigné', item.technicien || '—'],
+        ['Rédigé par', r.redacteur],
+        ['Date de rédaction', r.dateRedaction]
+      ];
+      if (r.dureeIntervention) infoBody.push(["Durée de l'intervention", r.dureeIntervention]);
+
+      autoTable(doc, {
+        startY: 36,
+        head: [['Élément', 'Valeur']],
+        body: infoBody,
+        theme: 'grid',
+        headStyles: { fillColor: [30, 58, 138], fontStyle: 'bold' },
+        styles: { fontSize: 10, cellPadding: 3 },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 } }
+      });
+
+      let y = (doc as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? 36;
+
+      // ===== Section conformité (le cas échéant) =====
+      if (estConformite) {
+        y += 10;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(4, 120, 87);
+        doc.text('Conformité', margin, y);
+        doc.setTextColor(20, 30, 50);
+        y += 4;
+        autoTable(doc, {
+          startY: y,
+          body: [
+            ['Inspection réalisée', r.inspectionRealisee === 'oui' ? 'Oui' : 'Non'],
+            ['Équipement conforme', r.equipementConforme === 'oui' ? 'Oui' : r.equipementConforme === 'non' ? 'Non' : 'N/A']
+          ],
+          theme: 'striped',
+          headStyles: { fillColor: [16, 185, 129] },
+          styles: { fontSize: 10, cellPadding: 3 },
+          columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 } }
+        });
+        y = (doc as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? y;
+        if (r.commentaireInspection) {
+          y += 8;
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.text("Commentaire d'inspection", margin, y);
+          y += 5;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          const lines = doc.splitTextToSize(r.commentaireInspection, contentWidth);
+          doc.text(lines, margin, y);
+          y += lines.length * 5;
         }
-        window.URL.revokeObjectURL(url);
-      }, 200);
+      }
+
+      // ===== Description de l'intervention =====
+      y += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text("Description de l'intervention", margin, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(51, 65, 85);
+      const descLines = doc.splitTextToSize(r.contenu, contentWidth);
+      doc.text(descLines, margin, y);
+      y += descLines.length * 5;
+      doc.setTextColor(20, 30, 50);
+
+      // ===== Pièces remplacées =====
+      if (r.piecesRemplacees) {
+        y += 10;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text('Pièces remplacées', margin, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(51, 65, 85);
+        const piecesLines = doc.splitTextToSize(r.piecesRemplacees, contentWidth);
+        doc.text(piecesLines, margin, y);
+        doc.setTextColor(20, 30, 50);
+      }
+
+      // ===== Pied de page =====
+      const pageCount = doc.getNumberOfPages();
+      for (let p = 1; p <= pageCount; p++) {
+        doc.setPage(p);
+        doc.setDrawColor(226, 232, 240);
+        doc.line(margin, pageHeight - 16, pageWidth - margin, pageHeight - 16);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(130, 140, 160);
+        doc.text('Document généré automatiquement par Shango — Rapport d\'intervention.', margin, pageHeight - 10);
+        doc.text(`Page ${p} / ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+      }
+
+      doc.save(`rapport-${item.equipment.replace(/[^a-zA-Z0-9]/g, '-')}-${r.dateRedaction.replace(/\//g, '-')}.pdf`);
     } catch (e) {
       console.error('Erreur lors de l\'export du rapport', e);
     }

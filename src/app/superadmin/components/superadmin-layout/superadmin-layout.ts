@@ -65,9 +65,7 @@ import { ThemeService } from '../../../services/theme.service';
               [attr.aria-label]="isDarkMode ? 'Passer en mode clair' : 'Passer en mode nuit'"
               [attr.title]="isDarkMode ? 'Mode clair' : 'Mode nuit'"
             >
-              <span class="sa-tt-icon sa-tt-icon-sun"><i class="fa-solid fa-sun"></i></span>
-              <span class="sa-tt-icon sa-tt-icon-moon"><i class="fa-solid fa-moon"></i></span>
-              <span class="sa-tt-knob"></span>
+              <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
             </button>
             <div class="sa-profile" (click)="openProfile()" role="button" tabindex="0" (keydown.enter)="openProfile()" aria-label="Ouvrir le profil">
               <div class="sa-avatar">{{ currentUser?.name?.charAt(0)?.toUpperCase() || 'SA' }}</div>
@@ -297,36 +295,55 @@ import { ThemeService } from '../../../services/theme.service';
     .sa-content { flex: 1; overflow-y: auto; padding: 24px; background: #FFFFFF; }
 
     /* Profile panel */
-    .sa-profile-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); z-index: 1500; backdrop-filter: blur(2px); }
-    .sa-profile-panel { position: fixed; top: 0; right: 0; width: 360px; max-width: 90vw; height: 100vh; background: #FFF; z-index: 1501; box-shadow: -8px 0 32px rgba(15, 23, 42, 0.15); display: flex; flex-direction: column; animation: saProfileSlideIn 0.3s cubic-bezier(0.4,0,0.2,1); }
-    @keyframes saProfileSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-    .sa-profile-panel-header { display: flex; align-items: center; gap: 12px; padding: 20px 24px; border-bottom: 1px solid #E2E8F0; background: linear-gradient(135deg, #1E3A8A, #3B5BDB); }
-    .sa-profile-panel-avatar { width: 48px; height: 48px; border-radius: 50%; background: #FFF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+    .sa-profile-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); z-index: 1500; }
+    .sa-profile-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% - 40px);
+      max-width: 420px;
+      max-height: min(88vh, calc(100dvh - 40px));
+      background: #FFF;
+      border-radius: 12px;
+      z-index: 1501;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.14), 0 24px 64px rgba(15, 23, 42, 0.22);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: saProfilePopIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes saProfilePopIn {
+      from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+      to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    .sa-profile-panel-header { display: flex; align-items: center; gap: 12px; padding: 20px 22px; background: linear-gradient(135deg, #1E3A8A, #3B5BDB); flex-shrink: 0; }
+    .sa-profile-panel-avatar { width: 46px; height: 46px; border-radius: 50%; background: #FFF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
     .sa-profile-panel-title-block { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-    .sa-profile-panel-title { font-size: 16px; font-weight: 700; color: #FFF; margin: 0; }
-    .sa-profile-panel-role { font-size: 11px; font-weight: 600; color: #93C5FD; letter-spacing: 0.5px; text-transform: uppercase; }
-    .sa-profile-panel-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255,255,255,0.1); color: #E2E8F0; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
-    .sa-profile-panel-close:hover { background: rgba(255,255,255,0.2); }
+    .sa-profile-panel-title { font-size: 15px; font-weight: 700; color: #FFF; margin: 0; }
+    .sa-profile-panel-role { font-size: 10.5px; font-weight: 600; color: #93C5FD; letter-spacing: 0.5px; text-transform: uppercase; }
+    .sa-profile-panel-close { width: 30px; height: 30px; border-radius: 8px; border: none; background: rgba(255,255,255,0.14); color: #E2E8F0; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
+    .sa-profile-panel-close:hover { background: rgba(255,255,255,0.24); }
     .sa-profile-panel-close:focus-visible { outline: 2px solid #38BDF8; outline-offset: 2px; }
-    .sa-profile-panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+    .sa-profile-panel-body { flex: 1; overflow-y: auto; padding: 20px 22px; display: flex; flex-direction: column; gap: 18px; background: #FFFFFF; }
     .sa-profile-section { display: flex; flex-direction: column; gap: 10px; }
     .sa-profile-section-title { font-size: 11px; font-weight: 700; color: #1E3A8A; text-transform: uppercase; letter-spacing: 0.8px; padding-bottom: 6px; border-bottom: 1px solid #E2E8F0; }
-    .sa-profile-field { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; transition: all 0.2s ease; }
+    .sa-profile-field { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; transition: all 0.2s ease; }
     .sa-profile-field:hover { border-color: #BFDBFE; background: #EFF6FF; }
-    .sa-profile-field-icon { width: 34px; height: 34px; border-radius: 10px; background: #EFF6FF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .sa-profile-field-icon { width: 34px; height: 34px; border-radius: 9px; background: #EFF6FF; color: #1E3A8A; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
     .sa-profile-field-content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .sa-profile-field-label { font-size: 10px; font-weight: 600; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
     .sa-profile-field-value { font-size: 14px; font-weight: 500; color: #0F172A; word-break: break-word; }
     .sa-profile-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #FEF2F2; color: #EF4444; }
     .sa-profile-badge-active { background: #ECFDF5; color: #10B981; }
-    .sa-profile-panel-footer { padding: 16px 24px; border-top: 1px solid #E2E8F0; }
-    .sa-profile-logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 18px; border-radius: 12px; border: none; background: #EF4444; color: #FFF; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+    .sa-profile-panel-footer { padding: 16px 22px; border-top: 1px solid #E2E8F0; background: #FFFFFF; flex-shrink: 0; }
+    .sa-profile-logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 18px; border-radius: 10px; border: none; background: #EF4444; color: #FFF; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
     .sa-profile-logout-btn:hover { background: #DC2626; }
     .sa-profile-logout-btn:focus-visible { outline: 2px solid #EF4444; outline-offset: 2px; }
 
     /* Modal */
     .sa-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.35); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); }
-    .sa-modal { background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.75)); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 20px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6); overflow: hidden; }
+    .sa-modal { background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.75)); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 12px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6); overflow: hidden; }
     .sa-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; background: linear-gradient(180deg, #2563EB, #1D4ED8); border-bottom: 1px solid #1E40AF; margin: 0; }
     .sa-modal-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .sa-modal-icon-danger { background: rgba(255, 255, 255, 0.18); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.25); }
@@ -338,58 +355,29 @@ import { ThemeService } from '../../../services/theme.service';
     .sa-btn-danger { background: #EF4444; color: #FFF; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; }
     .sa-btn-danger:hover { background: #DC2626; }
 
-    /* ===== Bouton mode nuit / clair — toggle pill animé (identique au header admin) ===== */
+    /* ===== Bouton mode nuit / clair — icône simple (identique aux boutons d'action du header) ===== */
     .sa-theme-btn {
-      position: relative;
-      width: 58px;
-      height: 30px;
-      border-radius: 999px;
-      border: 1px solid #E2E8F0;
-      background: linear-gradient(135deg, #FDBA74, #FDE68A);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 6px;
-      cursor: pointer;
-      transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.35s ease, box-shadow 0.35s ease;
-      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12);
-    }
-    .sa-theme-btn .sa-tt-icon {
-      position: relative;
-      z-index: 2;
-      width: 16px;
-      height: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: #EFF6FF;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 10px;
-      transition: color 0.3s ease;
-    }
-    .sa-theme-btn .sa-tt-icon-sun { color: #B45309; }
-    .sa-theme-btn .sa-tt-icon-moon { color: rgba(255, 255, 255, 0.9); }
-    .sa-theme-btn .sa-tt-knob {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: #FFFFFF;
-      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 1;
+      color: #2563EB;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
     .sa-theme-btn:hover {
-      border-color: #CBD5E1;
-      box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 3px rgba(37, 99, 235, 0.10);
+      background: #DBEAFE;
+      color: #1D4ED8;
     }
     .sa-theme-btn.active {
-      background: linear-gradient(135deg, #1E3A8A, #312E81);
-      border-color: #1E293B;
+      background: #DBEAFE;
+      color: #2563EB;
     }
-    .sa-theme-btn.active .sa-tt-knob { transform: translateX(28px); }
-    .sa-theme-btn.active .sa-tt-icon-sun { color: rgba(255, 255, 255, 0.55); }
-    .sa-theme-btn.active .sa-tt-icon-moon { color: #FBBF24; }
     .sa-theme-btn:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
 
     /* ===== Édition du profil SuperAdmin ===== */
@@ -493,7 +481,7 @@ export class SuperAdminLayoutComponent {
   private readonly SIDEBAR_STATE_KEY = 'safe_track_superadmin_sidebar_collapsed';
 
   protected readonly menuItems = [
-    { label: 'Dashboard', icon: 'fa-solid fa-chart-pie', route: '/superadmin', exact: true },
+    { label: 'Tableau de bord', icon: 'fa-solid fa-chart-pie', route: '/superadmin', exact: true },
     { label: 'Structures', icon: 'fa-solid fa-building', route: '/superadmin/structures', exact: true }
   ];
 

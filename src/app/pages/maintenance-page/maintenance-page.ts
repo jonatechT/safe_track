@@ -310,7 +310,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
 
     /* ===== Modale de planification ===== */
     .planif-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
-    .planif-modal { background: #FFFFFF; border-radius: 16px; width: 100%; max-width: 440px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28); }
+    .planif-modal { background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 440px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28); }
     .planif-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid #E2E8F0; }
     .planif-modal-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #EFF6FF; color: #2563EB; font-size: 18px; flex-shrink: 0; }
     .planif-modal-title-block { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
@@ -323,6 +323,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .planif-modal-label { font-size: 12px; font-weight: 600; color: #475569; }
     .planif-modal-input { padding: 9px 12px; border: 1px solid #E2E8F0; border-radius: 9px; font-size: 13px; color: #0F172A; outline: none; font-family: inherit; background: #FFFFFF; }
     .planif-modal-input:focus { border-color: #2563EB; }
+    .planif-modal-hint { font-size: 11px; color: #94A3B8; }
     .planif-modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 20px; border-top: 1px solid #E2E8F0; }
     .planif-btn-cancel { padding: 8px 16px; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; color: #475569; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease; }
     .planif-btn-cancel:hover { background: #F1F5F9; }

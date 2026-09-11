@@ -71,7 +71,11 @@ export class StructuresListComponent implements OnInit {
     // Simulate a small load time for UX
     setTimeout(() => this.isLoading.set(false), 300);
   }
-protected confirmToggleStatus(structure: Structure): void {
+protected verStructure(id: string): void {
+    this.router.navigate(['/superadmin/structures', id]);
+  }
+
+  protected confirmToggleStatus(structure: Structure): void {
     this.selectedStructure.set(structure);
     this.showConfirmModal.set(true);
   }

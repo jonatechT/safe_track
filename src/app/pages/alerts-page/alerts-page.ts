@@ -271,7 +271,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
 
     /* ===== Modale d'affectation (portée depuis l'ancienne page Alertes) ===== */
     .affect-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
-    .affect-modal { background: #FFFFFF; border-radius: 16px; width: 100%; max-width: 420px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28); }
+    .affect-modal { background: #FFFFFF; border-radius: 12px; width: 100%; max-width: 420px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28); }
     .affect-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid #E2E8F0; }
     .affect-modal-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: #EFF6FF; color: #2563EB; font-size: 18px; flex-shrink: 0; }
     .affect-modal-title-block { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }

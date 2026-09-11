@@ -93,9 +93,7 @@
           [attr.aria-label]="isDarkMode ? 'Passer en mode clair' : 'Passer en mode nuit'"
           [attr.title]="isDarkMode ? 'Mode clair' : 'Mode nuit'"
         >
-          <span class="tt-icon tt-icon-sun"><i class="fa-solid fa-sun"></i></span>
-          <span class="tt-icon tt-icon-moon"><i class="fa-solid fa-moon"></i></span>
-          <span class="tt-knob"></span>
+          <i class="fa-solid" [class.fa-moon]="!isDarkMode" [class.fa-sun]="isDarkMode"></i>
         </button>
         <div class="alerts-bell-wrapper">
           <button

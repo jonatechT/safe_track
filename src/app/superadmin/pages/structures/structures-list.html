@@ -61,7 +61,7 @@
         </thead>
         <tbody>
           @for (s of filteredStructures(); track s.id) {
-            <tr>
+            <tr (click)="verStructure(s.id)" style="cursor: pointer;">
               <td>
                 <div class="sa-cell-main">
                   <div class="sa-cell-avatar">{{ s.nom.charAt(0).toUpperCase() }}</div>
@@ -82,7 +82,7 @@
               </td>
               <td>{{ s.adminNom || '—' }}</td>
               <td>{{ s.dateCreation | date:'dd/MM/yyyy' }}</td>
-              <td>
+              <td (click)="$event.stopPropagation()">
                 <div style="display: flex; gap: 6px;">
                   <a [routerLink]="['/superadmin/structures', s.id]" class="sa-btn-icon" title="Consulter / Modifier">
                     <i class="fa-solid fa-eye"></i>

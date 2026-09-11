@@ -104,6 +104,8 @@
 .sa-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
 .sa-form-group { display: flex; flex-direction: column; gap: 6px; }
 .sa-form-group.full-width { grid-column: 1 / -1; }
+/* Valeur affichée en lecture seule (ex. page Détail structure) */
+.sa-detail-value { color: #0F172A; }
 .sa-form-label { font-size: 12px; font-weight: 600; color: #475569; display: inline-flex; align-items: center; gap: 7px; transition: color 0.2s ease; }
 .sa-form-label i { color: #2563EB; font-size: 13px; width: 16px; text-align: center; }
 .sa-form-group:focus-within .sa-form-label { color: #1E3A8A; }
@@ -141,7 +143,7 @@
 .sa-spinner { width: 20px; height: 20px; border: 3px solid #E2E8F0; border-top-color: #1E3A8A; border-radius: 50%; animation: sa-rotate 0.8s linear infinite; }
 /* Modal */
 .sa-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.35); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); animation: sa-fade 0.2s ease; }
-.sa-modal { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; overflow: hidden; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); animation: sa-scale-in 0.2s ease; }
+.sa-modal { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; overflow: hidden; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); animation: sa-scale-in 0.2s ease; }
 .sa-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; background: linear-gradient(180deg, #2563EB, #1D4ED8); border-bottom: 1px solid #1E40AF; margin: 0; }
 .sa-modal-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
 .sa-modal-icon-danger { background: rgba(255, 255, 255, 0.9); color: #EF4444; border: 1px solid rgba(255, 255, 255, 0.3); }
@@ -378,7 +380,7 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !i
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   max-height: min(90vh, calc(100dvh - 32px));
-  border-radius: 26px;
+  border-radius: 14px;
   width: 100%; max-width: 620px;
   margin: auto; flex-shrink: 0;
   overflow: hidden;
@@ -585,7 +587,7 @@ body.dark-mode .sa-modal-icon-warning { background: rgba(255, 255, 255, 0.14) !i
 .sam-btn--ghost:hover { background: #F1F5F9; color: #0F172A; border-color: #CBD5E1; }
 .sam-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 @media (max-width: 640px) {
-  .sam-modal { max-width: 480px; max-height: min(94vh, calc(100dvh - 24px)); border-radius: 22px; }
+  .sam-modal { max-width: 480px; max-height: min(94vh, calc(100dvh - 24px)); border-radius: 14px; }
   .sam-rail { padding: 16px 18px; }
   .sam-rail-step-icon { width: 28px; height: 28px; font-size: 11.5px; border-radius: 8px; }
   .sam-rail-step-text small { display: none; }

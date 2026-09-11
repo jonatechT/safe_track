@@ -147,7 +147,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 13px;
   min-width: 0;
   /* Le contenu défile silencieusement si l'écran est très court,
      mais AUCUNE scrollbar n'est affichée (ni verticale ni horizontale). */
@@ -165,10 +165,10 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 12px 14px;
+  padding: 13px 14px;
   border-radius: 12px;
   color: #E2E8F0;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
@@ -198,7 +198,7 @@ body {
 .nav-icon {
   width: 24px;
   text-align: center;
-  font-size: 20px;
+  font-size: 21px;
   flex-shrink: 0;
 }
 
@@ -261,12 +261,12 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: 10px;
   border: none;
   background: rgba(255, 255, 255, 0.12);
   color: #E2E8F0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   width: 100%;
@@ -701,7 +701,7 @@ body {
   height: 40px;
   border-radius: 10px;
   border: 1px solid transparent;
-  background: transparent;
+  background: #EFF6FF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -713,7 +713,7 @@ body {
 }
 
 .notification-btn:hover {
-  background: #EFF6FF;
+  background: #DBEAFE;
   color: #1D4ED8;
 }
 
@@ -722,67 +722,31 @@ body {
   color: #2563EB;
 }
 
-/* ===== Bouton mode nuit / clair — toggle pill animé ===== */
+/* ===== Bouton mode nuit / clair — icône simple (identique aux boutons d'action du header) ===== */
 .theme-toggle-btn {
-  position: relative;
-  width: 58px;
-  height: 30px;
-  border-radius: 999px;
-  border: 1px solid #E2E8F0;
-  background: linear-gradient(135deg, #FDBA74, #FDE68A);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 6px;
-  cursor: pointer;
-  transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.35s ease, box-shadow 0.35s ease;
-  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12);
-}
-
-.theme-toggle-btn .tt-icon {
-  position: relative;
-  z-index: 2;
-  width: 16px;
-  height: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #EFF6FF;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  transition: color 0.3s ease, opacity 0.3s ease;
-}
-
-.theme-toggle-btn .tt-icon-sun { color: #B45309; }
-.theme-toggle-btn .tt-icon-moon { color: rgba(255, 255, 255, 0.9); }
-
-.theme-toggle-btn .tt-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
+  color: #2563EB;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .theme-toggle-btn:hover {
-  border-color: #CBD5E1;
-  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.12), 0 0 0 3px rgba(37, 99, 235, 0.10);
+  background: #DBEAFE;
+  color: #1D4ED8;
 }
 
 .theme-toggle-btn.active {
-  background: linear-gradient(135deg, #1E3A8A, #312E81);
-  border-color: #1E293B;
+  background: #DBEAFE;
+  color: #2563EB;
 }
-
-.theme-toggle-btn.active .tt-knob {
-  transform: translateX(28px);
-}
-
-.theme-toggle-btn.active .tt-icon-sun { color: rgba(255, 255, 255, 0.55); }
-.theme-toggle-btn.active .tt-icon-moon { color: #FBBF24; }
 
 .theme-toggle-btn:focus-visible {
   outline: 2px solid #2563EB;
@@ -1214,11 +1178,11 @@ body {
   height: 40px;
   border-radius: 10px;
   border: 1px solid transparent;
-  background: transparent;
+  background: #FEE2E2;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #D97706;
+  color: #DC2626;
   font-size: 16px;
   cursor: pointer;
   position: relative;
@@ -1226,13 +1190,13 @@ body {
 }
 
 .alerts-bell-btn:hover {
-  background: #FFFBEB;
-  color: #B45309;
+  background: #FECACA;
+  color: #B91C1C;
 }
 
 .alerts-bell-btn.active {
-  background: #FEF3C7;
-  color: #D97706;
+  background: #FECACA;
+  color: #DC2626;
 }
 
 .alerts-badge {
@@ -1286,7 +1250,7 @@ body {
   gap: 12px;
   padding: 18px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(135deg, #B45309, #F59E0B);
+  background: linear-gradient(135deg, #B91C1C, #EF4444);
 }
 
 .alerts-bell-panel-title-block {
@@ -1437,12 +1401,12 @@ body {
   align-items: center;
   justify-content: center;
   padding: 14px 16px;
-  border-top: 1px solid #E2E8F0;
-  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-top: 1px solid #FECACA;
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
 }
 
 .alerts-bell-all-btn {
-  background: #D97706;
+  background: #DC2626;
   color: #FFFFFF;
   border: none;
   border-radius: 8px;
@@ -1460,9 +1424,9 @@ body {
 }
 
 .alerts-bell-all-btn:hover {
-  background: #B45309;
+  background: #B91C1C;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(180, 83, 9, 0.25);
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.25);
 }
 
 /* ===== Logout modal ===== */
@@ -1482,7 +1446,7 @@ body {
 
 .logout-modal {
   background: #FFF;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 24px;
   width: 90%;
   max-width: 440px;

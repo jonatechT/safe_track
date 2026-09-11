@@ -8,13 +8,16 @@ import { MaintenanceService } from '../../services/maintenance.service';
 export class StructureService {
   private readonly STORAGE_KEY = 'safe_track_structures';
   private readonly STORAGE_VERSION_KEY = 'safe_track_structures_version';
-  private readonly CURRENT_VERSION = '4';
+  private readonly CURRENT_VERSION = '5';
 
   structures = signal<Structure[]>(this.loadStructures());
 
   constructor(private maintenanceService: MaintenanceService) {
     const version = typeof window !== 'undefined' ? localStorage.getItem(this.STORAGE_VERSION_KEY) : null;
-    if (version !== this.CURRENT_VERSION) {
+    // Réamorce aussi si la liste est vide (ex. donnée corrompue/vidée) même si
+    // la version est à jour : un front sans structures de démonstration est
+    // impossible à prévisualiser/expliquer.
+    if (version !== this.CURRENT_VERSION || this.structures().length === 0) {
       this.seedStructures();
       if (typeof window !== 'undefined') {
         localStorage.setItem(this.STORAGE_VERSION_KEY, this.CURRENT_VERSION);

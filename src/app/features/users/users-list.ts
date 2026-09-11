@@ -113,7 +113,7 @@ import { StructureService } from '../../superadmin/services/structure.service';
     .users-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 48px 24px; color: #94A3B8; }
     .users-empty-icon { font-size: 36px; color: #CBD5E1; }
     .users-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.35); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px) saturate(1.2); -webkit-backdrop-filter: blur(8px) saturate(1.2); }
-    .users-modal { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 20px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); }
+    .users-modal { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 0; width: 90%; max-width: 440px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 64px rgba(15, 23, 42, 0.2); }
     .users-modal-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; background: linear-gradient(180deg, #2563EB, #1D4ED8); border-bottom: 1px solid #1E40AF; border-radius: 20px 20px 0 0; margin: 0; flex-shrink: 0; }
     .users-modal-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .users-modal-icon-warning { background: rgba(255, 255, 255, 0.9); color: #F59E0B; border: 1px solid rgba(255, 255, 255, 0.3); }

@@ -126,12 +126,35 @@ body.dark-mode .search-shortcut {
 }
 
 /* --- Boutons d'action du header --- */
+body.dark-mode .notification-btn,
+body.dark-mode .theme-toggle-btn {
+  background: #1E293B;
+  color: #60A5FA;
+}
 body.dark-mode .notification-btn:hover,
 body.dark-mode .theme-toggle-btn:hover {
-  background: #1E293B;
+  background: #334155;
+  color: #93C5FD;
 }
 body.dark-mode .notification-btn.active {
   background: #1E3A5F;
+  color: #93C5FD;
+}
+body.dark-mode .theme-toggle-btn.active {
+  background: #1E3A5F;
+  color: #FBBF24;
+}
+body.dark-mode .alerts-bell-btn {
+  background: rgba(220, 38, 38, 0.18);
+  color: #FCA5A5;
+}
+body.dark-mode .alerts-bell-btn:hover {
+  background: rgba(220, 38, 38, 0.3);
+  color: #FECACA;
+}
+body.dark-mode .alerts-bell-btn.active {
+  background: rgba(220, 38, 38, 0.34);
+  color: #FECACA;
 }
 body.dark-mode .profile-chip:hover {
   background: #1E293B;
@@ -167,6 +190,40 @@ body.dark-mode .notification-time {
 }
 body.dark-mode .notifications-empty-title {
   color: #94A3B8;
+}
+
+/* --- Panneau Alertes (cloche d'alertes, distinct des notifications) --- */
+body.dark-mode .alerts-bell-panel {
+  background: #111827;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+}
+body.dark-mode .alerts-bell-panel-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+body.dark-mode .alerts-bell-empty-title {
+  color: #CBD5E1;
+}
+body.dark-mode .alerts-bell-empty-subtitle {
+  color: #64748B;
+}
+body.dark-mode .alert-bell-item {
+  background: #1E293B;
+  border-color: #334155;
+  box-shadow: none;
+}
+body.dark-mode .alert-bell-item:hover {
+  border-color: #FBBF24;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+body.dark-mode .alert-bell-message {
+  color: #E2E8F0;
+}
+body.dark-mode .alert-bell-time {
+  color: #64748B;
+}
+body.dark-mode .alerts-bell-panel-footer {
+  background: linear-gradient(135deg, #78350F, #92400E);
+  border-top-color: #1F2937;
 }
 
 /* --- Modales gÃ©nÃ©riques --- */
@@ -718,6 +775,65 @@ body.dark-mode app-equipment-detail-page .eqd-loc-card--current {
   background: rgba(16, 185, 129, 0.10) !important;
 }
 
+/* ===== Modale "Planifier une intervention" (page Maintenance) — mode nuit ===== */
+body.dark-mode app-maintenance-page .planif-modal {
+  background: #111827 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-header {
+  border-bottom-color: #1F2937 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-icon {
+  background: rgba(37, 99, 235, 0.2) !important;
+  color: #93C5FD !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-title {
+  color: #F1F5F9 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-subtitle {
+  color: #94A3B8 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-close {
+  color: #94A3B8 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-close:hover {
+  background: #1F2937 !important;
+  color: #F1F5F9 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-label {
+  color: #CBD5E1 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-input {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+  color: #E2E8F0 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-input:focus {
+  border-color: #2563EB !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-input option {
+  background: #0B1220 !important;
+  color: #E2E8F0 !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-hint {
+  color: #64748B !important;
+}
+body.dark-mode app-maintenance-page .planif-modal-footer {
+  border-top-color: #1F2937 !important;
+}
+body.dark-mode app-maintenance-page .planif-btn-cancel {
+  background: #1F2937 !important;
+  border-color: #334155 !important;
+  color: #CBD5E1 !important;
+}
+body.dark-mode app-maintenance-page .planif-btn-cancel:hover {
+  background: #334155 !important;
+}
+body.dark-mode app-maintenance-page .planif-btn-confirm:disabled {
+  background: #334155 !important;
+  color: #94A3B8 !important;
+}
+
 /* ===== Tableaux : badges Statut / Technicien / Alerte (Maintenance, Alertes) ===== */
 /* Maintenance â€” badges de statut */
 body.dark-mode app-maintenance-page .status-planifiee {
@@ -877,14 +993,14 @@ body.dark-mode app-profile-page .profile-hero-btn--ghost:hover:not(:disabled) {
 }
 
 body.dark-mode app-profile-page .profile-hero-btn--danger {
-  background: rgba(239, 68, 68, 0.18) !important;
-  border-color: rgba(248, 113, 113, 0.4) !important;
-  color: #FECACA !important;
+  background: #DC2626 !important;
+  border-color: #DC2626 !important;
+  color: #FFFFFF !important;
 }
 
 body.dark-mode app-profile-page .profile-hero-btn--danger:hover {
-  background: rgba(239, 68, 68, 0.28) !important;
-  border-color: rgba(248, 113, 113, 0.55) !important;
+  background: #B91C1C !important;
+  border-color: #B91C1C !important;
 }
 
 body.dark-mode app-profile-page .profile-edit-overlay {
@@ -1027,11 +1143,12 @@ body.dark-mode app-superadmin-layout .sa-topbar-right {
   color: #F1F5F9 !important;
 }
 body.dark-mode app-superadmin-layout .sa-theme-btn {
-  background: transparent !important;
-  color: #2563EB !important;
+  background: #1E293B !important;
+  color: #60A5FA !important;
 }
 body.dark-mode app-superadmin-layout .sa-theme-btn:hover {
-  background: #1F2937 !important;
+  background: #334155 !important;
+  color: #93C5FD !important;
 }
 body.dark-mode app-superadmin-layout .sa-theme-btn.active {
   background: #0B1220 !important;
@@ -1040,15 +1157,107 @@ body.dark-mode app-superadmin-layout .sa-theme-btn.active {
 body.dark-mode app-superadmin-layout .sa-content {
   background: #0B1220 !important;
 }
+body.dark-mode app-superadmin-layout .sa-profile:hover {
+  background: #1F2937 !important;
+}
 body.dark-mode app-superadmin-layout .sa-profile-panel {
   background: #111827 !important;
   border-color: #1F2937 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-panel-body {
+  background: #111827 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-panel-footer {
+  background: #111827 !important;
 }
 body.dark-mode app-superadmin-layout .sa-profile-name {
   color: #F1F5F9 !important;
 }
 body.dark-mode app-superadmin-layout .sa-profile-role {
   color: #94A3B8 !important;
+}
+/* --- Panneau profil : sections, champs, badge, pied de panneau --- */
+body.dark-mode app-superadmin-layout .sa-profile-section-title {
+  color: #93C5FD !important;
+  border-bottom-color: #1F2937 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-field {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-field:hover {
+  background: #16243D !important;
+  border-color: #2563EB !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-field-icon {
+  background: #1E293B !important;
+  color: #93C5FD !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-field-label {
+  color: #64748B !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-field-value {
+  color: #E2E8F0 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-badge {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #FCA5A5 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-badge-active {
+  background: rgba(16, 185, 129, 0.16) !important;
+  color: #6EE7B7 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-panel-footer {
+  border-top-color: #1F2937 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-logout-btn {
+  background: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-logout-btn:hover {
+  background: #B91C1C !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-panel-edit {
+  background: #1F2937 !important;
+  border-color: #334155 !important;
+  color: #93C5FD !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-panel-edit:hover {
+  background: #334155 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-panel-close {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #E2E8F0 !important;
+}
+body.dark-mode app-superadmin-layout .sa-profile-panel-close:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+/* --- Panneau profil : formulaire d'édition --- */
+body.dark-mode app-superadmin-layout .sa-edit-label {
+  color: #CBD5E1 !important;
+}
+body.dark-mode app-superadmin-layout .sa-edit-input {
+  background: #0B1220 !important;
+  border-color: #1F2937 !important;
+  color: #E2E8F0 !important;
+}
+body.dark-mode app-superadmin-layout .sa-edit-btn-secondary {
+  background: #1F2937 !important;
+  color: #CBD5E1 !important;
+  border-color: #334155 !important;
+}
+body.dark-mode app-superadmin-layout .sa-edit-btn-secondary:hover {
+  background: #334155 !important;
+}
+body.dark-mode app-superadmin-layout .sa-edit-feedback {
+  background: rgba(16, 185, 129, 0.14) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+body.dark-mode app-superadmin-layout .sa-edit-feedback-error {
+  background: rgba(220, 38, 38, 0.14) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(220, 38, 38, 0.35) !important;
 }
 body.dark-mode app-superadmin-layout .sa-profile-action {
   color: #CBD5E1 !important;
@@ -1322,6 +1531,17 @@ body.dark-mode .profile-role {
   color: #94A3B8 !important;
 }
 
+/* ===== Ã‰tat vide page Alertes ("Aucune alerte en cours") â€” mode nuit ===== */
+body.dark-mode app-alerts-page .empty-state {
+  background: #111827 !important;
+  border-color: #1F2937 !important;
+  color: #94A3B8 !important;
+}
+body.dark-mode app-alerts-page .stat-card--amber {
+  background: rgba(217, 119, 6, 0.16) !important;
+  border-color: rgba(217, 119, 6, 0.3) !important;
+}
+
 /* ===== Onglets page Alertes (En cours / Historique) â€” mode nuit ===== */
 body.dark-mode .alerts-tabs .alerts-tab {
   background: #111827 !important;
@@ -1539,33 +1759,6 @@ body.dark-mode app-settings-page .stg-select {
   background: #0B1220 !important;
   border-color: #1F2937 !important;
   color: #E2E8F0 !important;
-}
-body.dark-mode app-settings-page .stg-choice {
-  background: #0B1220 !important;
-  border-color: #1F2937 !important;
-}
-body.dark-mode app-settings-page .stg-choice:hover {
-  border-color: #3B82F6 !important;
-  background: rgba(37, 99, 235, 0.1) !important;
-}
-body.dark-mode app-settings-page .stg-choice-icon {
-  color: #94A3B8 !important;
-}
-body.dark-mode app-settings-page .stg-choice-label {
-  color: #F1F5F9 !important;
-}
-body.dark-mode app-settings-page .stg-choice-desc {
-  color: #94A3B8 !important;
-}
-body.dark-mode app-settings-page .stg-choice--active {
-  background: rgba(37, 99, 235, 0.16) !important;
-  border-color: #3B82F6 !important;
-}
-body.dark-mode app-settings-page .stg-choice--active .stg-choice-icon {
-  color: #93C5FD !important;
-}
-body.dark-mode app-settings-page .stg-choice--active .stg-choice-label {
-  color: #93C5FD !important;
 }
 body.dark-mode app-settings-page .stg-alert--success {
   background: rgba(16, 185, 129, 0.14) !important;
@@ -2030,6 +2223,10 @@ body.dark-mode .sam-header-icon {
   filter: none !important;
 }
 /* ===== Page Â« Ajouter / Modifier une structure Â» (sf-*) â€” mode nuit ===== */
+body.dark-mode app-structure-detail .sa-detail-value {
+  color: #E2E8F0 !important;
+}
+
 body.dark-mode app-structure-form {
   background: #0B1220 !important;
   color: #E2E8F0 !important;

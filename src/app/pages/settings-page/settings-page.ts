@@ -61,66 +61,6 @@ import { ThemeService } from '../../services/theme.service';
           </div>
         </div>
 
-        <!-- ===== Action de l'admin sur une alerte ===== -->
-        <div class="stg-card">
-          <div class="stg-card-header">
-            <div class="stg-card-icon stg-card-icon--blue"><i class="fa-solid fa-calendar-check"></i></div>
-            <div>
-              <h3 class="stg-card-title">Action de l'admin sur une alerte</h3>
-              <p class="stg-card-subtitle">Choisissez l'unique action proposée à l'admin sur la page Alertes.</p>
-            </div>
-          </div>
-
-          <div class="stg-choice-group" role="radiogroup" aria-label="Action de l'admin sur une alerte">
-            <button
-              type="button"
-              class="stg-choice"
-              [class.stg-choice--active]="settings.actionAdmin === 'affecter'"
-              role="radio"
-              [attr.aria-checked]="settings.actionAdmin === 'affecter'"
-              (click)="setActionAdmin('affecter')"
-            >
-              <i class="fa-solid fa-user-clock stg-choice-icon"></i>
-              <span class="stg-choice-label">Affecter</span>
-              <span class="stg-choice-desc">à un ou plusieurs techniciens</span>
-            </button>
-            <button
-              type="button"
-              class="stg-choice"
-              [class.stg-choice--active]="settings.actionAdmin === 'planifier'"
-              role="radio"
-              [attr.aria-checked]="settings.actionAdmin === 'planifier'"
-              (click)="setActionAdmin('planifier')"
-            >
-              <i class="fa-solid fa-calendar-check stg-choice-icon"></i>
-              <span class="stg-choice-label">Planifier</span>
-              <span class="stg-choice-desc">une intervention (date + nature)</span>
-            </button>
-            <button
-              type="button"
-              class="stg-choice"
-              [class.stg-choice--active]="settings.actionAdmin === 'prendre'"
-              role="radio"
-              [attr.aria-checked]="settings.actionAdmin === 'prendre'"
-              (click)="setActionAdmin('prendre')"
-            >
-              <i class="fa-solid fa-hand stg-choice-icon"></i>
-              <span class="stg-choice-label">Prendre</span>
-              <span class="stg-choice-desc">l'alerte lui-même</span>
-            </button>
-          </div>
-
-          @if (settings.actionAdmin === 'planifier') {
-            <div class="stg-row stg-row--sub">
-              <div class="stg-row-info">
-                <span class="stg-row-title">Rappel avant la date limite</span>
-                <span class="stg-row-desc">Jours avant la date d'une intervention planifiée : les techniciens affectés reçoivent une notification automatique.</span>
-              </div>
-              <input type="number" class="stg-select stg-number" [value]="settings.rappelAvantIntervention" (change)="setRappel($any($event.target).value)" min="0" max="30" aria-label="Jours de rappel" />
-            </div>
-          }
-        </div>
-
         <!-- ===== Apparence ===== -->
         <div class="stg-card">
           <div class="stg-card-header">
@@ -254,22 +194,6 @@ import { ThemeService } from '../../services/theme.service';
     .stg-number { width: 92px; text-align: center; }
     .stg-row--stack { flex-direction: column; align-items: flex-start; gap: 4px; padding-bottom: 2px; }
 
-    /* ===== Sélecteur à 3 choix exclusifs (action de l'admin) ===== */
-    .stg-choice-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .stg-choice {
-      display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
-      padding: 16px 12px; border-radius: 12px; border: 1.5px solid #E2E8F0; background: #F8FAFC;
-      cursor: pointer; transition: all 0.18s ease; font-family: inherit;
-    }
-    .stg-choice:hover { border-color: #93C5FD; background: #F0F7FF; }
-    .stg-choice-icon { font-size: 18px; color: #64748B; transition: color 0.18s ease; }
-    .stg-choice-label { font-size: 13px; font-weight: 700; color: #0F172A; }
-    .stg-choice-desc { font-size: 11px; color: #64748B; line-height: 1.3; }
-    .stg-choice--active { border-color: #2563EB; background: #EFF6FF; box-shadow: 0 0 0 1px #2563EB; }
-    .stg-choice--active .stg-choice-icon { color: #2563EB; }
-    .stg-choice--active .stg-choice-label { color: #1D4ED8; }
-    @media (max-width: 560px) { .stg-choice-group { grid-template-columns: 1fr; } }
-
     @media (max-width: 640px) {
       .stg-row { flex-direction: column; align-items: flex-start; }
     }
@@ -300,15 +224,6 @@ export class SettingsPageComponent {
   protected setMax(value: string): void {
     const n = Math.min(50, Math.max(1, Number(value) || 1));
     this.settingsService.update({ maxTechniciens: n });
-  }
-
-  protected setRappel(value: string): void {
-    const n = Math.min(30, Math.max(0, Number(value) || 0));
-    this.settingsService.update({ rappelAvantIntervention: n });
-  }
-
-  protected setActionAdmin(value: AppSettings['actionAdmin']): void {
-    this.settingsService.update({ actionAdmin: value });
   }
 
   protected toggleTheme(): void {

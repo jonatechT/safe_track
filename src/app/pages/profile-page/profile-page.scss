@@ -40,6 +40,7 @@
 .profile-hero-actions {
   display: flex;
   align-items: center;
+  align-self: flex-start;
   gap: 10px;
   flex-wrap: wrap;
 }
@@ -76,14 +77,15 @@
 }
 
 .profile-hero-btn--danger {
-  background: rgba(239, 68, 68, 0.18);
-  border-color: rgba(252, 165, 165, 0.4);
-  color: #FEE2E2;
+  background: #EF4444;
+  border-color: #EF4444;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
 }
 
 .profile-hero-btn--danger:hover {
-  background: rgba(239, 68, 68, 0.32);
-  border-color: rgba(252, 165, 165, 0.6);
+  background: #DC2626;
+  border-color: #DC2626;
 }
 
 .profile-avatar {
@@ -340,7 +342,7 @@
   .profile-edit-card {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
-    border-radius: 18px;
+    border-radius: 12px;
     box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
     padding: 24px;
     width: 100%;
